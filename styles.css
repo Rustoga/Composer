@@ -190,12 +190,14 @@ body {
   bottom: 0;
   transition: all 300ms ease-in-out;
   opacity: 1;
+  
 }
 @media (min-width: 800px) {
   .nav {
     opacity: 1;
     position: static;
     width: 70%;
+    
   }
 }
 .nav--open {
@@ -209,10 +211,7 @@ body {
   justify-content: space-evenly;
 }
 
-  .menu {
-    position: static;
-    flex-flow: row;
-  }
+
 
 .menu-item {
   font-size: 2rem;
@@ -350,6 +349,9 @@ p:last-of-type {
   color: var(--footer-text-color);
   padding: none;
   text-align: center;
+    display: flex;
+    flex-direction: column;
+ align-items: center;
 }
 
 .footer-icons {
