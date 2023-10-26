@@ -1,2 +1,0 @@
-# Composer
-Composer Rudolf Westerholm
