@@ -26,10 +26,10 @@ a {
   text-decoration: none;
 }
 
-/* Hero (AVRSE-style, cropped) */
+/* Hero */
 .hero {
   height: 70vh;
-  background: url('RudolfWesterholm_profileImage_hero.png') center/cover no-repeat;
+  background: url('Rustoga_2023_Promo-3.png') center/cover no-repeat;
   position: relative;
 }
 
@@ -60,7 +60,7 @@ p.tagline {
   margin-top: 0.5rem;
 }
 
-/* Navigation (no dots) */
+/* Navigation */
 .nav {
   position: absolute;
   top: 1.25rem;
@@ -93,7 +93,7 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
-/* Featured music (AVRSE-style list) */
+/* Featured music */
 .music-section {
   padding: 4rem 1rem;
   background-color: #fafafa;
@@ -109,10 +109,8 @@ h2 {
 }
 
 .track {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
   background: #fff;
   padding: 1rem 1.25rem;
   border-radius: 8px;
@@ -129,58 +127,15 @@ h2 {
   font-size: 1.05rem;
   font-weight: 600;
   color: #111;
+  margin-bottom: 0.5rem;
 }
 
-/* Play button (inline audio) */
-.play-btn {
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
-  cursor: pointer;
+.track iframe {
+  display: block;
+  max-width: 100%;
 }
 
-.play-btn .pause-icon { display: none; }
-.play-btn.is-playing .play-icon { display: none; }
-.play-btn.is-playing .pause-icon { display: inline; }
-
-.play-btn:hover,
-.play-btn:focus {
-  background: #ffcc00;
-  color: #111;
-  outline: none;
-}
-
-.play-btn:active {
-  transform: scale(0.96);
-}
-
-/* External link (Bandcamp) */
-.external-play {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #eee;
-  color: #111;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.external-play:hover,
-.external-play:focus {
-  background: #ffcc00;
-  color: #111;
-}
-
-/* About (restored styling) */
+/* About */
 .about-section {
   padding: 4rem 1rem;
   background-color: #fff;
@@ -194,10 +149,11 @@ h2 {
   color: #333;
 }
 
-/* Selected works (Jukio Kallio-style) */
+/* Works */
 .works-section {
-  padding: 3rem 1rem 1rem;
+  padding: 3rem 1rem;
   background-color: #fff;
+  text-align: center;
 }
 
 .works-list {
@@ -209,34 +165,21 @@ h2 {
 
 .work-row {
   border-bottom: 1px solid #e7e7e7;
-}
-
-.work-link {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
   padding: 1rem 0;
-  align-items: baseline;
-  transition: opacity 0.2s ease;
-}
-
-.work-link:hover {
-  opacity: 0.85;
+  font-size: 1rem;
 }
 
 .work-title {
   font-weight: 700;
-  font-size: 1.1rem;
   letter-spacing: 0.2px;
   color: #111;
 }
 
 .work-meta {
-  font-size: 0.95rem;
   color: #777;
 }
 
-/* Clients (Sam Jämsén-style) */
+/* Clients */
 .clients-section {
   padding: 4rem 1rem;
   background-color: #111;
@@ -265,7 +208,7 @@ h2 {
   opacity: 1;
 }
 
-/* Footer (restored styling) */
+/* Footer */
 .footer {
   background-color: #111;
   color: #fff;
@@ -289,18 +232,8 @@ h2 {
   margin-top: 0.5rem;
 }
 
-/* Accessibility and motion */
-@media (prefers-reduced-motion: reduce) {
-  .track,
-  .play-btn,
-  .external-play {
-    transition: none;
-  }
-}
-
-/* Responsive tweaks */
+/* Responsive */
 @media (max-width: 768px) {
   h1.artist-name { font-size: 2.2rem; }
   p.tagline { font-size: 1rem; }
-  .track { grid-template-columns: 1fr auto; }
 }
