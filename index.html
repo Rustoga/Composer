@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <title>Composer Rudolf Westerholm</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script src="https://kit.fontawesome.com/ebfb879360.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/ebfb879360.js" crossorigin="anonymous" defer></script>
 </head>
 
 <body>
@@ -19,16 +19,18 @@
       <header class="header">
         <nav class="nav">
           <ul class="menu">
-            <li><a href="https://instagram.com/rustoga" title="Instagram"><i class="fab fa-instagram"></i></a></li>
-            <li><a href="https://www.tiktok.com/@rustoga" title="TikTok"><i class="fab fa-tiktok"></i></a></li>
-            <li><a href="https://youtube.com/@rustoga" title="YouTube"><i class="fab fa-youtube"></i></a></li>
+            <li><a href="https://facebook.com/rustoga" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+            <li><a href="https://instagram.com/rustoga" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
+            <li><a href="https://www.tiktok.com/@rustoga" aria-label="TikTok"><i class="fab fa-tiktok"></i></a></li>
+            <li><a href="https://twitter.com/rustoga" aria-label="X"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://youtube.com/@rustogamusic" aria-label="YouTube"><i class="fab fa-youtube"></i></a></li>
           </ul>
         </nav>
       </header>
 
       <div class="hero-content">
         <h1 class="artist-name">Rudolf Westerholm</h1>
-        <p class="tagline">Composer • Singer • Storyteller in Music</p>
+        <p class="tagline">Composer • Sound Designer • Storyteller in Music</p>
       </div>
     </div>
   </section>
@@ -36,39 +38,41 @@
   <!-- Featured Music -->
   <section class="music-section">
     <h2>Featured Music</h2>
-
-    <!-- YouTube Embed -->
-    <iframe width="560" height="315"
-      src="https://youtu.be/lRXtnHHtNZ0"
-      title="Rustoga YouTube playlist"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
-
-    <!-- Custom Tracklist -->
-    <div class="tracklist">
-      <div class="track">
+    <div class="tracklist" role="list">
+      <div class="track" role="listitem">
         <span class="track-title">Touch</span>
         <span class="track-duration">3:42</span>
-        <a href="https://https://youtu.be/fcFiJYHeCXU" target="_blank" class="play-btn"><i class="fas fa-play"></i></a>
+        <button class="play-btn" data-video-id="fcFiJYHeCXU" aria-label="Play Touch" aria-pressed="false">
+          <svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        </button>
       </div>
-      <div class="track">
+      <div class="track" role="listitem">
         <span class="track-title">Sä Oot Olemassa</span>
         <span class="track-duration">4:15</span>
-        <a href="https://youtu.be/DTvqautADms" target="_blank" class="play-btn"><i class="fas fa-play"></i></a>
+        <button class="play-btn" data-video-id="DTvqautADms" aria-label="Play Sä Oot Olemassa" aria-pressed="false">
+          <svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        </button>
       </div>
-      <div class="track">
+      <div class="track" role="listitem">
         <span class="track-title">Lush</span>
         <span class="track-duration">2:58</span>
-        <a href="https://youtu.be/FKUz_mP3WMU" target="_blank" class="play-btn"><i class="fas fa-play"></i></a>
+        <button class="play-btn" data-video-id="FKUz_mP3WMU" aria-label="Play Lush" aria-pressed="false">
+          <svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        </button>
       </div>
-      <div class="track">
+      <div class="track" role="listitem">
         <span class="track-title">Wash Away Your Memories</span>
         <span class="track-duration">5:04</span>
-        <a href="https://youtu.be/LgITDNdox6w" target="_blank" class="play-btn"><i class="fas fa-play"></i></a>
+        <button class="play-btn" data-video-id="LgITDNdox6w" aria-label="Play Wash Away Your Memories" aria-pressed="false">
+          <svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        </button>
       </div>
     </div>
+    <div id="yt-player" class="sr-only" aria-hidden="true"></div>
   </section>
 
   <!-- About -->
@@ -80,9 +84,24 @@
     </p>
     <p>
       His compositions blend experimental sound design with melodic elements, drawing on cross‑disciplinary research to evoke emotion. These qualities are showcased in his solo project
-      <a href="https://youtube.com/@rustoga">Rustoga</a> and in his publication
+      <a href="https://youtube.com/@rustogamusic">Rustoga</a> and in his publication
       <a href="http://urn.fi/URN:NBN:fi:aalto-202306254184">Making video game music more accessible for visually impaired</a>.
     </p>
+  </section>
+
+  <!-- Clients -->
+  <section class="clients-list-section">
+    <h2>Clients</h2>
+    <ul class="clients-list">
+      <li>YLE (Finnish National Broadcasting Company)</li>
+      <li>Housemarque</li>
+      <li>Aalto University</li>
+      <li>Vacuum Wood</li>
+      <li>Suomen Podcast Media</li>
+      <li>HypeWorks</li>
+      <li>EpicMeets</li>
+      <li>Desucon</li>
+    </ul>
   </section>
 
   <!-- Footer -->
@@ -93,5 +112,42 @@
     <p>&copy; <script>document.write(new Date().getFullYear())</script> Rudolf Westerholm - All Rights Reserved</p>
   </footer>
 
-</body>
-</html>
+  <!-- YouTube IFrame API -->
+  <script>
+    (function() {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    })();
+
+    let ytPlayer = null;
+    let currentVideoId = null;
+
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player('yt-player', {
+        height: '0',
+        width: '0',
+        videoId: '',
+        playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1, playsinline: 1 },
+        events: { onStateChange: handleStateChange }
+      });
+    }
+
+    function handleStateChange(e) {
+      const playing = e.data === YT.PlayerState.PLAYING;
+      document.querySelectorAll('.play-btn').forEach(btn => {
+        const isCurrent = btn.dataset.videoId === currentVideoId;
+        btn.classList.toggle('is-playing', playing && isCurrent);
+        btn.setAttribute('aria-pressed', (playing && isCurrent) ? 'true' : 'false');
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.play-btn');
+      if (!btn) return;
+      const videoId = btn.dataset.videoId;
+      if (!ytPlayer || typeof ytPlayer.loadVideoById !== 'function') return;
+
+      if (currentVideoId !== videoId) {
+        currentVideoId = videoId;
+        ytPlayer.loadVideoBy
