@@ -1,10 +1,16 @@
-/* Reset & Base */
+/* Reset & base */
 *,
 *::before,
 *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 body {
@@ -20,10 +26,10 @@ a {
   text-decoration: none;
 }
 
-/* Hero */
+/* Hero (AVRSE-style, cropped) */
 .hero {
   height: 70vh;
-  background: url('RudolfWesterholm_profileImage_3.png') center/cover no-repeat;
+  background: url('RudolfWesterholm_profileImage_hero.png') center/cover no-repeat;
   position: relative;
 }
 
@@ -54,7 +60,7 @@ p.tagline {
   margin-top: 0.5rem;
 }
 
-/* Navigation */
+/* Navigation (no dots) */
 .nav {
   position: absolute;
   top: 1.25rem;
@@ -71,13 +77,23 @@ p.tagline {
   color: #fff;
   font-size: 1.2rem;
   opacity: 0.9;
+  transition: opacity 0.25s ease;
 }
 
-.menu a:hover {
+.menu a:hover,
+.menu a:focus {
   opacity: 1;
 }
 
-/* Music Section */
+/* Sections */
+h2 {
+  font-weight: 400;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Featured music (AVRSE-style list) */
 .music-section {
   padding: 4rem 1rem;
   background-color: #fafafa;
@@ -85,15 +101,206 @@ p.tagline {
 }
 
 .tracklist {
-  max-width: 700px;
+  max-width: 800px;
   margin: 2rem auto 0;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.75rem;
 }
 
 .track {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  background:
+  gap: 1rem;
+  background: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.track:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.track-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111;
+}
+
+/* Play button (inline audio) */
+.play-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+.play-btn .pause-icon { display: none; }
+.play-btn.is-playing .play-icon { display: none; }
+.play-btn.is-playing .pause-icon { display: inline; }
+
+.play-btn:hover,
+.play-btn:focus {
+  background: #ffcc00;
+  color: #111;
+  outline: none;
+}
+
+.play-btn:active {
+  transform: scale(0.96);
+}
+
+/* External link (Bandcamp) */
+.external-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eee;
+  color: #111;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.external-play:hover,
+.external-play:focus {
+  background: #ffcc00;
+  color: #111;
+}
+
+/* About (restored styling) */
+.about-section {
+  padding: 4rem 1rem;
+  background-color: #fff;
+  text-align: center;
+}
+
+.about-section p {
+  max-width: 800px;
+  margin: 0 auto 1rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Selected works (Jukio Kallio-style) */
+.works-section {
+  padding: 3rem 1rem 1rem;
+  background-color: #fff;
+}
+
+.works-list {
+  max-width: 900px;
+  margin: 0 auto;
+  list-style: none;
+  border-top: 1px solid #e7e7e7;
+}
+
+.work-row {
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.work-link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding: 1rem 0;
+  align-items: baseline;
+  transition: opacity 0.2s ease;
+}
+
+.work-link:hover {
+  opacity: 0.85;
+}
+
+.work-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.2px;
+  color: #111;
+}
+
+.work-meta {
+  font-size: 0.95rem;
+  color: #777;
+}
+
+/* Clients (Sam Jämsén-style) */
+.clients-section {
+  padding: 4rem 1rem;
+  background-color: #111;
+  text-align: center;
+}
+
+.clients-logos {
+  max-width: 1100px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem 3rem;
+}
+
+.clients-logos img {
+  height: 48px;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.clients-logos a:hover img,
+.clients-logos a:focus img {
+  transform: scale(1.06);
+  opacity: 1;
+}
+
+/* Footer (restored styling) */
+.footer {
+  background-color: #111;
+  color: #fff;
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+
+.footer a {
+  color: #ffcc00;
+  text-decoration: none;
+}
+
+.footer a:hover,
+.footer a:focus {
+  text-decoration: underline;
+}
+
+.credits {
+  font-size: 0.9rem;
+  color: #c9c9c9;
+  margin-top: 0.5rem;
+}
+
+/* Accessibility and motion */
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .play-btn,
+  .external-play {
+    transition: none;
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  h1.artist-name { font-size: 2.2rem; }
+  p.tagline { font-size: 1rem; }
+  .track { grid-template-columns: 1fr auto; }
+}
