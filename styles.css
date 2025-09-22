@@ -7,12 +7,19 @@
   box-sizing: border-box;
 }
 
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 body {
   font-family: 'Libre Baskerville', serif;
   font-size: 16px;
   color: #111;
   background-color: #fff;
   line-height: 1.6;
+  font-weight: lighter;
 }
 
 /* Typography */
@@ -45,6 +52,7 @@ p {
   margin: 0 auto 1rem;
   font-size: 1rem;
   color: #333;
+  text-align: center;
 }
 
 /* Hero Section */
@@ -105,6 +113,62 @@ p {
   width: 100%;
   border: none;
   margin-top: 1rem;
+}
+
+/* Tracklist Styling */
+.tracklist {
+  max-width: 700px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.track:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.track-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+}
+
+.track-duration {
+  font-size: 0.9rem;
+  color: #666;
+  margin-right: auto;
+  margin-left: 1rem;
+}
+
+.play-btn {
+  background: #111;
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.play-btn:hover {
+  background: #ffcc00;
+  color: #111;
 }
 
 /* About Section */
