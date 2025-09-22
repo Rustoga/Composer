@@ -88,3 +88,12 @@ p.tagline {
   max-width: 700px;
   margin: 2rem auto 0;
   display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background:
