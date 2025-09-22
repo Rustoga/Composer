@@ -7,19 +7,12 @@
   box-sizing: border-box;
 }
 
-img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
 body {
   font-family: 'Libre Baskerville', serif;
   font-size: 16px;
   color: #111;
   background-color: #fff;
   line-height: 1.6;
-  font-weight: lighter;
 }
 
 a {
@@ -27,60 +20,10 @@ a {
   text-decoration: none;
 }
 
-/* Visually hidden but accessible (for hidden player) */
-.sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
-
-/* Typography */
-h1, h2 {
-  font-family: 'Libre Baskerville', serif;
-  font-weight: 400;
-  text-align: center;
-  color: #111;
-}
-
-h1.artist-name {
-  font-size: 3rem;
-  letter-spacing: 2px;
-  color: #fff; /* ensure white */
-}
-
-p.tagline {
-  font-size: 1.25rem;
-  font-style: italic;
-  color: #fff; /* ensure white */
-  margin-top: 0.5rem;
-}
-
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-p {
-  max-width: 800px;
-  margin: 0 auto 1rem;
-  font-size: 1rem;
-  color: #333;
-  text-align: center;
-}
-
-/* Hero Section (cropped height) */
+/* Hero */
 .hero {
-  height: 70vh; /* cropped by ~30% from full viewport height */
+  height: 70vh;
   background: url('RudolfWesterholm_profileImage_3.jpg') center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
 }
 
@@ -98,6 +41,19 @@ p {
   color: #fff;
 }
 
+h1.artist-name {
+  font-size: 3rem;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+p.tagline {
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
 /* Navigation */
 .nav {
   position: absolute;
@@ -108,20 +64,16 @@ p {
 .menu {
   display: flex;
   gap: 1rem;
-  list-style: none;       /* remove dots */
-  padding: 0;             /* reset default list padding */
-  margin: 0;
+  list-style: none;
 }
 
 .menu a {
   color: #fff;
   font-size: 1.2rem;
-  transition: opacity 0.25s ease;
   opacity: 0.9;
 }
 
-.menu a:hover,
-.menu a:focus {
+.menu a:hover {
   opacity: 1;
 }
 
@@ -132,150 +84,7 @@ p {
   text-align: center;
 }
 
-/* Tracklist */
 .tracklist {
   max-width: 700px;
-  margin: 1.5rem auto 0;
+  margin: 2rem auto 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.track {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 1rem;
-  background: #fff;
-  padding: 0.9rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.track:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-}
-
-.track-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111;
-}
-
-.track-duration {
-  font-size: 0.95rem;
-  color: #666;
-}
-
-/* Play button */
-.play-btn {
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
-  cursor: pointer;
-}
-
-.play-btn .pause-icon { display: none; }
-.play-btn.is-playing .play-icon { display: none; }
-.play-btn.is-playing .pause-icon { display: inline; }
-
-.play-btn:hover,
-.play-btn:focus {
-  background: #ffcc00;
-  color: #111;
-  outline: none;
-}
-
-.play-btn:active {
-  transform: scale(0.96);
-}
-
-/* About Section */
-.about-section {
-  padding: 4rem 1rem 2rem;
-  background-color: #fff;
-  text-align: center;
-}
-
-/* Clients List Section */
-.clients-list-section {
-  padding: 2rem 1rem 4rem;
-  background: #fff;
-}
-
-.clients-list {
-  max-width: 900px;
-  margin: 0.5rem auto 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.75rem 1.25rem;
-}
-
-.clients-list li {
-  background: #f7f7f7;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  font-weight: 600;
-  color: #222;
-}
-
-/* Footer */
-.footer {
-  background-color: #111;
-  color: #fff;
-  padding: 2rem 1rem;
-  text-align: center;
-}
-
-.footer a {
-  color: #ffcc00;
-  text-decoration: none;
-}
-
-.footer a:hover,
-.footer a:focus {
-  text-decoration: underline;
-}
-
-.credits {
-  font-size: 0.9rem;
-  color: #c9c9c9;
-  margin-top: 0.5rem;
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .track,
-  .play-btn {
-    transition: none;
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  h1.artist-name {
-    font-size: 2.2rem;
-  }
-  p.tagline {
-    font-size: 1rem;
-  }
-  .track {
-    grid-template-columns: 1fr auto;
-  }
-  .track-duration {
-    display: none;
-  }
-}
