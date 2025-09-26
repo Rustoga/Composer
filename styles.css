@@ -93,6 +93,16 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
+h3 {
+  font-weight: 400;
+  font-size: 2rem;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+
+
 /* Featured music */
 .music-section {
   padding: 4rem 1rem;
