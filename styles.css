@@ -40,7 +40,6 @@ a {
   position: relative;
 }
 
-
 .overlay {
   background: rgba(0, 0, 0, 0.4);
   width: 100%;
@@ -109,8 +108,6 @@ h3 {
   margin-bottom: 1.5rem;
 }
 
-
-
 /* Featured music */
 .music-section {
   padding: 4rem 1rem;
@@ -174,23 +171,25 @@ h3 {
   text-align: center;
 }
 
+/* Combined works-list rules (centered, constrained) */
 .works-list {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 0;
   list-style: none;
   border-top: 1px solid #e7e7e7;
   display: flex;
   flex-direction: column;
-  align-items: center; /* This centers the rows horizontally */
+  align-items: center;
 }
 
+/* Each row constrained for readability */
 .work-row {
   width: 100%;
-  max-width: 700px; /* Optional: limits row width for better readability */
+  max-width: 900px;
   border-bottom: 1px solid #e7e7e7;
   padding: 1rem 0;
   font-size: 1rem;
-}
 }
 
 .work-title {
@@ -223,18 +222,55 @@ h3 {
   outline: 2px solid #0687f5;
 }
 
+/* Panel content */
 .panel {
   padding: 1rem 0;
   animation: fadeIn 0.4s ease-in;
 }
 
+/* Responsive centered video wrapper with fallback and single definition */
 .video-wrapper {
-  margin-top: 1rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 14px auto 0;
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  /* Modern browsers */
+  aspect-ratio: 16 / 9;
+  /* Fallback for older browsers */
+  padding-top: 56.25%;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  /* Subtle entrance when revealed */
   opacity: 0;
-  animation: fadeIn 0.6s ease-in forwards;
-  animation-delay: 0.2s;
+  transform: translateY(6px);
+  transition: opacity 0.48s ease, transform 0.48s ease;
 }
 
+/* When panel is visible, let the wrapper appear */
+.panel .video-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Make iframe fill the wrapper */
+.video-wrapper iframe,
+.video-wrapper embed,
+.video-wrapper object {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Keep small Bandcamp/inline players unaffected */
+.track iframe { height: 42px; }
+
+/* Fade animation keyframes */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -300,3 +336,12 @@ h3 {
   .clients-logos img { height: 36px; }
   .clients-logos { gap: 1.5rem; }
 }
+
+/* Works-specific mobile adjustments */
+@media (max-width: 700px) {
+  .works-section { padding: 28px 12px; }
+  .accordion { font-size: 1rem; padding: 10px 0; }
+  .video-wrapper { max-width: 100%; padding-top: 56.25%; margin: 12px auto 0; }
+  .work-row { max-width: 100%; padding: 0.75rem 0; }
+}
+
