@@ -33,6 +33,13 @@ a {
   position: relative;
 }
 
+.hero-content {
+  height: 70vh;
+  margin: auto;
+  text-align: center;
+  color: #fff;
+}
+
 
     
  /* );
