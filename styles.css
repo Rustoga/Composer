@@ -32,10 +32,7 @@ a {
   margin: auto;
   text-align: center;
   color: #fff;
-  background-image: image-set(
-    url('https://github.com/Rustoga/Composer/blob/main/Rustoga_2023_Promo-3.webp') type('image/webp'),
-    url('https://github.com/Rustoga/Composer/blob/main/Rustoga_2023_Promo-3-onlineconverter.jpeg') type('image/jpeg')
-);
+  background-image: url('https://github.com/Rustoga/Composer/blob/main/Rustoga_2023_Promo-3.webp');
 }
 
 
