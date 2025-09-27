@@ -27,7 +27,7 @@ a {
 }
 
 /* Hero */
-.hero {
+.hero-content {
   height: 70vh;
   background-image: image-set(
     url('https://github.com/Rustoga/Composer/blob/main/Rustoga_2023_Promo-3.webp') type('image/webp'),
