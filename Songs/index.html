@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rudolf Westerholm | Music Portfolio</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --charcoal: #1a1a1f; --accent: #0ea5e9; --text: #f1f5f9; }
+* { scrollbar-width: thin; scrollbar-color: #3d3d48 var(--charcoal); }
+body { background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(--charcoal) 100%); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; }
+.font-brand { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; }
+.section-badge { font-size: 9px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; }
+.card { background: linear-gradient(135deg, rgba(45,45,53,0.6) 0%, rgba(45,45,53,0.3) 100%); border: 1px solid rgba(61,61,72,0.5); border-radius: 2px; }
+.card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(14,165,233,0.25); }
+@keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.6s ease forwards; }
+@media (prefers-reduced-motion: reduce) { .animate-in { animation: none; opacity: 1; transform: none; } }
+audio, video { background: rgba(0,0,0,0.4); border-radius: 4px; width: 100%; }
+audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel { background: rgba(26,26,31,0.97); }
+.mini-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 10px 12px; }
+</style>
+</head>
+<body class="h-full">
+
+<nav class="fixed top-0 w-full z-50 bg-zinc-900/90 backdrop-blur-md border-b border-white/5">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<a href="/" class="font-brand text-xs font-bold tracking-[0.2em]">Rudolf Westerholm</a>
+<div class="flex items-center gap-6">
+<a href="#videos" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Trailer Music</a>
+<a href="#own" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Own Projects</a>
+<a href="#client" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Client Work</a>
+<a href="#games" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Game Audio</a>
+<a href="#experiments" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Experiments</a>
+<a href="/" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-sm transition-colors">Main</a>
+</div>
+</div>
+</nav>
+
+<header class="pt-32 pb-20 px-6 text-center">
+<div class="max-w-3xl mx-auto">
+<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-500 mb-4">MUSIC PORTFOLIO</p>
+<h1 class="font-brand text-4xl md:text-5xl mb-6">Rudolf Westerholm</h1>
+<p class="text-sm text-zinc-500 leading-relaxed mb-2">Composer & Sound Designer</p>
+<p class="text-[11px] text-zinc-600">Click the links to play the music — no autoplay, no auto-download</p>
+</div>
+</header>
+
+<main class="pb-32">
+
+<!-- YLE SECTION -->
+<section id="yle" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">YLE</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — YLE JapaniEfekti Documentary</h3>
+<p class="text-[10px] text-zinc-500 mb-4">YLE — Radio Documentary</p>
+<iframe class="mb-3" style="height: 180px; width: 100%; border: none;" src="https://areena.yle.fi/1-76079949"></iframe>
+<p class="text-[10px] text-zinc-600">Yle Areena documentary feature</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — YLE Opening</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Intro/Outro</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/k1ijpsp3dntlieb7di7t2/Mirage_Lopputunnus_MASTER_48-24.wav?rlkey=ks4yuf6a9rfpgbp8et7zjp05q&st=sa7oiobs&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Intro/outro music for YLE</p>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — BG Music</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Mellow yet hopeful background</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ox60liu78ue235ktz6ous/Mirage_Hope.wav?rlkey=rkdhop80yygjg81tqcuwgvxb8&st=kpg2zeq4&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Ambient background music</p>
+</div>
+</div>
+</section>
+
+<!-- VIDEO LINK -->
+<section id="video" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Video Link</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Epic Meets Commercial Wizard Master</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Full video mix</p>
+<video controls preload="none" class="mb-3">
+<source src="https://www.dropbox.com/scl/fi/4zbezthjs0loo3m4232zc/EpicMeets_wizard_master_all.mp4?rlkey=jorcuv7ebfwbaslghg85g65y5&st=1qgdlq2j&raw=1" type="video/mp4">
+</video>
+<p class="text-[10px] text-zinc-600 mt-3">Epic orchestral meets commercial production</p>
+</div>
+</div>
+</section>
+
+<!-- EPIC MEETS -->
+<section id="epic" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.15s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Epic Meets</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Epic Meets Commercial Wizard</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Just sounds</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/gui08tf5935d2um5za0mo/EpicMeets_wizard_SFX.mp3?rlkey=q7jqfb0xaqxe269m3cssyelq3&st=l2w2vqu4&raw=1" type="audio/mpeg"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Sound effects from Epic Meets</p>
+</div>
+</div>
+</section>
+
+<!-- HYPEWORKS -->
+<section id="hypeworks" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.2s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">HypeWorks</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — HypeWorks Hockey Promoter</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Audio Logo & Event Video</p>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">AudioLogo v1</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ebpvkkb2yo3sbfp66f77h/Hypeworks_AudioLogo_v1.mp3?rlkey=tzslidjef00m0kruweequn6rj&st=y7y89oxg&raw=1" type="audio/mpeg"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Event Video 20sec</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/c6avv7mt1fvomfwu1hwag/Template_Hypeworks_20sec_v3.wav?rlkey=r0ooifsidivckzgdtdbej19b9&st=teqpd9lj&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+</div>
+</section>
+
+<!-- VACUUM WOOD -->
+<section id="vacuum" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.25s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Vacuum Wood</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Vacuum Wood Startup Launch</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Audio & Music Work</p>
+<video controls preload="none" class="mb-3">
+<source src="https://www.dropbox.com/scl/fi/lt6zv6m6pjj0a3fe1c096/Vacuum-Wood-valmis-video-8-9-2024.mp4?rlkey=u3c5scyobblgnahm58heq0xt0&st=cvxji0jh&raw=1" type="video/mp4">
+</video>
+</div>
+</section>
+
+<!-- CINEMATIC & GAME MUSIC REEL -->
+<section id="reel" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.3s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Cinematic & Game Music Reel</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Cinematic & Game Music Reel 2021</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Compilation</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ogsun1jzkw9dgvmfghqtk/RudolfWesterholm_MusicReel_2021.wav?rlkey=psbo01fksp55jfheutim7ds2b&st=c17pjaky&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+</section>
+
+<!-- BETTINA BERGSTRÖM -->
+<section id="bettina" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.35s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Bettina Bergström</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Bettina Bergström Cinematic Trailer Music</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Pohjanmaa Release — 3 Tracks</p>
+<div class="space-y-3">
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Pohjoismaa 1 — Main Theme</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr&raw=1" type="audio/wav"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Pohjoismaa Rauha — Peace</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z&raw=1" type="audio/wav"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Pohjoismaa Voima — Power</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ofhz2vqj1ckwyxolf1sd9/Pohjoismaa_voima.wav?rlkey=08zhs93ztuxgqas5nxfxfra37&st=p46uh86d&raw=1" type="audio/wav"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">More Sci-Fi Trailer Music</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/7tan8ovty8mni0utzpbzi/TrailerMusic_Sci-fi3Revision_RudolfWesterholm_ekajatoka.mp3?rlkey=cm8e10voot2km58290sio5hpu&st=woldgzhq&raw=1" type="audio/mpeg"></audio>
+</div>
+</div>
+</div>
+</section>
+
+<!-- OWN PROJECTS -->
+<section id="own" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.4s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Own Projects</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Stam1na-like Metal</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Heavy rock composition</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ywleijs31a9aswp1qwqrh/Rudolfin_IkiAurinko_Masterwav?rlkey=nyrauu49ty0oqyjwto39v2pkf&st=pya1jqo4&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">"Like Metal" — Stam1na style heavy rock</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Mick Gordon Inspired</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Industrial metal production</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">In the style of Mick Gordon</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Veikko Brave (Instrumental)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Artist: Veikko</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/qnmbzi7db9sevolmx94j6/Veikko_Brave_Inst.wav?rlkey=6twwxacoguamqcb9jy804sw5m&st=xfkrulww&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Cinematic instrumental piece</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Sattumaa Song & Sound Design</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Full band recording</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/38mgpjdz7xdid01pk8lqw/02-Sattumaa-M1_16-44100.wav?rlkey=d61fpqdqas4v4vtuepbfjs5rd&st=dcakj5t5&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Full band recording with integrated sound design</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Lush Release</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Atmospheric soundscape</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3&raw=1" type="audio/wav"></audio>
+<p class="text-[10px] text-zinc-600 mt-3">Atmospheric soundscape with layered textures</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Sensory Integration</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Techno-Inspired Album</p>
+<a href="https://www.dropbox.com/scl/fo/fknfp1gp6n7wmey753t2k/AG_caDp3aXD3JlPq88dBHts?rlkey=hyxzfdodd00xwl7newkn9csej&st=bhqse0lk&raw=1" target="_blank" class="text-blue-400 hover:text-blue-300">Play Sensory Integration</a>
+<p class="text-[10px] text-zinc-600 mt-3">Rhythmic techno exploration</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Choral Reef</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Ghostestra Album</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7&raw=1" type="audio/wav"></audio>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Path to Sea</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Ghostestra Album</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/rpuphd7hfiditetkxojzh/4-Path-to-Sea.wav?rlkey=qiy0s85hiocnvusw8hs383wyr&st=es0y5q5l&raw=1" type="audio/wav"></audio>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Various Sound Techniques into Composition</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Experimental</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/uef5c9n180lwiqb4o967s/RudolfWesterholm_VariousSoundTechniques_Into_Composition.wav?rlkey=yx3psgpmfhr9a6mimk4uiljh5&st=uz7iexn3&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+</section>
+
+<!-- GAME AUDIO & EXPERIMENTS -->
+<section id="games" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.45s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Game Audio & Experiments</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — GameJams 2023 Showreel</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Compilation</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/yoy4vq3nr2jxp48bpnnuk/Showreel2023_Rudolf_GameJams.wav?rlkey=jqdiezic9da5t0oiq1eb7p75x&st=msof3m1g&raw=1" type="audio/wav"></audio>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Castlevania-like SmolVania</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Level Music & Game Over</p>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Level Music</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02&raw=1" type="audio/mpeg"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Game Over</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar&raw=1" type="audio/mpeg"></audio>
+</div>
+</div>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Spelunky-like</h3>
+<p class="text-[10px] text-zinc-500 mb-4">GameJam Entry</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/irnz9kvuzbhdo97ib4z9t/RudolfWesterholm_GameJam_SpelunkyLike.ogg?rlkey=683lacoc8jgt0wi38ot9i2htf&st=rc9fzz3s&raw=1" type="audio/ogg"></audio>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Crayon Physics-like</h3>
+<p class="text-[10px] text-zinc-500 mb-4">crayon07.ogg</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/9i3060pykgxqcwzpz688z/crayon07.ogg?rlkey=w7p0j2qgpyfoyqeav6io65z76&st=7fvrctgj&raw=1" type="audio/ogg"></audio>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Accessibility Research Returnal 2022</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Making music more accessible</p>
+<video controls preload="none"><source src="https://www.dropbox.com/scl/fi/lihimnnh60us9j196fq6w/Acomp_1_mix_flavor_and_elements.mp4?rlkey=w2k8335ic6bu1ao2gco4t84cb&st=c1jcvkeu&raw=1" type="video/mp4"></video>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Stormdivers Compilation</h3>
+<p class="text-[10px] text-zinc-500 mb-4">7 years ago</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/6ra28y01t07xpcvf51eo3/Stormdivers_Polish_1_RudolfSoundDesign.wav?rlkey=e5jyeo0rv5xdj0g27y4rme4yk&st=eussi1b9&raw=1" type="audio/wav"></audio>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Stormdivers End Loop</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/a0jotfug088klrhp749ts/Stormdivers-end-loop-by-rudolf_v2.wav?rlkey=5dayoj9pjls8qxd9g72v7smoe&st=0zyny7y8&raw=1" type="audio/wav"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Stormdivers Menu Song</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Spectromorphology Experiment</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Assignment</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/v7hivc8m0vaqau3yvoi9n/RudolfWesterholm_Assignment_Spectromorphology_Experiment.wav?rlkey=eu78zi7p1vcda6jcbr2fhw77v&st=dc6za76z&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+</section>
+
+<!-- ENTANGLED MECHA -->
+<section id="mecha" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.5s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Entangled Mecha</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-lg mb-3">Rudolf Westerholm — Entangled Mecha Game Audio</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Fight Music & Wandering</p>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Fight Music</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/dyv63e6rhpgvltk60cwb2/Rustoga_EntangledMecha_2.wav?rlkey=keqbmircbfbw5i1512kjr7/&st=jzgfwdov&raw=1" type="audio/wav"></audio>
+</div>
+<div class="mini-card">
+<p class="text-[10px] font-bold opacity-50 mb-2">Wandering</p>
+<audio controls preload="none"><source src="https://www.dropbox.com/scl/fi/88rto734zqh33qkuoc0nl/Rustoga_EntangledMecha_Explore2.wav?rlkey=el7y8z319cmo4sjlv8p6v9fbs&st=810alzmd&raw=1" type="audio/wav"></audio>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer class="py-12 bg-black border-t border-white/5">
+<div class="max-w-4xl mx-auto px-6 text-center">
+<p class="font-brand text-[10px] tracking-[0.2em] opacity-40">Rudolf Westerholm — Music Portfolio</p>
+<p class="text-[10px] text-zinc-600 mt-2">Click the links to play — no autoplay, no auto-download</p>
+<div class="flex justify-center gap-6 mt-6">
+<a href="/" class="text-[10px] opacity-50 hover:opacity-100 transition-colors">Main Portfolio</a>
+<a href="mailto:rudolf.westerholm@gmail.com" class="text-[10px] opacity-50 hover:opacity-100 transition-colors">Contact</a>
+</div>
+</div>
+</footer>
+
+</body>
+</html>
