@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio - Rudolf Westerholm</title>
+<title>Rudolf Westerholm Portfolio</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,12 +21,6 @@ body { background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(
 @media (prefers-reduced-motion: reduce) { .animate-in { animation: none; opacity: 1; transform: none; } }
 audio, video, iframe { background: rgba(0,0,0,0.4); border-radius: 4px; width: 100%; max-width: 800px; }
 audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel { background: rgba(26,26,31,0.97); }
-.portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-.portfolio-item { position: relative; overflow: hidden; border-radius: 2px; }
-.portfolio-image { width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.3s ease; }
-.portfolio-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(14,165,233,0.1) 0%, rgba(14,165,233,0.2) 100%); opacity: 0; transition: opacity 0.3s ease; }
-.portfolio-item:hover .portfolio-overlay { opacity: 1; }
-.portfolio-item:hover .portfolio-image { transform: scale(1.05); }
 </style>
 </head>
 <body>
@@ -40,9 +34,8 @@ audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel { backg
 <a href="index.html#personal" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Personal Releases</a>
 <a href="index.html#games" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Game Projects</a>
 <a href="index.html#experiments" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Experiments</a>
-<a href="portfolio.html" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Portfolio</a>
 
-<a href="index.html" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-sm transition-colors">Home</a>
+<a href="portfolio.html" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-sm transition-colors">Portfolio</a>
 </div>
 </div>
 </nav>
@@ -50,117 +43,265 @@ audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel { backg
 <header class="pt-32 pb-20 text-center relative" style="background-image: url('https://dl.dropboxusercontent.com/scl/fi/ag4b6z645mhsoaw0you6g/rudolfwesterholm_portfoliocover_byStellaKeppo.png.jpg?rlkey=pls258avneh03nte7fqxkire6'); background-size: 100% auto; background-position: center; background-repeat: no-repeat;">
 <div class="absolute inset-0 bg-black bg-opacity-30"></div>
 <div class="relative max-w-3xl mx-auto z-10">
-<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-300 mb-4">PORTFOLIO GALLERY</p>
-<h1 class="font-brand text-4xl md:text-5xl mb-6 text-white">Featured Works</h1>
-<p class="text-sm text-zinc-300 leading-relaxed mb-4">A curated selection of my most notable compositions, sound design projects, and creative collaborations across multiple mediums.</p>
+<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-300 mb-4">COMPOSER & SOUND DESIGNER PORTFOLIO</p>
+<h1 class="font-brand text-4xl md:text-5xl mb-6 text-white">Rudolf Westerholm</h1>
+<p class="text-sm text-zinc-300 leading-relaxed mb-4">Finnish composer and music producer known for versatile work across different medias, blending from commercial projects into contemporary sonar exploration and distinctive soundscapes.</p>
 </div>
 </header>
 
 <main class="pb-32">
 
-<!-- PORTFOLIO GALLERY SECTION -->
-<section id="portfolio" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
-<div class="max-w-6xl mx-auto">
-<div class="flex items-center gap-3 mb-12">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Visual Gallery</span>
-</div>
-
-<div class="portfolio-grid">
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop" alt="Music Production Setup" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Music Production</h3>
-<p class="text-[10px] text-zinc-500">Professional audio engineering and composition work using state-of-the-art equipment and techniques.</p>
-</div>
-</div>
-
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=400&h=300&fit=crop" alt="Sound Design" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Sound Design</h3>
-<p class="text-[10px] text-zinc-500">Immersive audio experiences and sonic landscapes tailored to visual narratives and interactive media.</p>
-</div>
-</div>
-
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop" alt="Game Audio" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Game Audio</h3>
-<p class="text-[10px] text-zinc-500">Interactive music and dynamic sound systems that enhance gameplay and player immersion.</p>
-</div>
-</div>
-
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop" alt="Trailer Music" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Trailer Music</h3>
-<p class="text-[10px] text-zinc-500">Epic orchestral compositions and cinematic scores designed to captivate and inspire audiences.</p>
-</div>
-</div>
-
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1526678759075-ce3db36395ba?w=400&h=300&fit=crop" alt="Electronic Music" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Electronic Music</h3>
-<p class="text-[10px] text-zinc-500">Experimental and electronic soundscapes exploring contemporary sonic territories and innovative textures.</p>
-</div>
-</div>
-
-<div class="portfolio-item card">
-<img src="https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&h=300&fit=crop" alt="Creative Studio" class="portfolio-image">
-<div class="portfolio-overlay"></div>
-<div class="p-4">
-<h3 class="font-brand text-sm mb-2">Creative Studio</h3>
-<p class="text-[10px] text-zinc-500">Cutting-edge production facilities and sound craftsmanship for professional and artistic projects.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- ABOUT PORTFOLIO SECTION -->
-<section class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
+<!-- CLIENTS -->
+<section id="clients" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
 <div class="max-w-4xl mx-auto">
 <div class="flex items-center gap-3 mb-8">
 <span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">About This Portfolio</span>
+<span class="section-badge">Clients</span>
 </div>
 
-<div class="card rounded-sm p-8">
-<p class="text-sm text-zinc-300 leading-relaxed mb-4">This collection represents my journey as a composer and sound designer, spanning from commercial client work to personal artistic exploration. Each project has contributed to developing my distinctive approach to sound creation—blending commercial sensibility with creative experimentation.</p>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">YLE - JapaniEfekti!!</h3>
+<p class="text-[10px] text-zinc-500 mb-4">YLE Areena Video</p>
+<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400"></iframe>
+<p class="text-[10px] text-zinc-600 mt-3">YLE Areena video content</p>
+</div>
 
-<p class="text-sm text-zinc-300 leading-relaxed mb-4">Whether composing for film, designing interactive audio for games, or exploring electroacoustic territories, I approach each project with the same commitment to quality and innovation. My work has been featured in various media, from streaming platforms to independent game projects.</p>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Epic Meets</h3>
+<p class="text-[10px] text-zinc-500 mb-4">YouTube Video</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/b0FK7TGEHdI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p class="text-[10px] text-zinc-600 mt-3">Trailer video content</p>
+</div>
 
-<div class="mt-6 pt-6 border-t border-zinc-700">
-<h3 class="font-brand text-base mb-4">Featured Categories</h3>
-<ul class="text-sm text-zinc-400 space-y-2">
-<li class="flex items-center gap-2"><span class="text-accent">▸</span> Commercial client work for media and entertainment</li>
-<li class="flex items-center gap-2"><span class="text-accent">▸</span> Trailer and cinematic compositions</li>
-<li class="flex items-center gap-2"><span class="text-accent">▸</span> Game audio and interactive music</li>
-<li class="flex items-center gap-2"><span class="text-accent">▸</span> Personal releases and experimental works</li>
-<li class="flex items-center gap-2"><span class="text-accent">▸</span> Electroacoustic composition and sound art</li>
-</ul>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Vacuum Wood Tech</h3>
+<p class="text-[10px] text-zinc-500 mb-4">YouTube Video</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/M0W-rCrrg0E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p class="text-[10px] text-zinc-600 mt-3">Trailer video content</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Hypeworks event production</h3>
+<p class="text-[10px] text-zinc-500 mb-4">YouTube Video</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0fkT4cHags8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p class="text-[10px] text-zinc-600 mt-3">Trailer video content</p>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-base mb-3">Desucon - Dance Anthem</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Anime Idol Edit</p>
+            <audio controls preload="metadata" crossorigin="anonymous">
+                <source src="https://dl.dropboxusercontent.com/scl/fi/h1xg0v1hfovhvtz1917ti/AnimeIdol_EditMyy_2.wav?rlkey=b3bt0e3lt25i4s3mieqh5tdeg&st=a6rs0y2w" type="audio/wav">
+            </audio>
+<p class="text-[10px] text-zinc-600 mt-3">Dance anthem featuring anime idol elements</p>
 </div>
 </div>
 </section>
 
-<!-- CALL TO ACTION -->
-<section class="px-6 opacity-0 animate-in" style="animation-delay: 0.15s">
+<!-- TRAILER MUSIC -->
+<section id="trailermusic" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
 <div class="max-w-4xl mx-auto">
-<div class="card rounded-sm p-8 text-center">
-<h2 class="font-brand text-2xl mb-4">Interested in Collaboration?</h2>
-<p class="text-sm text-zinc-400 mb-6">For inquiries about commissions, licensing, or professional opportunities, feel free to reach out.</p>
-<a href="index.html" class="inline-block text-[10px] font-bold bg-white/5 hover:bg-white/10 px-6 py-3 rounded-sm transition-colors border border-white/20 hover:border-accent">Return to Main Portfolio</a>
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Trailer Music</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Pohjanmaa 1 (Main Theme)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Main Theme</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Cinematic orchestral theme for Pohjanmaa catalogue</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Pohjanmaa Rauha (Peace)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Ambient cinematic</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Ambient peace theme</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Space within Power (Sci-fi)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Sci-fi Trailer Music</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/uqel62rv2u05i0g2qs3ld/TrailerMusic_Sci-fi_RudolfWesterholm.wav?rlkey=1r6wlivsg8uvhi400rk2yszle&st=r4kx4krr&dl=0" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Sci-fi trailer music with epic orchestral elements</p>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-base mb-3">Nosferatu</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Trailer Music</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/hcg29nfikg6cp976irq7k/TrailerMusic_Nosferatu_RudolfWesterholm.wav?rlkey=ftz1ocr49fg8b18wd10465eem&st=tjex94gd&dl=0" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Atmospheric trailer music for horror/drama</p>
+</div>
+</div>
+</section>
+
+<!-- PERSONAL RELEASES -->
+<section id="personal" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.15s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Personal Releases</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Lush Release</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Atmospheric soundscape with layered textures</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Lush atmospheric soundscape with rich textures</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Sensory Integration Techno</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Rhythmic techno exploration</p>
+            <audio controls preload="metadata" crossorigin="anonymous">
+                <source src="https://dl.dropboxusercontent.com/scl/fi/pn9fpd6kjhvhp3xy65g35/03_Touch_Rustoga_Feat_Albin_Sensory-Intergration.wav?rlkey=92fbvk9o43vx6ifz2uvterng6" type="audio/wav">
+            </audio>
+<p class="text-[10px] text-zinc-600 mt-3">Techno track exploring sensory integration themes</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">RAILO</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Industrial metal production</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">DOOM-inspired industrial metal track</p>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-base mb-3">Choral Reef Ghostestra Album</h3>
+<p class="text-[10px] text-zinc-500 mb-4">5-Choral-Reef</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Choral composition from the Ghostestra album</p>
+</div>
+</div>
+</section>
+
+<!-- GAME PROJECTS -->
+<section id="games" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.2s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Game Projects</span>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Stormdivers Menu Song</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Menu music</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Menu music for Stormdivers game</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Entangled Mecha Game Audio</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Fight Music & Wandering</p>
+<audio controls preload="metadata" class="mb-2">
+<source src="https://dl.dropboxusercontent.com/scl/fi/dyv63e6rhpgvltk60cwb2/Rustoga_EntangledMecha_2.wav?rlkey=keqbmircbfbw5u1512kjr7/&st=jzgfwdov" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mb-2">Fight music</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/88rto734zqh33qkuoc0nl/Rustoga_EntangledMecha_Explore2.wav?rlkey=el7y8z319cmo4sjlv8p6v9fbs&st=810alzmd" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-2">Wandering/exploration music</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Castlevania-like SmolVania</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Level Music & Game Over</p>
+<audio controls preload="metadata" class="mb-2">
+<source src="https://dl.dropboxusercontent.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02" type="audio/mp3">
+</audio>
+<p class="text-[10px] text-zinc-600 mb-2">Level music</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar" type="audio/mp3">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-2">Game over music</p>
+</div>
+
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="font-brand text-base mb-3">Spelunky-like (GameJam Entry)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Game audio</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/irnz9kvuzbhdo97ib4z9t/RudolfWesterholm_GameJam_SpelunkyLike.ogg?rlkey=683lacoc8jgt0wi38ot9i2htf&st=rc9fzz3s" type="audio/ogg">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Audio for Spelunky-like game jam entry</p>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-base mb-3">GameJams 2023 Showreel (Compilation)</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Compilation of game audio work</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/yoy4vq3nr2jxp48bpnnuk/Showreel2023_Rudolf_GameJams.wav?rlkey=jqdiezic9da5t0oiq1eb7p75x&st=msof3m1g" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Showreel compilation of 2023 game jam audio projects</p>
+</div>
+</div>
+</section>
+
+<!-- COMPOSITIONAL ELECTROACOUSTIC EXPERIMENTS -->
+<section id="experiments" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.25s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Compositional ElectroAcousmatic Experiments</span>
+</div>
+
+<div class="card rounded-sm p-6">
+<h3 class="font-brand text-base mb-3">Various Sound Techniques into Composition</h3>
+<p class="text-[10px] text-zinc-500 mb-4">Experimental composition</p>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/uef5c9n180lwiqb4o967s/RudolfWesterholm_VariousSoundTechniques_Into_Composition.wav?rlkey=yx3psgpmfhr9a6mimk4uiljh5&st=uz7iexn3" type="audio/wav">
+</audio>
+<p class="text-[10px] text-zinc-600 mt-3">Experimental composition using various sound techniques</p>
 </div>
 </div>
 </section>
 
 </main>
+
+<!-- FOOTER WITH SOCIAL MEDIA -->
+<footer class="border-t border-white/5 bg-zinc-900/50 py-12 px-6">
+<div class="max-w-4xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center gap-8">
+<div>
+<p class="font-brand text-xs mb-2">Rudolf Westerholm</p>
+<p class="text-[10px] text-zinc-500">Composer & Sound Designer</p>
+</div>
+<div class="flex gap-6">
+<a href="#" class="text-zinc-400 hover:text-accent transition-colors" title="Spotify">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.6 17.5c-.3.5-.9.7-1.4.4-3.8-2.3-8.6-2.8-14.3-1.5-.5.1-1.1-.2-1.2-.7-.1-.5.2-1.1.7-1.2 6.2-1.4 11.4-.9 15.5 1.7.5.3.7.9.4 1.4zm1.5-3.3c-.4.6-1.1.8-1.7.4-4.3-2.7-10.9-3.4-16-1.9-.6.2-1.3-.1-1.5-.7-.2-.6.1-1.3.7-1.5 5.5-1.7 12.5-.9 17.2 2.1.6.4.8 1.1.4 1.7zm.1-3.4c-5.1-3-13.6-3.3-18.5-1.8-.7.2-1.4-.2-1.6-.9-.2-.7.2-1.4.9-1.6 5.4-1.8 14.5-1.4 20.2 2.1.6.4.9 1.1.5 1.8-.3.6-1 .9-1.6.5z"/></svg>
+</a>
+<a href="#" class="text-zinc-400 hover:text-accent transition-colors" title="YouTube">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+</a>
+<a href="#" class="text-zinc-400 hover:text-accent transition-colors" title="SoundCloud">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M1.175 12.225c-.051 0-.094.046-.109.1-.244 1.412-.356 2.423-.393 3.367 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1.015-.869.058-1.869.283-3.225.015-.062-.031-.125-.092-.125h-.658zm.943-2.352c-.051 0-.094.046-.109.1-.319 1.873-.416 2.766-.416 3.276 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-.531.103-1.429.422-3.3.015-.062-.031-.125-.092-.125h-.774zm1.869-1.496c-.051 0-.094.046-.109.1-.398 2.334-.544 3.635-.544 4.452 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-.844.156-2.157.545-4.491.015-.062-.031-.125-.092-.125h-.769zm2.954.571c-.051 0-.094.046-.109.1-.464 2.733-.627 4.159-.627 5.181 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-1.032.169-2.476.632-5.213.015-.062-.031-.125-.092-.125h-.773zm3.182-.778c-.051 0-.094.046-.109.1-.551 3.269-.744 5.047-.744 6.367 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-1.329.197-3.118.749-6.403.015-.062-.031-.125-.092-.125h-.773zm3.232-.509c-.051 0-.094.046-.109.1-.637 3.881-.858 5.963-.858 7.632 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-1.669.226-3.759.863-7.747.015-.062-.031-.125-.092-.125h-.773zm3.182.778c-.051 0-.094.046-.109.1-.464 2.733-.627 4.159-.627 5.181 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-1.032.169-2.476.632-5.213.015-.062-.031-.125-.092-.125h-.773zm3.232.571c-.051 0-.094.046-.109.1-.398 2.334-.544 3.635-.544 4.452 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-.844.156-2.157.545-4.491.015-.062-.031-.125-.092-.125h-.769zm2.954-.571c-.051 0-.094.046-.109.1-.319 1.873-.416 2.766-.416 3.276 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-.531.103-1.429.422-3.3.015-.062-.031-.125-.092-.125h-.774zm1.869 1.496c-.051 0-.094.046-.109.1-.398 2.334-.544 3.635-.544 4.452 0 .051.046.1.1.1h.769c.051 0 .1-.046.1-.1 0-.844.156-2.157.545-4.491.015-.062-.031-.125-.092-.125h-.769z"/></svg>
+</a>
+<a href="#" class="text-zinc-400 hover:text-accent transition-colors" title="Instagram">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1 1 12.324 0 6.162 6.162 0 0 1-12.324 0zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm4.965-10.322a1.44 1.44 0 1 1 2.881.001 1.44 1.44 0 0 1-2.881-.001z"/></svg>
+</a>
+</div>
+</div>
+<div class="border-t border-white/10 mt-8 pt-8 text-center text-[10px] text-zinc-600">
+<p>© 2026 Rudolf Westerholm. All rights reserved.</p>
+</div>
+</div>
+</footer>
+
 </body>
 </html>
