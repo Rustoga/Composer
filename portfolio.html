@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio - Rudolf Westerholm</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --charcoal: #1a1a1f; --accent: #0ea5e9; --text: #f1f5f9; }
+* { scrollbar-width: thin; scrollbar-color: #3d3d48 var(--charcoal); }
+body { background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(--charcoal) 100%); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+.font-brand { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; }
+.section-badge { font-size: 14px; letter-spacing: 0.3em; color: var(--accent); text-transform: uppercase; }
+.card { background: linear-gradient(135deg, rgba(45,45,53,0.6) 0%, rgba(45,45,53,0.3) 100%); border: 1px solid rgba(61,61,72,0.5); border-radius: 2px; }
+.card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(14,165,233,0.25); }
+@keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.6s ease forwards; }
+@media (prefers-reduced-motion: reduce) { .animate-in { animation: none; opacity: 1; transform: none; } }
+audio, video, iframe { background: rgba(0,0,0,0.4); border-radius: 4px; width: 100%; max-width: 800px; }
+audio::-webkit-media-controls-panel, video::-webkit-media-controls-panel { background: rgba(26,26,31,0.97); }
+.portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.portfolio-item { position: relative; overflow: hidden; border-radius: 2px; }
+.portfolio-image { width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+.portfolio-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(14,165,233,0.1) 0%, rgba(14,165,233,0.2) 100%); opacity: 0; transition: opacity 0.3s ease; }
+.portfolio-item:hover .portfolio-overlay { opacity: 1; }
+.portfolio-item:hover .portfolio-image { transform: scale(1.05); }
+</style>
+</head>
+<body>
+
+<nav class="fixed top-0 w-full z-50 bg-zinc-900/90 backdrop-blur-md border-b border-white/5">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<a href="index.html" class="font-brand text-xs font-bold tracking-[0.2em]">Rudolf Westerholm</a>
+<div class="flex items-center gap-6">
+<a href="index.html#clients" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Clients</a>
+<a href="index.html#trailermusic" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Trailer Music</a>
+<a href="index.html#personal" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Personal Releases</a>
+<a href="index.html#games" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Game Projects</a>
+<a href="index.html#experiments" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Experiments</a>
+<a href="portfolio.html" class="text-[10px] font-brand opacity-60 hover:opacity-100 transition-colors">Portfolio</a>
+
+<a href="index.html" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-sm transition-colors">Home</a>
+</div>
+</div>
+</nav>
+
+<header class="pt-32 pb-20 text-center relative" style="background-image: url('https://dl.dropboxusercontent.com/scl/fi/ag4b6z645mhsoaw0you6g/rudolfwesterholm_portfoliocover_byStellaKeppo.png.jpg?rlkey=pls258avneh03nte7fqxkire6'); background-size: 100% auto; background-position: center; background-repeat: no-repeat;">
+<div class="absolute inset-0 bg-black bg-opacity-30"></div>
+<div class="relative max-w-3xl mx-auto z-10">
+<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-300 mb-4">PORTFOLIO GALLERY</p>
+<h1 class="font-brand text-4xl md:text-5xl mb-6 text-white">Featured Works</h1>
+<p class="text-sm text-zinc-300 leading-relaxed mb-4">A curated selection of my most notable compositions, sound design projects, and creative collaborations across multiple mediums.</p>
+</div>
+</header>
+
+<main class="pb-32">
+
+<!-- PORTFOLIO GALLERY SECTION -->
+<section id="portfolio" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
+<div class="max-w-6xl mx-auto">
+<div class="flex items-center gap-3 mb-12">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Visual Gallery</span>
+</div>
+
+<div class="portfolio-grid">
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop" alt="Music Production Setup" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Music Production</h3>
+<p class="text-[10px] text-zinc-500">Professional audio engineering and composition work using state-of-the-art equipment and techniques.</p>
+</div>
+</div>
+
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=400&h=300&fit=crop" alt="Sound Design" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Sound Design</h3>
+<p class="text-[10px] text-zinc-500">Immersive audio experiences and sonic landscapes tailored to visual narratives and interactive media.</p>
+</div>
+</div>
+
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop" alt="Game Audio" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Game Audio</h3>
+<p class="text-[10px] text-zinc-500">Interactive music and dynamic sound systems that enhance gameplay and player immersion.</p>
+</div>
+</div>
+
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop" alt="Trailer Music" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Trailer Music</h3>
+<p class="text-[10px] text-zinc-500">Epic orchestral compositions and cinematic scores designed to captivate and inspire audiences.</p>
+</div>
+</div>
+
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1526678759075-ce3db36395ba?w=400&h=300&fit=crop" alt="Electronic Music" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Electronic Music</h3>
+<p class="text-[10px] text-zinc-500">Experimental and electronic soundscapes exploring contemporary sonic territories and innovative textures.</p>
+</div>
+</div>
+
+<div class="portfolio-item card">
+<img src="https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&h=300&fit=crop" alt="Creative Studio" class="portfolio-image">
+<div class="portfolio-overlay"></div>
+<div class="p-4">
+<h3 class="font-brand text-sm mb-2">Creative Studio</h3>
+<p class="text-[10px] text-zinc-500">Cutting-edge production facilities and sound craftsmanship for professional and artistic projects.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ABOUT PORTFOLIO SECTION -->
+<section class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">About This Portfolio</span>
+</div>
+
+<div class="card rounded-sm p-8">
+<p class="text-sm text-zinc-300 leading-relaxed mb-4">This collection represents my journey as a composer and sound designer, spanning from commercial client work to personal artistic exploration. Each project has contributed to developing my distinctive approach to sound creation—blending commercial sensibility with creative experimentation.</p>
+
+<p class="text-sm text-zinc-300 leading-relaxed mb-4">Whether composing for film, designing interactive audio for games, or exploring electroacoustic territories, I approach each project with the same commitment to quality and innovation. My work has been featured in various media, from streaming platforms to independent game projects.</p>
+
+<div class="mt-6 pt-6 border-t border-zinc-700">
+<h3 class="font-brand text-base mb-4">Featured Categories</h3>
+<ul class="text-sm text-zinc-400 space-y-2">
+<li class="flex items-center gap-2"><span class="text-accent">▸</span> Commercial client work for media and entertainment</li>
+<li class="flex items-center gap-2"><span class="text-accent">▸</span> Trailer and cinematic compositions</li>
+<li class="flex items-center gap-2"><span class="text-accent">▸</span> Game audio and interactive music</li>
+<li class="flex items-center gap-2"><span class="text-accent">▸</span> Personal releases and experimental works</li>
+<li class="flex items-center gap-2"><span class="text-accent">▸</span> Electroacoustic composition and sound art</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="px-6 opacity-0 animate-in" style="animation-delay: 0.15s">
+<div class="max-w-4xl mx-auto">
+<div class="card rounded-sm p-8 text-center">
+<h2 class="font-brand text-2xl mb-4">Interested in Collaboration?</h2>
+<p class="text-sm text-zinc-400 mb-6">For inquiries about commissions, licensing, or professional opportunities, feel free to reach out.</p>
+<a href="index.html" class="inline-block text-[10px] font-bold bg-white/5 hover:bg-white/10 px-6 py-3 rounded-sm transition-colors border border-white/20 hover:border-accent">Return to Main Portfolio</a>
+</div>
+</div>
+</section>
+
+</main>
+</body>
+</html>
