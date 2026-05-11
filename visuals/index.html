@@ -376,12 +376,35 @@
         const p = safeText(permalink).trim();
         if (!p) return "";
         try {
-          // Public screenshot fallback so each post gets a visible preview image
-          // even when Instagram direct thumbnails are unavailable.
-          return `https://image.thum.io/get/width/900/noanimate/${encodeURIComponent(p)}`;
+          const u = new URL(p);
+          const parts = u.pathname.split("/").filter(Boolean);
+          if (parts.length >= 2) {
+            const type = parts[0];
+            const code = parts[1];
+            if (type === "p" || type === "reel" || type === "tv") {
+              return `https://www.instagram.com/${type}/${code}/media/?size=l`;
+            }
+          }
+          return "";
         } catch (e) {
           return "";
         }
+      }
+
+      function placeholderSvg(title) {
+        const text = encodeURIComponent((title || "Instagram").slice(0, 28));
+        return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%231a1a1f'/><stop offset='1' stop-color='%2312121a'/></linearGradient></defs><rect fill='url(%23g)' width='100%25' height='100%25'/><circle cx='600' cy='430' r='120' fill='none' stroke='%23ffffff44' stroke-width='16'/><circle cx='680' cy='350' r='20' fill='%23ffffff55'/><text x='50%25' y='72%25' fill='%23f1f5f9cc' font-family='Arial,sans-serif' font-size='44' text-anchor='middle'>${text}</text></svg>`;
+      }
+
+      function onThumbError(img) {
+        const queue = (img.dataset.fallbacks || "").split("|").filter(Boolean);
+        const next = queue.shift();
+        img.dataset.fallbacks = queue.join("|");
+        if (next) {
+          img.src = next;
+          return;
+        }
+        img.onerror = null;
       }
 
       async function loadJson(path) {
@@ -423,15 +446,17 @@
             .slice(0, 24)
             .map((item) => {
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
-              const thumb =
-                safeText(item.thumbnail_url) || safeText(item.media_url) || previewUrlFromPermalink(permalink);
+              const apiThumb = safeText(item.thumbnail_url) || safeText(item.media_url);
+              const igThumb = previewUrlFromPermalink(permalink);
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
+              const src = apiThumb || igThumb || placeholderSvg(title);
+              const fallbacks = [igThumb, placeholderSvg(title)].filter((x) => x && x !== src).join("|");
 
               return `
                 <div class="tile" role="listitem">
                   <a href="${permalink}" target="_blank" rel="noreferrer" aria-label="${title}">
-                    ${thumb ? `<img class="thumb" loading="lazy" src="${thumb}" alt="${title}" />` : ""}
+                    <img class="thumb" loading="lazy" src="${src}" data-fallbacks="${fallbacks}" onerror="onThumbError(this)" alt="${title}" />
                     <div class="tile-meta">
                       <p class="tile-title font-brand">${label}</p>
                       <span class="pill">Open</span>
