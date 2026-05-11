@@ -222,14 +222,12 @@
         min-height: 0;
       }
 
-      .embed-wrap {
+      .insta-embed {
+        width: 100%;
+        height: 420px;
+        border: 0;
+        display: block;
         background: #fff;
-      }
-
-      .embed-wrap .instagram-media {
-        margin: 0 !important;
-        min-width: 100% !important;
-        width: 100% !important;
       }
 
       .tile-meta {
@@ -386,25 +384,15 @@
         return typeof s === "string" ? s : "";
       }
 
-      function ensureInstagramEmbedScript() {
-        if (document.querySelector('script[data-ig-embed="1"]')) return;
-        const s = document.createElement("script");
-        s.async = true;
-        s.src = "https://www.instagram.com/embed.js";
-        s.setAttribute("data-ig-embed", "1");
-        s.onload = () => {
-          if (window.instgrm?.Embeds?.process) {
-            window.instgrm.Embeds.process();
-          }
-        };
-        document.body.appendChild(s);
-      }
-
-      function processInstagramEmbeds() {
-        if (window.instgrm?.Embeds?.process) {
-          window.instgrm.Embeds.process();
-        } else {
-          ensureInstagramEmbedScript();
+      function embedFrameUrl(permalink) {
+        const p = safeText(permalink).trim();
+        if (!p) return "";
+        try {
+          const u = new URL(p);
+          const path = u.pathname.endsWith("/") ? u.pathname : `${u.pathname}/`;
+          return `https://www.instagram.com${path}embed/captioned/`;
+        } catch (e) {
+          return "";
         }
       }
 
@@ -450,13 +438,12 @@
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
               const thumb = safeText(item.thumbnail_url) || safeText(item.media_url);
+              const frame = embedFrameUrl(permalink);
 
-              if (!thumb) {
+              if (!thumb && frame) {
                 return `
                   <div class="tile embed-tile" role="listitem">
-                    <div class="embed-wrap">
-                      <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="${permalink}" data-instgrm-version="14"></blockquote>
-                    </div>
+                    <iframe class="insta-embed" loading="lazy" src="${frame}" title="${title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>
                     <div class="tile-meta">
                       <p class="tile-title font-brand">${label}</p>
                       <a class="pill" href="${permalink}" target="_blank" rel="noreferrer">Open</a>
@@ -480,7 +467,6 @@
             .join("");
 
           grid.innerHTML = html;
-          processInstagramEmbeds();
         } catch (e) {
           empty.hidden = false;
         }
