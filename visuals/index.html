@@ -342,9 +342,6 @@
             </div>
           </div>
 
-          <div class="note">
-            Reference inspiration: <a href="https://samjamsen.com/photography" target="_blank" rel="noreferrer">Sam Jamsen</a>.
-          </div>
         </div>
       </section>
     </main>
@@ -373,6 +370,18 @@
 
       function safeText(s) {
         return typeof s === "string" ? s : "";
+      }
+
+      function previewUrlFromPermalink(permalink) {
+        const p = safeText(permalink).trim();
+        if (!p) return "";
+        try {
+          // Public screenshot fallback so each post gets a visible preview image
+          // even when Instagram direct thumbnails are unavailable.
+          return `https://image.thum.io/get/width/900/noanimate/${encodeURIComponent(p)}`;
+        } catch (e) {
+          return "";
+        }
       }
 
       async function loadJson(path) {
@@ -414,7 +423,8 @@
             .slice(0, 24)
             .map((item) => {
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
-              const thumb = safeText(item.thumbnail_url) || safeText(item.media_url) || "";
+              const thumb =
+                safeText(item.thumbnail_url) || safeText(item.media_url) || previewUrlFromPermalink(permalink);
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
 
