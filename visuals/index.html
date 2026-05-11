@@ -468,11 +468,6 @@
         }
       }
 
-      function placeholderSvg(title) {
-        const text = encodeURIComponent((title || "Instagram").slice(0, 28));
-        return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%231a1a1f'/><stop offset='1' stop-color='%2312121a'/></linearGradient></defs><rect fill='url(%23g)' width='100%25' height='100%25'/><text x='50%25' y='52%25' fill='%23f1f5f9cc' font-family='Arial,sans-serif' font-size='40' text-anchor='middle'>Preview unavailable</text><text x='50%25' y='60%25' fill='%2394a3b8cc' font-family='Arial,sans-serif' font-size='24' text-anchor='middle'>Tap Open</text><text x='50%25' y='70%25' fill='%2364748bcc' font-family='Arial,sans-serif' font-size='20' text-anchor='middle'>${text}</text></svg>`;
-      }
-
       function onThumbError(img) {
         const embed = img.dataset.embed || "";
         if (embed && img.dataset.embedTried !== "1") {
@@ -487,7 +482,6 @@
           return;
         }
         img.onerror = null;
-        img.src = img.dataset.fallback || "";
       }
 
       function buildMoreTile(items) {
@@ -557,14 +551,26 @@
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
-              const thumb = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
-              const fallback = placeholderSvg(title);
+              const directThumb = safeText(item.thumbnail_url) || safeText(item.media_url);
+              const thumb = directThumb || previewImageUrl(permalink);
               const embed = embedFrameUrl(permalink);
+
+              if (!directThumb && embed) {
+                return `
+                  <div class="tile" role="listitem">
+                    <iframe class="thumb-embed" loading="lazy" src="${embed}" title="${title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    <div class="tile-meta">
+                      <p class="tile-title font-brand">${label}</p>
+                      <a class="pill" href="${permalink}" target="_blank" rel="noreferrer">Open</a>
+                    </div>
+                  </div>
+                `;
+              }
 
               return `
                 <div class="tile" role="listitem">
                   <a href="${permalink}" target="_blank" rel="noreferrer" aria-label="${title}">
-                    <img class="thumb" loading="lazy" src="${thumb}" data-embed="${embed}" data-fallback="${fallback}" onerror="onThumbError(this)" alt="${title}" />
+                    <img class="thumb" loading="lazy" src="${thumb}" data-embed="${embed}" onerror="onThumbError(this)" alt="${title}" />
                     <div class="tile-meta">
                       <p class="tile-title font-brand">${label}</p>
                       <span class="pill">Open</span>
