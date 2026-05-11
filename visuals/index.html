@@ -218,6 +218,14 @@
         background: rgba(0, 0, 0, 0.32);
       }
 
+      .thumb-embed {
+        width: 100%;
+        height: 240px;
+        border: 0;
+        display: block;
+        background: #0f0f14;
+      }
+
       .tile-meta {
         padding: 12px 14px 14px;
         display: flex;
@@ -257,6 +265,67 @@
         padding: 18px;
         opacity: 0.88;
         line-height: 1.6;
+      }
+
+      .more-tile {
+        grid-column: 1 / -1;
+        position: relative;
+        border: 1px solid rgba(61, 61, 72, 0.55);
+        border-radius: 10px;
+        overflow: hidden;
+        min-height: 230px;
+        background: #101018;
+      }
+
+      .more-bg {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+      }
+
+      .more-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.22;
+      }
+
+      .more-fade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(16, 16, 24, 0.15) 0%,
+          rgba(16, 16, 24, 0.55) 35%,
+          rgba(16, 16, 24, 0.9) 70%,
+          rgba(16, 16, 24, 1) 100%
+        );
+      }
+
+      .more-content {
+        position: relative;
+        z-index: 1;
+        min-height: 230px;
+        padding: 28px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+      }
+
+      .more-title {
+        margin: 0;
+        font-size: clamp(1rem, 1.5vw + 0.55rem, 1.35rem);
+        letter-spacing: 0.14em;
+      }
+
+      .more-copy {
+        margin: 0;
+        max-width: 65ch;
+        opacity: 0.86;
       }
 
       footer {
@@ -387,14 +456,63 @@
         }
       }
 
+      function embedFrameUrl(permalink) {
+        const p = safeText(permalink).trim();
+        if (!p) return "";
+        try {
+          const u = new URL(p);
+          const path = u.pathname.endsWith("/") ? u.pathname : `${u.pathname}/`;
+          return `https://www.instagram.com${path}embed/?theme=dark`;
+        } catch (e) {
+          return "";
+        }
+      }
+
       function placeholderSvg(title) {
         const text = encodeURIComponent((title || "Instagram").slice(0, 28));
         return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%231a1a1f'/><stop offset='1' stop-color='%2312121a'/></linearGradient></defs><rect fill='url(%23g)' width='100%25' height='100%25'/><text x='50%25' y='52%25' fill='%23f1f5f9cc' font-family='Arial,sans-serif' font-size='40' text-anchor='middle'>Preview unavailable</text><text x='50%25' y='60%25' fill='%2394a3b8cc' font-family='Arial,sans-serif' font-size='24' text-anchor='middle'>Tap Open</text><text x='50%25' y='70%25' fill='%2364748bcc' font-family='Arial,sans-serif' font-size='20' text-anchor='middle'>${text}</text></svg>`;
       }
 
       function onThumbError(img) {
+        const embed = img.dataset.embed || "";
+        if (embed && img.dataset.embedTried !== "1") {
+          img.dataset.embedTried = "1";
+          const frame = document.createElement("iframe");
+          frame.className = "thumb-embed";
+          frame.loading = "lazy";
+          frame.src = embed;
+          frame.title = img.alt || "Instagram preview";
+          frame.referrerPolicy = "strict-origin-when-cross-origin";
+          img.replaceWith(frame);
+          return;
+        }
         img.onerror = null;
         img.src = img.dataset.fallback || "";
+      }
+
+      function buildMoreTile(items) {
+        const bg = items
+          .slice(0, 12)
+          .map((item) => {
+            const permalink = safeText(item.permalink);
+            const src = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
+            return src
+              ? `<img src="${src}" loading="lazy" alt="" aria-hidden="true" onerror="this.style.display='none'" />`
+              : "";
+          })
+          .join("");
+
+        return `
+          <div class="more-tile" role="listitem">
+            <div class="more-bg">${bg}</div>
+            <div class="more-fade" aria-hidden="true"></div>
+            <div class="more-content">
+              <p class="more-title font-brand">More On Instagram</p>
+              <p class="more-copy">For the full archive and newest visual posts, continue on @rudolf_visual.</p>
+              <a class="pill" href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer">Open Instagram</a>
+            </div>
+          </div>
+        `;
       }
 
       async function loadJson(path) {
@@ -432,19 +550,21 @@
             return;
           }
 
-          const html = items
-            .slice(0, 24)
+          const visibleItems = items.slice(0, 12);
+          const remainingItems = items.slice(12);
+          const html = visibleItems
             .map((item) => {
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
               const thumb = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
               const fallback = placeholderSvg(title);
+              const embed = embedFrameUrl(permalink);
 
               return `
                 <div class="tile" role="listitem">
                   <a href="${permalink}" target="_blank" rel="noreferrer" aria-label="${title}">
-                    <img class="thumb" loading="lazy" src="${thumb}" data-fallback="${fallback}" onerror="onThumbError(this)" alt="${title}" />
+                    <img class="thumb" loading="lazy" src="${thumb}" data-embed="${embed}" data-fallback="${fallback}" onerror="onThumbError(this)" alt="${title}" />
                     <div class="tile-meta">
                       <p class="tile-title font-brand">${label}</p>
                       <span class="pill">Open</span>
@@ -455,7 +575,7 @@
             })
             .join("");
 
-          grid.innerHTML = html;
+          grid.innerHTML = `${html}${buildMoreTile(remainingItems.length ? remainingItems : items)}`;
         } catch (e) {
           empty.hidden = false;
         }
