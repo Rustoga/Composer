@@ -259,67 +259,6 @@
         line-height: 1.6;
       }
 
-      .more-tile {
-        grid-column: 1 / -1;
-        position: relative;
-        border: 1px solid rgba(61, 61, 72, 0.55);
-        border-radius: 10px;
-        overflow: hidden;
-        min-height: 230px;
-        background: #101018;
-      }
-
-      .more-bg {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-      }
-
-      .more-bg img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.22;
-      }
-
-      .more-fade {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          180deg,
-          rgba(16, 16, 24, 0.15) 0%,
-          rgba(16, 16, 24, 0.55) 35%,
-          rgba(16, 16, 24, 0.9) 70%,
-          rgba(16, 16, 24, 1) 100%
-        );
-      }
-
-      .more-content {
-        position: relative;
-        z-index: 1;
-        min-height: 230px;
-        padding: 28px 18px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        gap: 10px;
-      }
-
-      .more-title {
-        margin: 0;
-        font-size: clamp(1rem, 1.5vw + 0.55rem, 1.35rem);
-        letter-spacing: 0.14em;
-      }
-
-      .more-copy {
-        margin: 0;
-        max-width: 65ch;
-        opacity: 0.86;
-      }
-
       footer {
         padding: 30px 18px;
         border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -458,31 +397,6 @@
         img.src = img.dataset.fallback || "";
       }
 
-      function buildMoreTile(items) {
-        const bg = items
-          .slice(0, 12)
-          .map((item) => {
-            const permalink = safeText(item.permalink);
-            const src = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
-            return src
-              ? `<img src="${src}" loading="lazy" alt="" aria-hidden="true" onerror="this.style.display='none'" />`
-              : "";
-          })
-          .join("");
-
-        return `
-          <div class="more-tile" role="listitem">
-            <div class="more-bg">${bg}</div>
-            <div class="more-fade" aria-hidden="true"></div>
-            <div class="more-content">
-              <p class="more-title font-brand">More On Instagram</p>
-              <p class="more-copy">For the full archive and newest visual posts, continue on @rudolf_visual.</p>
-              <a class="pill" href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer">Open Instagram</a>
-            </div>
-          </div>
-        `;
-      }
-
       async function loadJson(path) {
         const res = await fetch(path, { cache: "no-store" });
         if (!res.ok) throw new Error(`Missing ${path}`);
@@ -518,9 +432,8 @@
             return;
           }
 
-          const visibleItems = items.slice(0, 12);
-          const remainingItems = items.slice(12);
-          const html = visibleItems
+          const html = items
+            .slice(0, 24)
             .map((item) => {
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
@@ -542,7 +455,7 @@
             })
             .join("");
 
-          grid.innerHTML = `${html}${buildMoreTile(remainingItems.length ? remainingItems : items)}`;
+          grid.innerHTML = html;
         } catch (e) {
           empty.hidden = false;
         }
