@@ -218,18 +218,6 @@
         background: rgba(0, 0, 0, 0.32);
       }
 
-      .tile.embed-tile {
-        min-height: 0;
-      }
-
-      .insta-embed {
-        width: 100%;
-        height: 420px;
-        border: 0;
-        display: block;
-        background: #0f0f14;
-      }
-
       .tile-meta {
         padding: 12px 14px 14px;
         display: flex;
@@ -384,16 +372,29 @@
         return typeof s === "string" ? s : "";
       }
 
-      function embedFrameUrl(permalink) {
+      function previewImageUrl(permalink) {
         const p = safeText(permalink).trim();
         if (!p) return "";
         try {
           const u = new URL(p);
-          const path = u.pathname.endsWith("/") ? u.pathname : `${u.pathname}/`;
-          return `https://www.instagram.com${path}embed/?theme=dark`;
+          const parts = u.pathname.split("/").filter(Boolean);
+          if (parts.length < 2) return "";
+          const [kind, code] = parts;
+          if (kind !== "p" && kind !== "reel" && kind !== "tv") return "";
+          return `https://www.instagram.com/${kind}/${code}/media/?size=l`;
         } catch (e) {
           return "";
         }
+      }
+
+      function placeholderSvg(title) {
+        const text = encodeURIComponent((title || "Instagram").slice(0, 28));
+        return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%231a1a1f'/><stop offset='1' stop-color='%2312121a'/></linearGradient></defs><rect fill='url(%23g)' width='100%25' height='100%25'/><text x='50%25' y='52%25' fill='%23f1f5f9cc' font-family='Arial,sans-serif' font-size='40' text-anchor='middle'>Preview unavailable</text><text x='50%25' y='60%25' fill='%2394a3b8cc' font-family='Arial,sans-serif' font-size='24' text-anchor='middle'>Tap Open</text><text x='50%25' y='70%25' fill='%2364748bcc' font-family='Arial,sans-serif' font-size='20' text-anchor='middle'>${text}</text></svg>`;
+      }
+
+      function onThumbError(img) {
+        img.onerror = null;
+        img.src = img.dataset.fallback || "";
       }
 
       async function loadJson(path) {
@@ -437,25 +438,13 @@
               const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
               const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
               const label = guessType(item);
-              const thumb = safeText(item.thumbnail_url) || safeText(item.media_url);
-              const frame = embedFrameUrl(permalink);
-
-              if (!thumb && frame) {
-                return `
-                  <div class="tile embed-tile" role="listitem">
-                    <iframe class="insta-embed" loading="lazy" src="${frame}" title="${title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                    <div class="tile-meta">
-                      <p class="tile-title font-brand">${label}</p>
-                      <a class="pill" href="${permalink}" target="_blank" rel="noreferrer">Open</a>
-                    </div>
-                  </div>
-                `;
-              }
+              const thumb = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
+              const fallback = placeholderSvg(title);
 
               return `
                 <div class="tile" role="listitem">
                   <a href="${permalink}" target="_blank" rel="noreferrer" aria-label="${title}">
-                    <img class="thumb" loading="lazy" src="${thumb}" alt="${title}" />
+                    <img class="thumb" loading="lazy" src="${thumb}" data-fallback="${fallback}" onerror="onThumbError(this)" alt="${title}" />
                     <div class="tile-meta">
                       <p class="tile-title font-brand">${label}</p>
                       <span class="pill">Open</span>
