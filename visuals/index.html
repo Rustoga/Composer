@@ -119,6 +119,16 @@
           linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65));
       }
 
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("/Rustoga_2023_Promo_small_2.jpg") center center / cover no-repeat;
+        opacity: 0.16;
+        transform: scale(1.02);
+        filter: saturate(0.9) contrast(1.05);
+      }
+
       .hero-content {
         position: relative;
         width: 100%;
@@ -394,11 +404,10 @@
         <div class="container">
           <div class="section-head">
             <span class="dot" aria-hidden="true"></span>
-            <span class="section-badge" id="section-photography">Photography</span>
+            <span class="section-badge" id="section-photography">Different Works</span>
           </div>
           <p class="lede">
-            Recent work for different clients. Click any tile to open the original post. This page loads from a JSON feed:
-            first the automated API cache, then a manual fallback file so you can launch without API setup.
+            Works in Music Videos, Artist and Product Images, Corporate Design and Motion Design realm.
           </p>
 
           <div id="ig-grid" class="grid" role="list" aria-label="Instagram gallery"></div>
