@@ -21,51 +21,60 @@ export interface NormalizedEvent {
   date: string;
   image: string;
   source: string;
-  url?: string;
+
+  lat?: number;
+  lng?: number;
 }
 
-function stableHash(input: string): string {
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    hash = (hash << 5) - hash + input.charCodeAt(i);
-    hash |= 0;
+function cityCoordinates(location: string) {
+  const city = location?.toLowerCase() || "";
+
+  if (city.includes("helsinki")) {
+    return { lat: 60.1699, lng: 24.9384 };
   }
-  return Math.abs(hash).toString(36);
+
+  if (city.includes("espoo")) {
+    return { lat: 60.2055, lng: 24.6559 };
+  }
+
+  if (city.includes("vantaa")) {
+    return { lat: 60.2934, lng: 25.0378 };
+  }
+
+  return undefined;
 }
 
 export function normalizeEvent(event: any): NormalizedEvent {
   const title = event?.title ? String(event.title).trim() : "";
   const description = event?.description ? String(event.description).trim() : "";
 
-  const location =
-    event?.location
-      ? String(event.location).trim()
-      : event?.city
-      ? String(event.city).trim()
-      : "Unknown";
+  const location = event?.location
+    ? String(event.location).trim()
+    : event?.city
+    ? String(event.city).trim()
+    : "Unknown";
 
   const date = event?.date ? String(event.date).trim() : "";
   const image = event?.image ? String(event.image).trim() : "";
   const source = event?.source ? String(event.source).trim() : "";
-  const url = event?.url ? String(event.url).trim() : "";
 
   let category: EventCategory = EventCategory.OTHER;
   let categoryConfidence = 0;
 
   if (event?.category) {
     const cat = String(event.category).toUpperCase().trim();
+
     if (Object.values(EventCategory).includes(cat as EventCategory)) {
       category = cat as EventCategory;
       categoryConfidence = 0.8;
     }
   }
 
-  // STRONG STABLE ID (prevents duplicates across sources)
-  const base = `${title}|${date}|${location}|${source}`;
   const id =
-    event?.id && typeof event.id === "string"
-      ? event.id
-      : stableHash(base);
+    event?.id ||
+    `${source}:${title}:${date}:${location}`;
+
+  const coords = cityCoordinates(location);
 
   return {
     id,
@@ -77,6 +86,7 @@ export function normalizeEvent(event: any): NormalizedEvent {
     date,
     image,
     source,
-    url,
+    lat: coords?.lat,
+    lng: coords?.lng,
   };
 }
