@@ -27,17 +27,18 @@ export function normalizeEvent(event: any): NormalizedEvent {
   const title = event?.title ? String(event.title).trim() : "";
   const description = event?.description ? String(event.description).trim() : "";
 
-  // Lokki uses "city", normalize it into "location"
+  // Lokki uses "city", fallback into location
   const location = event?.location
     ? String(event.location).trim()
     : event?.city
-    ? String(event.city).trim()
-    : "Unknown";
+      ? String(event.city).trim()
+      : "Unknown";
 
   const date = event?.date ? String(event.date).trim() : "";
   const image = event?.image ? String(event.image).trim() : "";
   const source = event?.source ? String(event.source).trim() : "";
 
+  // Category normalization
   let category: EventCategory = EventCategory.OTHER;
   let categoryConfidence = 0;
 
@@ -49,28 +50,10 @@ export function normalizeEvent(event: any): NormalizedEvent {
     }
   }
 
-  // IMPORTANT: stable Lokki-compatible ID fallback
+  // Stable ID (important for deduping + API consistency)
   const id =
     event?.id ||
     `${source}:${title}:${date}:${location}`;
-
-  return {
-    id,
-    title,
-    description,
-    category,
-    categoryConfidence,
-    location,
-    date,
-    image,
-    source,
-  };
-}
-    }
-  }
-
-  // Create a stable id if provided or fallback to hashed-ish placeholder
-  const id = event && event.id ? String(event.id) : `${category}:${title}:${date}:${location}`;
 
   return {
     id,
