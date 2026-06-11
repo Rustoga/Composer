@@ -70,6 +70,7 @@
       padding: 15px;
       border-radius: 10px;
       border: 1px solid #334155;
+      position: relative;
     }
 
     .title {
@@ -83,12 +84,28 @@
       margin: 2px 0;
     }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px 0;
-      flex-wrap: wrap;
+    .fav {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+
+    .fav.active {
+      opacity: 1;
+    }
+
+    .loading {
+      text-align: center;
+      margin-top: 40px;
+      opacity: 0.7;
+    }
+
+    .empty {
+      text-align: center;
+      margin-top: 40px;
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -100,53 +117,45 @@
     <input id="search" placeholder="Search events..." />
   </div>
 
-  <div class="tabs">
-    <button onclick="setTimeFilter('ALL')" class="active">All</button>
-    <button onclick="setTimeFilter('TODAY')">Today</button>
-    <button onclick="setTimeFilter('WEEK')">This Week</button>
-  </div>
-
   <div class="filters" id="filters"></div>
 
-  <div id="status" style="text-align:center;">Loading...</div>
+  <div id="status" class="loading">Loading events...</div>
   <div id="grid" class="grid"></div>
 
   <script>
     let allEvents = [];
     let activeCategory = "ALL";
-    let activeTime = "ALL";
     let searchTerm = "";
+    let favorites = JSON.parse(localStorage.getItem("lokki_favs") || "[]");
 
     async function loadEvents() {
-      const res = await fetch('/api/v2/events');
-      const data = await res.json();
+      try {
+        const res = await fetch('/api/v2/events');
+        const data = await res.json();
 
-      allEvents = data.events || [];
+        allEvents = data.events || [];
 
-      buildFilters(allEvents);
-      render();
+        buildFilters(allEvents);
+        render();
+      } catch (e) {
+        document.getElementById("status").innerText = "Failed to load events";
+      }
     }
 
     function buildFilters(events) {
-      const categories = ["ALL", ...new Set(events.map(e => e.category))];
+      const cats = ["ALL", ...new Set(events.map(e => e.category))];
+
       document.getElementById("filters").innerHTML =
-        categories.map(c =>
+        cats.map(c =>
           `<button onclick="setCategory('${c}')">${c}</button>`
         ).join("");
 
       setActiveButtons();
     }
 
-    function setCategory(cat) {
-      activeCategory = cat;
+    function setCategory(c) {
+      activeCategory = c;
       setActiveButtons();
-      render();
-    }
-
-    function setTimeFilter(t) {
-      activeTime = t;
-      document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
       render();
     }
 
@@ -157,76 +166,58 @@
       });
     }
 
-    function isToday(dateStr) {
-      const d = new Date(dateStr);
-      const now = new Date();
-      return d.toDateString() === now.toDateString();
-    }
-
-    function isThisWeek(dateStr) {
-      const d = new Date(dateStr);
-      const now = new Date();
-
-      const weekFromNow = new Date();
-      weekFromNow.setDate(now.getDate() + 7);
-
-      return d >= now && d <= weekFromNow;
-    }
-
-    function formatDate(dateStr) {
-      try {
-        const d = new Date(dateStr);
-        return d.toLocaleString("en-GB", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          hour: "2-digit",
-          minute: "2-digit"
-        });
-      } catch {
-        return dateStr;
+    function toggleFav(id) {
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(f => f !== id);
+      } else {
+        favorites.push(id);
       }
+      localStorage.setItem("lokki_favs", JSON.stringify(favorites));
+      render();
     }
 
     function getFiltered() {
-      let events = [...allEvents];
+      let e = [...allEvents];
 
       if (activeCategory !== "ALL") {
-        events = events.filter(e => e.category === activeCategory);
+        e = e.filter(x => x.category === activeCategory);
       }
 
       if (searchTerm) {
         const s = searchTerm.toLowerCase();
-        events = events.filter(e =>
-          (e.title || "").toLowerCase().includes(s) ||
-          (e.location || "").toLowerCase().includes(s)
+        e = e.filter(x =>
+          (x.title || "").toLowerCase().includes(s) ||
+          (x.location || "").toLowerCase().includes(s)
         );
       }
 
-      if (activeTime === "TODAY") {
-        events = events.filter(e => isToday(e.date));
-      }
-
-      if (activeTime === "WEEK") {
-        events = events.filter(e => isThisWeek(e.date));
-      }
-
-      return events;
+      return e;
     }
 
     function render() {
       const events = getFiltered();
+
+      if (!events.length) {
+        document.getElementById("status").innerHTML =
+          `<div class="empty">No events found</div>`;
+        document.getElementById("grid").innerHTML = "";
+        return;
+      }
 
       document.getElementById("status").innerText =
         `Showing ${events.length} events`;
 
       document.getElementById("grid").innerHTML = events.map(e => `
         <div class="card">
+          <div class="fav ${favorites.includes(e.id) ? "active" : ""}"
+               onclick="toggleFav('${e.id}')">⭐</div>
+
           <div class="title">${e.title}</div>
           <div class="meta">📍 ${e.location}</div>
-          <div class="meta">📅 ${formatDate(e.date)}</div>
+          <div class="meta">📅 ${e.date}</div>
           <div class="meta">🏷️ ${e.category}</div>
           <div class="meta">🔗 ${e.source}</div>
+
           <a href="${e.url || '#'}" target="_blank">View</a>
         </div>
       `).join("");
