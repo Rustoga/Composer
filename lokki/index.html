@@ -1,95 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lokki - Helsinki Free Events</title>
+<script>
+    let allEvents = [];
+    let currentFilter = 'all';
+    let searchTerm = '';
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #0f172a;
-            color: #e2e8f0;
-        }
+    // 🔥 SAFE API CONFIG (DEV + PROD)
+    const API_URL =
+        window.location.hostname === 'localhost'
+            ? 'http://localhost:3000/api/v2/events'
+            : '/api/v2/events';
 
-        h1 {
-            color: #60a5fa;
-        }
+    async function loadEvents() {
+        try {
+            document.getElementById('status')?.style && (document.getElementById('status').style.display = 'block');
 
-        .event {
-            background: #1e293b;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-        }
+            const response = await fetch(API_URL);
 
-        .error {
-            color: #fca5a5;
-            background: #3f1d1d;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .loading {
-            color: #94a3b8;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>Lokki</h1>
-    <p>A place to discover free events happening in Helsinki, Espoo, and Vantaa.</p>
-
-    <div id="status" class="loading">Loading events...</div>
-    <div id="events"></div>
-
-    <script>
-        async function loadEvents() {
-            const status = document.getElementById('status');
-            const container = document.getElementById('events');
-
-            try {
-                const res = await fetch('/api/v2/events');
-
-                if (!res.ok) {
-                    throw new Error('API error: ' + res.status);
-                }
-
-                const data = await res.json();
-
-                if (!data.events || !Array.isArray(data.events)) {
-                    throw new Error('Invalid API response');
-                }
-
-                status.style.display = 'none';
-
-                container.innerHTML = data.events.map(e => `
-                    <div class="event">
-                        <strong>${escapeHtml(e.title || '')}</strong><br>
-                        📍 ${e.location || 'Unknown'}<br>
-                        📅 ${e.date || 'TBA'}<br>
-                        🔗 <a href="${e.url || '#'}" target="_blank" style="color:#60a5fa;">
-                            View
-                        </a>
-                    </div>
-                `).join('');
-
-            } catch (err) {
-                console.error(err);
-
-                status.className = 'error';
-                status.textContent = 'Failed to load events: ' + err.message;
+            if (!response.ok) {
+                throw new Error('API error: ' + response.status);
             }
+
+            const data = await response.json();
+
+            if (!data.events || !Array.isArray(data.events)) {
+                throw new Error('Invalid API response format');
+            }
+
+            allEvents = data.events;
+
+            document.getElementById('status').style.display = 'none';
+
+            renderEvents();
+            updateStats();
+
+        } catch (error) {
+            console.error('Error loading events:', error);
+
+            const status = document.getElementById('status');
+            status.className = 'error';
+            status.textContent = 'Failed to load events: ' + error.message;
+        }
+    }
+
+    function updateStats() {
+        const cities = new Set(allEvents.map(e => e.location || e.city));
+        const sources = new Set(allEvents.map(e => e.source));
+
+        const total = document.getElementById('totalEvents');
+        const citiesEl = document.getElementById('cityCount');
+        const sourcesEl = document.getElementById('sourceCount');
+
+        if (total) total.textContent = allEvents.length;
+        if (citiesEl) citiesEl.textContent = cities.size;
+        if (sourcesEl) sourcesEl.textContent = sources.size;
+    }
+
+    function formatDate(date) {
+        if (!date) return 'TBA';
+        try {
+            return new Date(date).toLocaleString();
+        } catch {
+            return date;
+        }
+    }
+
+    function filterEvents() {
+        let filtered = allEvents;
+
+        if (currentFilter !== 'all') {
+            filtered = filtered.filter(e => e.location === currentFilter);
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(e =>
+                (e.title || '').toLowerCase().includes(term) ||
+                (e.location || '').toLowerCase().includes(term)
+            );
         }
 
-        loadEvents();
-    </script>
-</body>
-</html>
+        return filtered;
+    }
+
+    function renderEvents() {
+        const container = document.getElementById('events');
+
+        if (!container) return;
+
+        const filtered = filterEvents();
+
+        if (filtered.length === 0) {
+            container.innerHTML = "<p>No events found.</p>";
+            return;
+        }
+
+        container.innerHTML = filtered.map(e => `
+            <div class="event">
+                <strong>${escapeHtml(e.title || '')}</strong><br>
+                📍 ${e.location || 'Unknown'}<br>
+                📅 ${formatDate(e.date)}<br>
+                🔗 <a href="${e.url || '#'}" target="_blank">View</a>
+            </div>
+        `).join('');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // (optional filters if you add UI later)
+    document.querySelectorAll?.('.filter-btn')?.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentFilter = btn.dataset.filter || 'all';
+            renderEvents();
+        });
+    });
+
+    document.getElementById('searchInput')?.addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        renderEvents();
+    });
+
+    loadEvents();
+</script>
