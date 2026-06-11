@@ -130,14 +130,17 @@
 
     async function loadEvents() {
       try {
-        const res = await fetch('/api/v2/events');
+        // ✅ FIX: GitHub Pages uses static JSON, not API routes
+        const res = await fetch('./events.json');
+
         const data = await res.json();
 
-        allEvents = data.events || [];
+        allEvents = data || [];
 
         buildFilters(allEvents);
         render();
       } catch (e) {
+        console.error(e);
         document.getElementById("status").innerText = "Failed to load events";
       }
     }
