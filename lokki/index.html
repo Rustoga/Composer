@@ -1,280 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Lokki - Free Events Helsinki</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lokki - Free Events Helsinki, Espoo, Vantaa</title>
 
-<style>
+  <style>
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #0f172a;
-        color: #e2e8f0;
-        padding: 20px;
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 20px;
     }
 
     h1 {
-        text-align: center;
-        margin-bottom: 10px;
+      text-align: center;
+      margin-bottom: 10px;
     }
 
-    .container {
-        max-width: 1000px;
-        margin: 0 auto;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
     }
 
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    input, select, button {
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #334155;
-        background: #1e293b;
-        color: white;
-    }
-
-    button {
-        cursor: pointer;
-    }
-
-    button:hover {
-        background: #334155;
-    }
-
-    .featured {
-        background: #1e40af22;
-        border: 1px solid #3b82f6;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    .event {
-        background: #1e293b;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 10px;
-        border: 1px solid #334155;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .event:hover {
-        transform: scale(1.01);
-        border-color: #3b82f6;
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #334155;
     }
 
     .title {
-        font-size: 18px;
-        font-weight: bold;
+      font-weight: bold;
+      margin-bottom: 8px;
     }
 
     .meta {
-        font-size: 14px;
-        opacity: 0.8;
-        margin-top: 5px;
+      font-size: 0.85rem;
+      opacity: 0.8;
     }
 
-    .details {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #334155;
-        display: none;
+    a {
+      color: #60a5fa;
     }
-
-    .status {
-        text-align: center;
-        opacity: 0.7;
-        margin: 10px 0;
-    }
-
-    .skeleton {
-        background: linear-gradient(90deg, #1e293b, #334155, #1e293b);
-        background-size: 200% 100%;
-        animation: shimmer 1.2s infinite;
-        height: 80px;
-        border-radius: 10px;
-        margin: 10px 0;
-    }
-
-    @keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
-
-    .empty {
-        text-align: center;
-        opacity: 0.7;
-        padding: 30px;
-    }
-</style>
+  </style>
 </head>
 
 <body>
+  <h1>🎫 Lokki</h1>
+  <p style="text-align:center;">Free events in Helsinki, Espoo & Vantaa</p>
 
-<div class="container">
+  <div id="status" style="text-align:center;">Loading...</div>
+  <div id="grid" class="grid"></div>
 
-<h1>🎫 Lokki Events</h1>
-
-<div class="controls">
-    <input id="search" placeholder="Search events..." />
-    <select id="city">
-        <option value="">All cities</option>
-        <option value="Helsinki">Helsinki</option>
-        <option value="Espoo">Espoo</option>
-        <option value="Vantaa">Vantaa</option>
-    </select>
-
-    <select id="range">
-        <option value="">All time</option>
-        <option value="today">Today</option>
-        <option value="week">This week</option>
-    </select>
-
-    <button onclick="loadEvents()">Refresh</button>
-</div>
-
-<div id="status" class="status">Loading...</div>
-
-<div id="featured"></div>
-<div id="events"></div>
-
-</div>
-
-<script>
-let allEvents = [];
-
-function showSkeletons() {
-    const container = document.getElementById("events");
-    container.innerHTML = `
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-    `;
-}
-
-async function loadEvents() {
-    const status = document.getElementById("status");
-
-    status.textContent = "Loading events...";
-    showSkeletons();
-
-    try {
-        const res = await fetch("/api/v2/events");
+  <script>
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/v2/events');
         const data = await res.json();
 
-        allEvents = data.events || [];
+        const events = data.events || [];
 
-        status.textContent = `Loaded ${allEvents.length} events`;
+        document.getElementById("status").innerText =
+          `Loaded ${events.length} events`;
 
-        render();
+        const grid = document.getElementById("grid");
 
-    } catch (err) {
-        status.textContent = "Error loading events";
-        document.getElementById("events").innerHTML =
-            `<div class="empty">Failed to load events</div>`;
-    }
-}
+        grid.innerHTML = events.map(e => `
+          <div class="card">
+            <div class="title">${e.title}</div>
+            <div class="meta">📍 ${e.location}</div>
+            <div class="meta">📅 ${e.date}</div>
+            <div class="meta">🏷️ ${e.category}</div>
+            <div class="meta">🔗 ${e.source}</div>
+            <a href="${e.url || '#'}" target="_blank">View</a>
+          </div>
+        `).join("");
 
-function isToday(dateStr) {
-    const d = new Date(dateStr);
-    const now = new Date();
-    return d.toDateString() === now.toDateString();
-}
-
-function isThisWeek(dateStr) {
-    const d = new Date(dateStr);
-    const now = new Date();
-    const week = new Date();
-    week.setDate(now.getDate() + 7);
-    return d >= now && d <= week;
-}
-
-function render() {
-    const search = document.getElementById("search").value.toLowerCase();
-    const city = document.getElementById("city").value;
-    const range = document.getElementById("range").value;
-
-    let filtered = allEvents;
-
-    if (search) {
-        filtered = filtered.filter(e =>
-            (e.title || "").toLowerCase().includes(search)
-        );
+      } catch (err) {
+        document.getElementById("status").innerText =
+          "Failed to load events API";
+        console.error(err);
+      }
     }
 
-    if (city) {
-        filtered = filtered.filter(e => e.location === city);
-    }
-
-    if (range === "today") {
-        filtered = filtered.filter(e => isToday(e.date));
-    }
-
-    if (range === "week") {
-        filtered = filtered.filter(e => isThisWeek(e.date));
-    }
-
-    const featured = filtered.slice(0, 3);
-    const rest = filtered.slice(3);
-
-    document.getElementById("featured").innerHTML = `
-        <div class="featured">
-            <strong>⭐ Featured</strong>
-            ${featured.map(renderCard).join("")}
-        </div>
-    `;
-
-    document.getElementById("events").innerHTML =
-        rest.length
-            ? rest.map(renderCard).join("")
-            : `<div class="empty">No more events</div>`;
-}
-
-function renderCard(e) {
-    const id = e.id || Math.random().toString(36);
-
-    return `
-        <div class="event" onclick="toggleDetails('${id}')">
-            <div class="title">${escapeHtml(e.title || "No title")}</div>
-            <div class="meta">📍 ${e.location || "Unknown"}</div>
-            <div class="meta">📅 ${e.date || ""}</div>
-            <div class="meta">🏷 ${e.category || "OTHER"}</div>
-
-            <div class="details" id="details-${id}">
-                <div class="meta">Source: ${e.source || ""}</div>
-                <div class="meta">ID: ${e.id || "n/a"}</div>
-            </div>
-        </div>
-    `;
-}
-
-function toggleDetails(id) {
-    const el = document.getElementById("details-" + id);
-    if (!el) return;
-    el.style.display = el.style.display === "block" ? "none" : "block";
-}
-
-function escapeHtml(str) {
-    return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-}
-
-document.getElementById("search").addEventListener("input", render);
-document.getElementById("city").addEventListener("change", render);
-document.getElementById("range").addEventListener("change", render);
-
-loadEvents();
-</script>
-
+    loadEvents();
+  </script>
 </body>
 </html>
