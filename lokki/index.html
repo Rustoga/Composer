@@ -94,6 +94,26 @@
         opacity: 0.7;
         margin: 10px 0;
     }
+
+    .skeleton {
+        background: linear-gradient(90deg, #1e293b, #334155, #1e293b);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        height: 80px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .empty {
+        text-align: center;
+        opacity: 0.7;
+        padding: 30px;
+    }
 </style>
 </head>
 
@@ -105,7 +125,6 @@
 
 <div class="controls">
     <input id="search" placeholder="Search events..." />
-
     <select id="city">
         <option value="">All cities</option>
         <option value="Helsinki">Helsinki</option>
@@ -132,10 +151,20 @@
 <script>
 let allEvents = [];
 
+function showSkeletons() {
+    const container = document.getElementById("events");
+    container.innerHTML = `
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    `;
+}
+
 async function loadEvents() {
     const status = document.getElementById("status");
 
-    status.textContent = "Loading...";
+    status.textContent = "Loading events...";
+    showSkeletons();
 
     try {
         const res = await fetch("/api/v2/events");
@@ -149,6 +178,8 @@ async function loadEvents() {
 
     } catch (err) {
         status.textContent = "Error loading events";
+        document.getElementById("events").innerHTML =
+            `<div class="empty">Failed to load events</div>`;
     }
 }
 
@@ -161,9 +192,9 @@ function isToday(dateStr) {
 function isThisWeek(dateStr) {
     const d = new Date(dateStr);
     const now = new Date();
-    const weekFromNow = new Date();
-    weekFromNow.setDate(now.getDate() + 7);
-    return d >= now && d <= weekFromNow;
+    const week = new Date();
+    week.setDate(now.getDate() + 7);
+    return d >= now && d <= week;
 }
 
 function render() {
@@ -191,22 +222,23 @@ function render() {
         filtered = filtered.filter(e => isThisWeek(e.date));
     }
 
-    // FEATURED = first 3 events
     const featured = filtered.slice(0, 3);
     const rest = filtered.slice(3);
 
     document.getElementById("featured").innerHTML = `
         <div class="featured">
-            <strong>⭐ Featured events</strong>
+            <strong>⭐ Featured</strong>
             ${featured.map(renderCard).join("")}
         </div>
     `;
 
     document.getElementById("events").innerHTML =
-        rest.map(renderCard).join("");
+        rest.length
+            ? rest.map(renderCard).join("")
+            : `<div class="empty">No more events</div>`;
 }
 
-function renderCard(e, i) {
+function renderCard(e) {
     const id = e.id || Math.random().toString(36);
 
     return `
@@ -218,7 +250,7 @@ function renderCard(e, i) {
 
             <div class="details" id="details-${id}">
                 <div class="meta">Source: ${e.source || ""}</div>
-                <div class="meta">Event ID: ${e.id || "n/a"}</div>
+                <div class="meta">ID: ${e.id || "n/a"}</div>
             </div>
         </div>
     `;
