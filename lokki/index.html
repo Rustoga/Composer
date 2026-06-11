@@ -19,12 +19,29 @@
       margin-bottom: 5px;
     }
 
+    .topbar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+
+    input {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: white;
+      min-width: 220px;
+    }
+
     .filters {
       display: flex;
       gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
-      margin: 15px 0;
+      margin: 10px 0;
     }
 
     button {
@@ -66,15 +83,28 @@
       margin: 2px 0;
     }
 
-    a {
-      color: #60a5fa;
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0;
+      flex-wrap: wrap;
     }
   </style>
 </head>
 
 <body>
   <h1>🎫 Lokki</h1>
-  <p style="text-align:center;">Free events in Helsinki, Espoo & Vantaa</p>
+
+  <div class="topbar">
+    <input id="search" placeholder="Search events..." />
+  </div>
+
+  <div class="tabs">
+    <button onclick="setTimeFilter('ALL')" class="active">All</button>
+    <button onclick="setTimeFilter('TODAY')">Today</button>
+    <button onclick="setTimeFilter('WEEK')">This Week</button>
+  </div>
 
   <div class="filters" id="filters"></div>
 
@@ -83,7 +113,9 @@
 
   <script>
     let allEvents = [];
-    let activeFilter = "ALL";
+    let activeCategory = "ALL";
+    let activeTime = "ALL";
+    let searchTerm = "";
 
     async function loadEvents() {
       const res = await fetch('/api/v2/events');
@@ -92,40 +124,99 @@
       allEvents = data.events || [];
 
       buildFilters(allEvents);
-      render(allEvents);
+      render();
     }
 
     function buildFilters(events) {
       const categories = ["ALL", ...new Set(events.map(e => e.category))];
+      document.getElementById("filters").innerHTML =
+        categories.map(c =>
+          `<button onclick="setCategory('${c}')">${c}</button>`
+        ).join("");
 
-      const container = document.getElementById("filters");
-
-      container.innerHTML = categories.map(c =>
-        `<button onclick="setFilter('${c}')">${c}</button>`
-      ).join("");
-
-      setActiveButton("ALL");
+      setActiveButtons();
     }
 
-    function setFilter(cat) {
-      activeFilter = cat;
-      setActiveButton(cat);
-
-      if (cat === "ALL") {
-        render(allEvents);
-      } else {
-        render(allEvents.filter(e => e.category === cat));
-      }
+    function setCategory(cat) {
+      activeCategory = cat;
+      setActiveButtons();
+      render();
     }
 
-    function setActiveButton(cat) {
-      document.querySelectorAll("button").forEach(b => {
+    function setTimeFilter(t) {
+      activeTime = t;
+      document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+      render();
+    }
+
+    function setActiveButtons() {
+      document.querySelectorAll(".filters button").forEach(b => {
         b.classList.remove("active");
-        if (b.textContent === cat) b.classList.add("active");
+        if (b.textContent === activeCategory) b.classList.add("active");
       });
     }
 
-    function render(events) {
+    function isToday(dateStr) {
+      const d = new Date(dateStr);
+      const now = new Date();
+      return d.toDateString() === now.toDateString();
+    }
+
+    function isThisWeek(dateStr) {
+      const d = new Date(dateStr);
+      const now = new Date();
+
+      const weekFromNow = new Date();
+      weekFromNow.setDate(now.getDate() + 7);
+
+      return d >= now && d <= weekFromNow;
+    }
+
+    function formatDate(dateStr) {
+      try {
+        const d = new Date(dateStr);
+        return d.toLocaleString("en-GB", {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      } catch {
+        return dateStr;
+      }
+    }
+
+    function getFiltered() {
+      let events = [...allEvents];
+
+      if (activeCategory !== "ALL") {
+        events = events.filter(e => e.category === activeCategory);
+      }
+
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase();
+        events = events.filter(e =>
+          (e.title || "").toLowerCase().includes(s) ||
+          (e.location || "").toLowerCase().includes(s)
+        );
+      }
+
+      if (activeTime === "TODAY") {
+        events = events.filter(e => isToday(e.date));
+      }
+
+      if (activeTime === "WEEK") {
+        events = events.filter(e => isThisWeek(e.date));
+      }
+
+      return events;
+    }
+
+    function render() {
+      const events = getFiltered();
+
       document.getElementById("status").innerText =
         `Showing ${events.length} events`;
 
@@ -133,13 +224,18 @@
         <div class="card">
           <div class="title">${e.title}</div>
           <div class="meta">📍 ${e.location}</div>
-          <div class="meta">📅 ${e.date}</div>
+          <div class="meta">📅 ${formatDate(e.date)}</div>
           <div class="meta">🏷️ ${e.category}</div>
           <div class="meta">🔗 ${e.source}</div>
           <a href="${e.url || '#'}" target="_blank">View</a>
         </div>
       `).join("");
     }
+
+    document.getElementById("search").addEventListener("input", (e) => {
+      searchTerm = e.target.value;
+      render();
+    });
 
     loadEvents();
   </script>
