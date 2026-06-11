@@ -4,13 +4,19 @@ import path from "path";
 
 type AggregateOptions = { maxPerSource?: number };
 
+function safeDateValue(date: string | undefined): number {
+  if (!date) return Number.MAX_SAFE_INTEGER;
+  const d = new Date(date);
+  const t = d.getTime();
+  return isNaN(t) ? Number.MAX_SAFE_INTEGER : t;
+}
+
 export async function aggregateEvents(
   options?: AggregateOptions
 ): Promise<NormalizedEvent[]> {
-  const maxPerSource = options?.maxPerSource ?? 100;
+  const maxPerSource = options?.maxPerSource ?? 200;
 
   try {
-    // Read scraped events JSON produced by Python scraper
     const filePath = path.join(process.cwd(), "lokki", "events.json");
     const raw = fs.readFileSync(filePath, "utf-8");
     const events = JSON.parse(raw);
@@ -20,17 +26,35 @@ export async function aggregateEvents(
       return [];
     }
 
-    const sliced = events.slice(0, maxPerSource);
-
-    const normalized: NormalizedEvent[] = sliced.map((e) =>
+    // 1. Normalize
+    let normalized: NormalizedEvent[] = events.map((e) =>
       normalizeEvent(e)
     );
 
-    return normalized;
+    // 2. Remove invalid entries
+    normalized = normalized.filter(
+      (e) => e.title && e.date && e.location
+    );
+
+    // 3. Deduplicate (strong key)
+    const seen = new Set<string>();
+    normalized = normalized.filter((e) => {
+      const key = `${e.title.toLowerCase()}|${e.date}|${e.location}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // 4. Sort by date (soonest first)
+    normalized.sort((a, b) => {
+      return safeDateValue(a.date) - safeDateValue(b.date);
+    });
+
+    // 5. Limit output
+    return normalized.slice(0, maxPerSource);
+
   } catch (err) {
     console.error("aggregateEvents error:", err);
-
-    // fallback empty instead of crashing API
     return [];
   }
 }
