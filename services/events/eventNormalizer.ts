@@ -21,24 +21,34 @@ export interface NormalizedEvent {
   date: string;
   image: string;
   source: string;
+  url?: string;
+}
+
+function stableHash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash << 5) - hash + input.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
 }
 
 export function normalizeEvent(event: any): NormalizedEvent {
   const title = event?.title ? String(event.title).trim() : "";
   const description = event?.description ? String(event.description).trim() : "";
 
-  // Lokki uses "city", fallback into location
-  const location = event?.location
-    ? String(event.location).trim()
-    : event?.city
+  const location =
+    event?.location
+      ? String(event.location).trim()
+      : event?.city
       ? String(event.city).trim()
       : "Unknown";
 
   const date = event?.date ? String(event.date).trim() : "";
   const image = event?.image ? String(event.image).trim() : "";
   const source = event?.source ? String(event.source).trim() : "";
+  const url = event?.url ? String(event.url).trim() : "";
 
-  // Category normalization
   let category: EventCategory = EventCategory.OTHER;
   let categoryConfidence = 0;
 
@@ -50,10 +60,12 @@ export function normalizeEvent(event: any): NormalizedEvent {
     }
   }
 
-  // Stable ID (important for deduping + API consistency)
+  // STRONG STABLE ID (prevents duplicates across sources)
+  const base = `${title}|${date}|${location}|${source}`;
   const id =
-    event?.id ||
-    `${source}:${title}:${date}:${location}`;
+    event?.id && typeof event.id === "string"
+      ? event.id
+      : stableHash(base);
 
   return {
     id,
@@ -65,5 +77,6 @@ export function normalizeEvent(event: any): NormalizedEvent {
     date,
     image,
     source,
+    url,
   };
 }
