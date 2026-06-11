@@ -24,21 +24,48 @@ export interface NormalizedEvent {
 }
 
 export function normalizeEvent(event: any): NormalizedEvent {
-  const title = event && event.title ? String(event.title).trim() : "";
-  const description = event && event.description ? String(event.description).trim() : "";
-  const location = event && event.location ? String(event.location).trim() : "";
-  const date = event && event.date ? String(event.date).trim() : "";
-  const image = event && event.image ? String(event.image).trim() : "";
-  const source = event && event.source ? String(event.source).trim() : "";
+  const title = event?.title ? String(event.title).trim() : "";
+  const description = event?.description ? String(event.description).trim() : "";
 
-  // Safely map category to enum when possible
+  // Lokki uses "city", normalize it into "location"
+  const location = event?.location
+    ? String(event.location).trim()
+    : event?.city
+    ? String(event.city).trim()
+    : "Unknown";
+
+  const date = event?.date ? String(event.date).trim() : "";
+  const image = event?.image ? String(event.image).trim() : "";
+  const source = event?.source ? String(event.source).trim() : "";
+
   let category: EventCategory = EventCategory.OTHER;
   let categoryConfidence = 0;
-  if (event && event.category) {
+
+  if (event?.category) {
     const cat = String(event.category).toUpperCase().trim();
     if (Object.values(EventCategory).includes(cat as EventCategory)) {
       category = cat as EventCategory;
       categoryConfidence = 0.8;
+    }
+  }
+
+  // IMPORTANT: stable Lokki-compatible ID fallback
+  const id =
+    event?.id ||
+    `${source}:${title}:${date}:${location}`;
+
+  return {
+    id,
+    title,
+    description,
+    category,
+    categoryConfidence,
+    location,
+    date,
+    image,
+    source,
+  };
+}
     }
   }
 
