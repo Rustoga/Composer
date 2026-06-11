@@ -32,7 +32,7 @@
         margin: 20px 0;
     }
 
-    input, select {
+    input, select, button {
         padding: 10px;
         border-radius: 8px;
         border: 1px solid #334155;
@@ -41,16 +41,19 @@
     }
 
     button {
-        padding: 10px 14px;
-        background: #334155;
-        color: white;
-        border: none;
-        border-radius: 8px;
         cursor: pointer;
     }
 
     button:hover {
-        background: #475569;
+        background: #334155;
+    }
+
+    .featured {
+        background: #1e40af22;
+        border: 1px solid #3b82f6;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
     }
 
     .event {
@@ -59,6 +62,13 @@
         margin: 10px 0;
         border-radius: 10px;
         border: 1px solid #334155;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .event:hover {
+        transform: scale(1.01);
+        border-color: #3b82f6;
     }
 
     .title {
@@ -72,49 +82,50 @@
         margin-top: 5px;
     }
 
+    .details {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #334155;
+        display: none;
+    }
+
     .status {
         text-align: center;
         opacity: 0.7;
         margin: 10px 0;
     }
-
-    .error {
-        color: #f87171;
-        text-align: center;
-    }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
-    <h1>🎫 Lokki Events</h1>
+<h1>🎫 Lokki Events</h1>
 
-    <div class="controls">
-        <input id="search" placeholder="Search events..." />
+<div class="controls">
+    <input id="search" placeholder="Search events..." />
 
-        <select id="city">
-            <option value="">All cities</option>
-            <option value="Helsinki">Helsinki</option>
-            <option value="Espoo">Espoo</option>
-            <option value="Vantaa">Vantaa</option>
-        </select>
+    <select id="city">
+        <option value="">All cities</option>
+        <option value="Helsinki">Helsinki</option>
+        <option value="Espoo">Espoo</option>
+        <option value="Vantaa">Vantaa</option>
+    </select>
 
-        <select id="category">
-            <option value="">All categories</option>
-            <option value="MUSIC">Music</option>
-            <option value="FOOD">Food</option>
-            <option value="ART">Art</option>
-            <option value="SPORTS">Sports</option>
-            <option value="OUTDOORS">Outdoors</option>
-            <option value="FAMILY">Family</option>
-        </select>
+    <select id="range">
+        <option value="">All time</option>
+        <option value="today">Today</option>
+        <option value="week">This week</option>
+    </select>
 
-        <button onclick="loadEvents()">Refresh</button>
-    </div>
+    <button onclick="loadEvents()">Refresh</button>
+</div>
 
-    <div id="status" class="status">Loading...</div>
-    <div id="events"></div>
+<div id="status" class="status">Loading...</div>
+
+<div id="featured"></div>
+<div id="events"></div>
 
 </div>
 
@@ -123,17 +134,13 @@ let allEvents = [];
 
 async function loadEvents() {
     const status = document.getElementById("status");
-    const container = document.getElementById("events");
 
     status.textContent = "Loading...";
-    container.innerHTML = "";
 
     try {
         const res = await fetch("/api/v2/events");
-
-        if (!res.ok) throw new Error("API error " + res.status);
-
         const data = await res.json();
+
         allEvents = data.events || [];
 
         status.textContent = `Loaded ${allEvents.length} events`;
@@ -142,14 +149,27 @@ async function loadEvents() {
 
     } catch (err) {
         status.textContent = "Error loading events";
-        container.innerHTML = `<div class="error">${err.message}</div>`;
     }
+}
+
+function isToday(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+}
+
+function isThisWeek(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const weekFromNow = new Date();
+    weekFromNow.setDate(now.getDate() + 7);
+    return d >= now && d <= weekFromNow;
 }
 
 function render() {
     const search = document.getElementById("search").value.toLowerCase();
     const city = document.getElementById("city").value;
-    const category = document.getElementById("category").value;
+    const range = document.getElementById("range").value;
 
     let filtered = allEvents;
 
@@ -163,26 +183,51 @@ function render() {
         filtered = filtered.filter(e => e.location === city);
     }
 
-    if (category) {
-        filtered = filtered.filter(e => e.category === category);
+    if (range === "today") {
+        filtered = filtered.filter(e => isToday(e.date));
     }
 
-    const container = document.getElementById("events");
-
-    if (filtered.length === 0) {
-        container.innerHTML = "<p class='status'>No events found</p>";
-        return;
+    if (range === "week") {
+        filtered = filtered.filter(e => isThisWeek(e.date));
     }
 
-    container.innerHTML = filtered.map(e => `
-        <div class="event">
+    // FEATURED = first 3 events
+    const featured = filtered.slice(0, 3);
+    const rest = filtered.slice(3);
+
+    document.getElementById("featured").innerHTML = `
+        <div class="featured">
+            <strong>⭐ Featured events</strong>
+            ${featured.map(renderCard).join("")}
+        </div>
+    `;
+
+    document.getElementById("events").innerHTML =
+        rest.map(renderCard).join("");
+}
+
+function renderCard(e, i) {
+    const id = e.id || Math.random().toString(36);
+
+    return `
+        <div class="event" onclick="toggleDetails('${id}')">
             <div class="title">${escapeHtml(e.title || "No title")}</div>
             <div class="meta">📍 ${e.location || "Unknown"}</div>
-            <div class="meta">📅 ${e.date || "No date"}</div>
+            <div class="meta">📅 ${e.date || ""}</div>
             <div class="meta">🏷 ${e.category || "OTHER"}</div>
-            <div class="meta">🔗 ${e.source || ""}</div>
+
+            <div class="details" id="details-${id}">
+                <div class="meta">Source: ${e.source || ""}</div>
+                <div class="meta">Event ID: ${e.id || "n/a"}</div>
+            </div>
         </div>
-    `).join("");
+    `;
+}
+
+function toggleDetails(id) {
+    const el = document.getElementById("details-" + id);
+    if (!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
 }
 
 function escapeHtml(str) {
@@ -192,10 +237,9 @@ function escapeHtml(str) {
         .replaceAll(">", "&gt;");
 }
 
-// live filtering
 document.getElementById("search").addEventListener("input", render);
 document.getElementById("city").addEventListener("change", render);
-document.getElementById("category").addEventListener("change", render);
+document.getElementById("range").addEventListener("change", render);
 
 loadEvents();
 </script>
