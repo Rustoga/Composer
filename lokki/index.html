@@ -1,141 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Lokki - Free Events Helsinki</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lokki - Free Events Helsinki</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #0f172a;
-            color: #e2e8f0;
-            padding: 20px;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 20px;
+    }
 
-        h1 {
-            text-align: center;
-        }
+    h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-        .event {
-            background: #1e293b;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #334155;
-        }
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+    }
 
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-        }
+    input, select {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #1e293b;
+        color: white;
+    }
 
-        .meta {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
+    button {
+        padding: 10px 14px;
+        background: #334155;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-        .loading {
-            text-align: center;
-            opacity: 0.7;
-        }
+    button:hover {
+        background: #475569;
+    }
 
-        .error {
-            color: #f87171;
-            text-align: center;
-        }
+    .event {
+        background: #1e293b;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: 1px solid #334155;
+    }
 
-        button {
-            padding: 8px 12px;
-            margin: 5px;
-            background: #334155;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+    .title {
+        font-size: 18px;
+        font-weight: bold;
+    }
 
-        button:hover {
-            background: #475569;
-        }
+    .meta {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-top: 5px;
+    }
 
-        .controls {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
+    .status {
+        text-align: center;
+        opacity: 0.7;
+        margin: 10px 0;
+    }
+
+    .error {
+        color: #f87171;
+        text-align: center;
+    }
+</style>
 </head>
 
 <body>
 <div class="container">
+
     <h1>🎫 Lokki Events</h1>
 
     <div class="controls">
+        <input id="search" placeholder="Search events..." />
+
+        <select id="city">
+            <option value="">All cities</option>
+            <option value="Helsinki">Helsinki</option>
+            <option value="Espoo">Espoo</option>
+            <option value="Vantaa">Vantaa</option>
+        </select>
+
+        <select id="category">
+            <option value="">All categories</option>
+            <option value="MUSIC">Music</option>
+            <option value="FOOD">Food</option>
+            <option value="ART">Art</option>
+            <option value="SPORTS">Sports</option>
+            <option value="OUTDOORS">Outdoors</option>
+            <option value="FAMILY">Family</option>
+        </select>
+
         <button onclick="loadEvents()">Refresh</button>
     </div>
 
-    <div id="status" class="loading">Loading events...</div>
+    <div id="status" class="status">Loading...</div>
     <div id="events"></div>
+
 </div>
 
 <script>
-    async function loadEvents() {
-        const status = document.getElementById("status");
-        const container = document.getElementById("events");
+let allEvents = [];
 
-        status.textContent = "Loading events...";
-        container.innerHTML = "";
+async function loadEvents() {
+    const status = document.getElementById("status");
+    const container = document.getElementById("events");
 
-        try {
-            const res = await fetch("/api/v2/events");
+    status.textContent = "Loading...";
+    container.innerHTML = "";
 
-            if (!res.ok) {
-                throw new Error("API error: " + res.status);
-            }
+    try {
+        const res = await fetch("/api/v2/events");
 
-            const data = await res.json();
+        if (!res.ok) throw new Error("API error " + res.status);
 
-            const events = data.events || [];
+        const data = await res.json();
+        allEvents = data.events || [];
 
-            if (events.length === 0) {
-                status.textContent = "No events found";
-                return;
-            }
+        status.textContent = `Loaded ${allEvents.length} events`;
 
-            status.textContent = `Found ${events.length} events`;
+        render();
 
-            container.innerHTML = events.map(e => `
-                <div class="event">
-                    <div class="title">${escapeHtml(e.title || "No title")}</div>
-                    <div class="meta">📍 ${e.location || "Unknown"}</div>
-                    <div class="meta">📅 ${e.date || "No date"}</div>
-                    <div class="meta">🏷 ${e.category || "OTHER"}</div>
-                    <div class="meta">🔗 ${e.source || ""}</div>
-                </div>
-            `).join("");
+    } catch (err) {
+        status.textContent = "Error loading events";
+        container.innerHTML = `<div class="error">${err.message}</div>`;
+    }
+}
 
-        } catch (err) {
-            status.textContent = "Error loading events";
-            document.getElementById("events").innerHTML =
-                `<div class="error">${err.message}</div>`;
-        }
+function render() {
+    const search = document.getElementById("search").value.toLowerCase();
+    const city = document.getElementById("city").value;
+    const category = document.getElementById("category").value;
+
+    let filtered = allEvents;
+
+    if (search) {
+        filtered = filtered.filter(e =>
+            (e.title || "").toLowerCase().includes(search)
+        );
     }
 
-    function escapeHtml(str) {
-        return String(str)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;");
+    if (city) {
+        filtered = filtered.filter(e => e.location === city);
     }
 
-    loadEvents();
+    if (category) {
+        filtered = filtered.filter(e => e.category === category);
+    }
+
+    const container = document.getElementById("events");
+
+    if (filtered.length === 0) {
+        container.innerHTML = "<p class='status'>No events found</p>";
+        return;
+    }
+
+    container.innerHTML = filtered.map(e => `
+        <div class="event">
+            <div class="title">${escapeHtml(e.title || "No title")}</div>
+            <div class="meta">📍 ${e.location || "Unknown"}</div>
+            <div class="meta">📅 ${e.date || "No date"}</div>
+            <div class="meta">🏷 ${e.category || "OTHER"}</div>
+            <div class="meta">🔗 ${e.source || ""}</div>
+        </div>
+    `).join("");
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+// live filtering
+document.getElementById("search").addEventListener("input", render);
+document.getElementById("city").addEventListener("change", render);
+document.getElementById("category").addEventListener("change", render);
+
+loadEvents();
 </script>
+
 </body>
 </html>
