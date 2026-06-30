@@ -1,1 +1,11 @@
-[]
+{
+  "generatedAt": "2026-06-30T09:21:53.509Z",
+  "nextUpdateAt": "2026-06-30T17:30:00.000Z",
+  "updateSchedule": "Twice daily around 08:30 and 20:30 (Europe/Helsinki)",
+  "sources": [
+    "https://menot.hs.fi/",
+    "https://www.stadissa.fi/tapahtumat/"
+  ],
+  "total": 0,
+  "events": []
+}
