@@ -1,0 +1,39 @@
+name: Update Lokki events
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Approx. 08:30 and 20:30 Helsinki (DST may shift by 1h)
+    - cron: "30 5,17 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lokki-events
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch free events
+        run: node scripts/fetch-lokki-events.mjs
+
+      - name: Commit updated events (if changed)
+        run: |
+          if git diff --quiet -- lokki/events.json; then
+            echo "No changes."
+            exit 0
+          fi
+          git add lokki/events.json
+          git commit -m "chore(lokki): update free events snapshot"
+          git push

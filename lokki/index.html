@@ -1,237 +1,309 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lokki - Free Events Helsinki, Espoo, Vantaa</title>
-
+  <title>Lokki - Free Events by Region</title>
   <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --line: #334155;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: system-ui, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
       margin: 0;
+      background: radial-gradient(1200px 500px at 10% 10%, rgba(56,189,248,.08), transparent 60%), var(--bg);
+      color: #e2e8f0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
       padding: 20px;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 2.5vw, 2rem); }
+    .lede { margin: 0 0 14px; color: var(--muted); line-height: 1.5; }
     .topbar {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
       gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 15px 0;
+      margin: 14px 0 10px;
     }
-
-    input {
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: white;
-      min-width: 220px;
+    input, select, button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0b1220;
+      color: #e2e8f0;
+      padding: 10px 12px;
+      font-size: 14px;
     }
-
-    .filters {
+    button { cursor: pointer; }
+    .stats {
       display: flex;
-      gap: 8px;
-      justify-content: center;
       flex-wrap: wrap;
-      margin: 10px 0;
+      gap: 12px 18px;
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
     }
-
-    button {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: white;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
     }
-
-    button.active {
-      background: #60a5fa;
-      color: #0f172a;
+    .sections {
+      display: grid;
+      gap: 18px;
     }
-
+    .region {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(17,24,39,.85), rgba(17,24,39,.55));
+    }
+    .region-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(15,23,42,.65);
+    }
+    .region-head h2 { margin: 0; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 12px;
     }
-
     .card {
-      background: #1e293b;
-      padding: 15px;
+      border: 1px solid var(--line);
       border-radius: 10px;
-      border: 1px solid #334155;
-      position: relative;
+      padding: 12px;
+      background: var(--card);
+      display: grid;
+      gap: 8px;
+      min-height: 200px;
     }
-
-    .title {
-      font-weight: bold;
-      margin-bottom: 8px;
+    .title { font-weight: 600; line-height: 1.35; }
+    .meta { font-size: 13px; color: var(--muted); }
+    .free {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(34,197,94,.55);
+      color: #dcfce7;
+      background: rgba(34,197,94,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      width: fit-content;
+      text-transform: uppercase;
     }
-
-    .meta {
-      font-size: 0.85rem;
-      opacity: 0.8;
-      margin: 2px 0;
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+    .links a {
+      text-decoration: none;
+      color: #e2e8f0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
     }
-
-    .fav {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      opacity: 0.6;
+    .empty { padding: 16px; color: var(--muted); }
+    .helper {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
-
-    .fav.active {
-      opacity: 1;
-    }
-
-    .loading {
-      text-align: center;
-      margin-top: 40px;
-      opacity: 0.7;
-    }
-
-    .empty {
-      text-align: center;
-      margin-top: 40px;
-      opacity: 0.7;
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
 <body>
-  <h1>🎫 Lokki</h1>
+  <div class="wrap">
+    <h1>Lokki - Free Events</h1>
+    <p class="lede">Free events from HS Menokone and Stadissa, grouped by Helsinki, Espoo, Vantaa, and route area / central Finland.</p>
 
-  <div class="topbar">
-    <input id="search" placeholder="Search events..." />
+    <div class="topbar">
+      <input id="search" placeholder="Search by title, location, category..." />
+      <select id="regionSelect">
+        <option value="ALL">All regions</option>
+        <option value="Helsinki">Helsinki</option>
+        <option value="Espoo">Espoo</option>
+        <option value="Vantaa">Vantaa</option>
+        <option value="Route area / Central Finland">Route area / Central Finland</option>
+      </select>
+      <button id="refreshNow">Request update now</button>
+    </div>
+
+    <div class="stats">
+      <span class="pill">Total: <strong id="totalCount">0</strong></span>
+      <span class="pill">Last update: <strong id="lastUpdate">-</strong></span>
+      <span class="pill">Next update: <strong id="nextUpdate">-</strong></span>
+      <span class="pill">Countdown: <strong id="countdown">-</strong></span>
+    </div>
+
+    <div id="sections" class="sections"></div>
+
+    <div class="helper">
+      Manual update button opens GitHub Actions workflow page where you can click <em>Run workflow</em>.
+      This static site cannot safely trigger workflow API calls directly without exposing credentials.
+    </div>
   </div>
 
-  <div class="filters" id="filters"></div>
-
-  <div id="status" class="loading">Loading events...</div>
-  <div id="grid" class="grid"></div>
-
   <script>
-    let allEvents = [];
-    let activeCategory = "ALL";
-    let searchTerm = "";
-    let favorites = JSON.parse(localStorage.getItem("lokki_favs") || "[]");
+    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Route area / Central Finland']
+    let snapshot = { events: [] }
+    let searchTerm = ''
+    let regionFilter = 'ALL'
+    let countdownTimer = null
 
-    async function loadEvents() {
-      try {
-        // ✅ FIX: GitHub Pages uses static JSON, not API routes
-        const res = await fetch('./events.json');
+    function fmtDate(iso) {
+      if (!iso) return 'Date not specified'
+      const d = new Date(iso)
+      if (Number.isNaN(d.getTime())) return iso
+      return d.toLocaleString('fi-FI', { dateStyle: 'medium', timeStyle: 'short' })
+    }
 
-        const data = await res.json();
+    function sortRegions(keys) {
+      return [...keys].sort((a, b) => {
+        const ai = PRIORITY.indexOf(a)
+        const bi = PRIORITY.indexOf(b)
+        if (ai === -1 && bi === -1) return a.localeCompare(b)
+        if (ai === -1) return 1
+        if (bi === -1) return -1
+        return ai - bi
+      })
+    }
 
-        allEvents = data || [];
+    function normalize(str) {
+      return String(str || '').toLowerCase()
+    }
 
-        buildFilters(allEvents);
-        render();
-      } catch (e) {
-        console.error(e);
-        document.getElementById("status").innerText = "Failed to load events";
+    function filteredEvents(events) {
+      const q = normalize(searchTerm)
+      return events.filter((e) => {
+        if (!e.isFree) return false
+        if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
+        if (!q) return true
+        return (
+          normalize(e.title).includes(q) ||
+          normalize(e.location).includes(q) ||
+          normalize(e.category).includes(q)
+        )
+      })
+    }
+
+    function groupByRegion(events) {
+      const map = new Map()
+      for (const e of events) {
+        const r = e.region || 'Route area / Central Finland'
+        if (!map.has(r)) map.set(r, [])
+        map.get(r).push(e)
       }
-    }
-
-    function buildFilters(events) {
-      const cats = ["ALL", ...new Set(events.map(e => e.category))];
-
-      document.getElementById("filters").innerHTML =
-        cats.map(c =>
-          `<button onclick="setCategory('${c}')">${c}</button>`
-        ).join("");
-
-      setActiveButtons();
-    }
-
-    function setCategory(c) {
-      activeCategory = c;
-      setActiveButtons();
-      render();
-    }
-
-    function setActiveButtons() {
-      document.querySelectorAll(".filters button").forEach(b => {
-        b.classList.remove("active");
-        if (b.textContent === activeCategory) b.classList.add("active");
-      });
-    }
-
-    function toggleFav(id) {
-      if (favorites.includes(id)) {
-        favorites = favorites.filter(f => f !== id);
-      } else {
-        favorites.push(id);
-      }
-      localStorage.setItem("lokki_favs", JSON.stringify(favorites));
-      render();
-    }
-
-    function getFiltered() {
-      let e = [...allEvents];
-
-      if (activeCategory !== "ALL") {
-        e = e.filter(x => x.category === activeCategory);
-      }
-
-      if (searchTerm) {
-        const s = searchTerm.toLowerCase();
-        e = e.filter(x =>
-          (x.title || "").toLowerCase().includes(s) ||
-          (x.location || "").toLowerCase().includes(s)
-        );
-      }
-
-      return e;
+      return map
     }
 
     function render() {
-      const events = getFiltered();
+      const events = filteredEvents(snapshot.events || [])
+      document.getElementById('totalCount').textContent = String(events.length)
+      const root = document.getElementById('sections')
 
       if (!events.length) {
-        document.getElementById("status").innerHTML =
-          `<div class="empty">No events found</div>`;
-        document.getElementById("grid").innerHTML = "";
-        return;
+        root.innerHTML = '<div class="empty">No free events matched the current filters.</div>'
+        return
       }
 
-      document.getElementById("status").innerText =
-        `Showing ${events.length} events`;
-
-      document.getElementById("grid").innerHTML = events.map(e => `
-        <div class="card">
-          <div class="fav ${favorites.includes(e.id) ? "active" : ""}"
-               onclick="toggleFav('${e.id}')">⭐</div>
-
-          <div class="title">${e.title}</div>
-          <div class="meta">📍 ${e.location}</div>
-          <div class="meta">📅 ${e.date}</div>
-          <div class="meta">🏷️ ${e.category}</div>
-          <div class="meta">🔗 ${e.source}</div>
-
-          <a href="${e.url || '#'}" target="_blank">View</a>
-        </div>
-      `).join("");
+      const grouped = groupByRegion(events)
+      const regions = sortRegions(Array.from(grouped.keys()))
+      root.innerHTML = regions.map((region) => {
+        const items = grouped.get(region) || []
+        return `
+          <section class="region">
+            <div class="region-head">
+              <h2>${region}</h2>
+              <span class="meta">${items.length} events</span>
+            </div>
+            <div class="grid">
+              ${items.map((e) => `
+                <article class="card">
+                  <span class="free">Maksuton / Free</span>
+                  <div class="title">${e.title || 'Untitled event'}</div>
+                  <div class="meta">📍 ${e.location || 'Unknown location'}</div>
+                  <div class="meta">📅 ${fmtDate(e.date)}</div>
+                  <div class="meta">🏷️ ${e.category || 'General'}</div>
+                  <div class="meta">✅ ${e.freeProof || 'Free marker verified from source text'}</div>
+                  <div class="meta">Source: ${e.source || 'Unknown'}</div>
+                  <div class="links">
+                    <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event proof</a>
+                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Map</a>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        `
+      }).join('')
     }
 
-    document.getElementById("search").addEventListener("input", (e) => {
-      searchTerm = e.target.value;
-      render();
-    });
+    function setTimeStats() {
+      const last = snapshot.generatedAt ? new Date(snapshot.generatedAt) : null
+      const next = snapshot.nextUpdateAt ? new Date(snapshot.nextUpdateAt) : null
+      document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
+      document.getElementById('nextUpdate').textContent = next && !Number.isNaN(next) ? next.toLocaleString('fi-FI') : '-'
 
-    loadEvents();
+      if (countdownTimer) clearInterval(countdownTimer)
+      if (!next || Number.isNaN(next.getTime())) return
+
+      const tick = () => {
+        const ms = next.getTime() - Date.now()
+        if (ms <= 0) {
+          document.getElementById('countdown').textContent = 'Updating soon'
+          return
+        }
+        const h = Math.floor(ms / (1000 * 60 * 60))
+        const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
+        document.getElementById('countdown').textContent = `${h}h ${m}m`
+      }
+      tick()
+      countdownTimer = setInterval(tick, 30000)
+    }
+
+    async function load() {
+      try {
+        const res = await fetch('./events.json', { cache: 'no-store' })
+        const data = await res.json()
+        snapshot = Array.isArray(data) ? { events: data } : data
+        snapshot.events = Array.isArray(snapshot.events) ? snapshot.events : []
+        setTimeStats()
+        render()
+      } catch (err) {
+        document.getElementById('sections').innerHTML = '<div class="empty">Failed to load events snapshot.</div>'
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchTerm = e.target.value || ''
+      render()
+    })
+
+    document.getElementById('regionSelect').addEventListener('change', (e) => {
+      regionFilter = e.target.value
+      render()
+    })
+
+    document.getElementById('refreshNow').addEventListener('click', () => {
+      window.open('https://github.com/Rustoga/Composer/actions/workflows/lokki-events.yml', '_blank', 'noopener')
+    })
+
+    load()
   </script>
 </body>
 </html>

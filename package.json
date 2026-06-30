@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "test": "jest --passWithNoTests",
-    "scrape": "ts-node ./scripts/run-scraper.ts"
+    "scrape": "ts-node ./scripts/run-scraper.ts",
+    "lokki:fetch": "node scripts/fetch-lokki-events.mjs"
   },
   "dependencies": {
     "axios": "^1.5.0",
