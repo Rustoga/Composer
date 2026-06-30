@@ -1,205 +1,219 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Rudolf Westerholm - Composer & Music Producer">
-  <title>Composer Rudolf Westerholm</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://kit.fontawesome.com/ebfb879360.js" crossorigin="anonymous" defer></script>
-<link rel="preload" as="image" href="Rustoga_2023_Promo-3.webp">
-
-</head>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Rudolf Westerholm",
-  "url": "https://rustoga.github.io",
-  "image": "https://github.com/Rustoga/Composer/blob/main/Rustoga_2023_Promo-3.png?raw=true",
-  "sameAs": [
-    "https://instagram.com/rustoga",
-    "https://www.tiktok.com/@rustoga",
-    "https://youtube.com/@rustoga"
-  ],
-  "jobTitle": "Composer & Music Producer",
-  "description": "Multidisciplinary composer blending experimental sound design with melodic storytelling."
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rudolf Westerholm Portfolio</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --charcoal: #1a1a1f; --accent: #0ea5e9; --text: #f1f5f9; }
+* { scrollbar-width: thin; scrollbar-color: #3d3d48 var(--charcoal); }
+body { background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(--charcoal) 100%); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-top: clamp(78px, 11vh, 118px); }
+.font-brand { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; }
+.hero {
+  position: relative;
+  background-image: url('https://dl.dropboxusercontent.com/scl/fi/ag4b6z645mhsoaw0you6g/rudolfwesterholm_portfoliocover_byStellaKeppo.png.jpg?rlkey=pls258avneh03nte7fqxkire6');
+  background-size: cover;
+  background-position: center 4%;
+  background-repeat: no-repeat;
+  min-height: clamp(280px, 42vh, 430px);
+  display: grid;
+  place-items: center;
 }
-</script>
-
-  
+.hero-content {
+  width: 100%;
+  padding-block: clamp(3.25rem, 9vh, 4.75rem);
+  padding-inline: clamp(1.8rem, 7vw, 3.2rem);
+  text-align: center;
+}
+.hero-title {
+  font-size: clamp(1.4rem, 2.7vw + 0.6rem, 2.55rem);
+  line-height: 1.1;
+}
+.hero-intro {
+  max-width: min(58ch, 100%);
+  margin-inline: auto;
+  font-size: clamp(0.88rem, 0.45vw + 0.76rem, 1rem);
+  line-height: 1.58;
+}
+.section-badge {
+  display: inline-block;
+  font-size: clamp(12px, 2.1vw, 16px);
+  letter-spacing: clamp(0.14em, 0.35vw, 0.3em);
+  line-height: 1.35;
+  color: var(--accent);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.card { background: linear-gradient(135deg, rgba(45,45,53,0.6) 0%, rgba(45,45,53,0.3) 100%); border: 1px solid rgba(61,61,72,0.5); border-radius: 2px; }
+.card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(14,165,233,0.25); }
+.card-title {
+  font-size: clamp(0.72rem, 0.4vw + 0.65rem, 0.88rem);
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+}
+.top-nav-inner { gap: 1rem; }
+.top-nav-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.4rem 1rem; }
+.nav-link { font-size: clamp(9px, 1.6vw, 11px); white-space: nowrap; }
+@keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.6s ease forwards; }
+@media (prefers-reduced-motion: reduce) { .animate-in { animation: none; opacity: 1; transform: none; } }
+@media (max-width: 900px) {
+  .top-nav-inner { flex-direction: column; align-items: flex-start; }
+  .top-nav-links { justify-content: flex-start; width: 100%; }
+}
+audio, video, iframe { background: rgba(0,0,0,0.4); border-radius: 4px; width: 100%; max-width: 800px; }
+audio {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.16);
+  color-scheme: dark;
+}
+audio::-webkit-media-controls-enclosure,
+audio::-webkit-media-controls-panel {
+  background: rgba(17, 24, 39, 0.92);
+}
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-volume-slider {
+  filter: brightness(0) invert(1);
+}
+video::-webkit-media-controls-panel { background: rgba(26,26,31,0.97); }
+.clients-strip {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(16,16,24,0.5);
+}
+.clients-logos { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: center; }
+.clients-logos img { height: 34px; width: auto; opacity: 0.92; filter: grayscale(0.1) brightness(0.98); }
+</style>
+</head>
 <body>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="overlay">
-      <header class="header">
-        <nav class="nav">
-          <ul class="menu" role="list">
-            <li><a href="https://instagram.com/rustoga" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
-            <li><a href="https://www.tiktok.com/@rustoga" aria-label="TikTok"><i class="fab fa-tiktok"></i></a></li>
-            <li><a href="https://youtube.com/@rustoga" aria-label="YouTube"><i class="fab fa-youtube"></i></a></li>
-          </ul>
-        </nav>
-      </header>
+<nav class="fixed top-0 w-full z-50 bg-zinc-900/90 backdrop-blur-md border-b border-white/5">
+<div class="top-nav-inner max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+<a href="/" class="font-brand text-xs font-bold tracking-[0.2em]">Rudolf Westerholm</a>
+<div class="top-nav-links">
+<a href="/" class="nav-link font-bold bg-white/5 hover:bg-white/10 px-3 py-2 rounded-sm transition-colors">Portfolio</a>
+<a href="/visuals/" class="nav-link font-bold bg-white/5 hover:bg-white/10 px-3 py-2 rounded-sm transition-colors">Visuals</a>
+<a href="#clients" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Clients</a>
+<a href="#trailermusic" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Trailers</a>
+<a href="#personal" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Personal</a>
+<a href="#games" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Games</a>
+<a href="#experiments" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Experiments</a>
+</div>
+</div>
+</nav>
 
-      <div class="hero-content">
-        <h1 class="artist-name">Rudolf Westerholm</h1>
-        <p class="tagline">Composer •  Vocalist • Storyteller in Music</p>
-        <a href="/Songs/" class="cta-button">View Full Music Portfolio</a>
-      </div>
-    </div>
-  </section>
+<header class="hero text-center">
+<div class="absolute inset-0 bg-black bg-opacity-30"></div>
+<div class="hero-content relative max-w-3xl mx-auto z-10">
+<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-300 mb-4">COMPOSER & SOUND DESIGNER PORTFOLIO</p>
+<h1 class="hero-title font-brand mb-6 text-white">Rudolf Westerholm</h1>
+<p class="hero-intro text-zinc-300 mb-4">Finnish composer and music producer known for versatile work across different medias, blending from commercial projects into contemporary sonar exploration and distinctive soundscapes.</p>
+</div>
+</header>
 
-  <!-- Featured music -->
-  <section class="music-section">
-    <h2>Featured Music</h2>
-    <div class="tracklist" role="list">
-      <div class="track" role="listitem">
-        <span class="track-title">Lush</span>
-        <iframe style="border: 0; width: 100%; height: 42px;"
-          src="https://bandcamp.com/EmbeddedPlayer/album=1377723208/size=small/bgcol=ffffff/linkcol=0687f5/track=2743099848/transparent=true/"
-          seamless title="Lush by Rustoga">
-          <a href="https://rustoga.bandcamp.com/album/lush-2">Lush by Rustoga</a>
-        </iframe>
-      </div>
+<main class="pb-20">
 
-      <div class="track" role="listitem">
-        <span class="track-title">Sensory Integration</span>
-        <iframe style="border: 0; width: 100%; height: 42px;"
-          src="https://bandcamp.com/EmbeddedPlayer/album=2179392842/size=small/bgcol=ffffff/linkcol=0687f5/track=2881542817/transparent=true/"
-          seamless title="Sensory Integration by Rustoga">
-          <a href="https://rustoga.bandcamp.com/album/sensory-integration">Sensory Integration by Rustoga</a>
-        </iframe>
-      </div>
+<section id="clients" class="px-6 mt-10 md:mt-12 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Clients</span>
+</div>
 
-      <div class="track" role="listitem">
-        <span class="track-title">Von</span>
-        <iframe style="border: 0; width: 100%; height: 42px;"
-          src="https://bandcamp.com/EmbeddedPlayer/track=744036721/size=small/bgcol=ffffff/linkcol=0687f5/transparent=true/"
-          seamless title="Von by Rustoga">
-          <a href="https://rustoga.bandcamp.com/track/von">Von by Rustoga</a>
-        </iframe>
-      </div>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="card-title font-brand mb-3">YLE - JapaniEfekti!!</h3>
+<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400"></iframe>
+</div>
 
-      <div class="track" role="listitem">
-        <span class="track-title">Paint On Me</span>
-        <iframe style="border: 0; width: 100%; height: 42px;"
-          src="https://bandcamp.com/EmbeddedPlayer/album=1683189868/size=small/bgcol=ffffff/linkcol=0687f5/track=1776940325/transparent=true/"
-          seamless title="Paint On Me by Rustoga">
-          <a href="https://rustoga.bandcamp.com/album/paint-on-me">Paint On Me by Rustoga</a>
-        </iframe>
-      </div>
-    </div>
-  </section>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="card-title font-brand mb-3">Epic Meets</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/b0FK7TGEHdI" title="Epic Meets" frameborder="0" allowfullscreen></iframe>
+</div>
 
-  <!-- About -->
-  <section class="about-section">
-    <h2>About</h2>
-    <p>
-      Rudolf Westerholm is a multidisciplinary composer with almost two decades of experience in music and sound.
-      He is a practising professional in the video game industry and holds a Master of Sound degree from Aalto University, Finland, and Academic minor on Game Music & Music Technology from Sibelius Academy.
-    </p>
-    <p>
-      His compositions blend experimental sound design with melodic elements, drawing on cross‑disciplinary research to evoke emotion. These qualities are showcased in his solo project
-      <a href="https://youtube.com/@rustogamusic"><i>Rustoga</i></a> and in his publication
-      <a href="http://urn.fi/URN:NBN:fi:aalto-202306254184"><i>Making Video Game Music More Accessible For Visually Impaired</i></a>.
-    </p>
-  </section>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="card-title font-brand mb-3">Vacuum Wood Tech</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/M0W-rCrrg0E" title="Vacuum Wood Tech" frameborder="0" allowfullscreen></iframe>
+</div>
 
-  <!-- Works -->
-<section class="works-section">
-  <h2>Selected Works</h2>
-  <ul class="works-list">
-    <li class="work-row">
-      <button class="accordion" aria-expanded="false" aria-controls="yle-panel" id="yle-button">
-        <span class="work-title">YLE</span> – <span class="work-meta">Series • Soundtrack</span>
-      </button>
-      <div class="panel" id="yle-panel" role="region" aria-labelledby="yle-button" hidden>
-        <p>Soundtrack work for YLE's documentary series. TBA. </p>
-        <div class="video-wrapper">
-          <iframe loading="lazy" src="https://www.youtube.com/embed/lRXtnHHtNZ0" title="Epic Meets Sample Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </li>
+<div class="card rounded-sm p-6 mb-6">
+<h3 class="card-title font-brand mb-3">Hypeworks event production</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0fkT4cHags8" title="Hypeworks" frameborder="0" allowfullscreen></iframe>
+</div>
 
-    <li class="work-row">
-      <button class="accordion" aria-expanded="false" aria-controls="housemarque-panel" id="housemarque-button">
-        <span class="work-title">Housemarque</span> – <span class="work-meta">Game • Composition & Sound Design</span>
-      </button>
-      <div class="panel" id="housemarque-panel" role="region" aria-labelledby="housemarque-button" hidden>
-        <p>Original compositions and immersive sound design for Housemarque's sci-fi action title StormDivers.</p>
-        <div class="video-wrapper">
-          <iframe loading="lazy" src="https://www.dropbox.com/scl/fi/xi9jjbr2oea42h7bldarj/Stormdivers_Intro_jingle.wav?rlkey=j499ljwok8tshcvot6worrxwy&st=kf1ijy3x&dl=0" title="Housemarque Sample" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-        </div>
-      </div>
-    </li>
-
-    <li class="work-row">
-      <button class="accordion" aria-expanded="false" aria-controls="aalto-panel" id="aalto-button">
-        <span class="work-title">Epic Meets</span> – <span class="work-meta">Brand Composition</span>
-      </button>
-      <div class="panel" id="aalto-panel" role="region" aria-labelledby="aalto-button" hidden>
-        <p>Musical product compositions and brand jingle for Epic Meets.</p>
-        <div class="video-wrapper">
-          <iframe loading="lazy" src="https://www.youtube.com/embed/b0FK7TGEHdI" title="Epic Meets Sample Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </li>
-
-    <li class="work-row">
-      <button class="accordion" aria-expanded="false" aria-controls="vacuum-panel" id="vacuum-button">
-        <span class="work-title">Vacuum Wood</span> – <span class="work-meta">Brand • Theme Composition</span>
-      </button>
-      <div class="panel" id="vacuum-panel" role="region" aria-labelledby="vacuum-button" hidden>
-        <p>Crafted brand-defining theme music for Vacuum Wood's tech-forward meets nature - identity.</p>
-        <div class="video-wrapper">
-          <iframe loading="lazy" src="https://www.youtube.com/embed/M0W-rCrrg0E" title="Vacuum Wood Tech" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </li>
-
-    <li class="work-row">
-      <button class="accordion" aria-expanded="false" aria-controls="hypeworks-panel" id="hypeworks-button">
-        <span class="work-title">HypeWorks</span> – <span class="work-meta">Brand • Theme Composition</span>
-      </button>
-      <div class="panel" id="hypeworks-panel" role="region" aria-labelledby="hypeworks-button" hidden>
-        <p>Energetic and memorable audio branding for HypeWorks' Sports Events.</p>
-        <div class="video-wrapper">
-          <iframe loading="lazy" src="https://www.youtube.com/embed/0fkT4cHags8" title="HypeWorks Sample Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </div>
-    </li>
-  </ul>
+<div class="card rounded-sm p-6">
+<h3 class="card-title font-brand mb-3">Desucon - Dance Anthem</h3>
+<audio controls preload="metadata" crossorigin="anonymous">
+<source src="https://dl.dropboxusercontent.com/scl/fi/h1xg0v1hfovhvtz1917ti/AnimeIdol_EditMyy_2.wav?rlkey=b3bt0e3lt25i4s3mieqh5tdeg&st=a6rs0y2w" type="audio/wav">
+</audio>
+</div>
+</div>
 </section>
 
+<section id="trailermusic" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+<span class="section-badge">Trailers</span>
+</div>
 
-  <!-- Clients --> <section class="clients-section"> <h3>Clients</h3> <div class="clients-logos"> <a href="https://yle.fi" target="_blank"><img src="Yle-logo_RGB_valkoinen.png" alt="YLE"></a> <a href="https://housemarque.com" target="_blank"><img src="Housemarque-Logo.png" alt="Housemarque"></a> </div></section>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa 1 (Main Theme)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa Rauha (Peace)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Space within Power (Sci-fi)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uqel62rv2u05i0g2qs3ld/TrailerMusic_Sci-fi_RudolfWesterholm.wav?rlkey=1r6wlivsg8uvhi400rk2yszle&st=r4kx4krr&dl=0" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Nosferatu</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/hcg29nfikg6cp976irq7k/TrailerMusic_Nosferatu_RudolfWesterholm.wav?rlkey=ftz1ocr49fg8b18wd10465eem&st=tjex94gd&dl=0" type="audio/wav"></audio></div>
+</div>
+</section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <h2>Contact</h2>
-    <p><a href="mailto:Rudolf.westerholm@gmail.com">Rudolf.westerholm@gmail.com</a></p>
-    <p class="credits">Cover Photo by Stella Keppo.</p>
-    <p>&copy; <script>document.write(new Date().getFullYear())</script> Rudolf Westerholm - All Rights Reserved</p>
-  </footer>
+<section id="personal" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.15s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Personal</span></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Lush Release</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Sensory Integration Techno</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/pn9fpd6kjhvhp3xy65g35/03_Touch_Rustoga_Feat_Albin_Sensory-Intergration.wav?rlkey=92fbvk9o43vx6ifz2uvterng6" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">RAILO</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Choral Reef Ghostestra Album</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7" type="audio/wav"></audio></div>
+</div>
+</section>
 
-  <script>
-    document.querySelectorAll('.accordion').forEach(button => {
-      button.addEventListener('click', () => {
-        const panel = document.getElementById(button.getAttribute('aria-controls'));
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+<section id="games" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.2s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Games</span></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Stormdivers Menu Song</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Entangled Mecha Game Audio</h3><audio controls preload="metadata" class="mb-2"><source src="https://dl.dropboxusercontent.com/scl/fi/dyv63e6rhpgvltk60cwb2/Rustoga_EntangledMecha_2.wav?rlkey=keqbmircbfbw5u1512kjr7/&st=jzgfwdov" type="audio/wav"></audio><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88rto734zqh33qkuoc0nl/Rustoga_EntangledMecha_Explore2.wav?rlkey=el7y8z319cmo4sjlv8p6v9fbs&st=810alzmd" type="audio/wav"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Castlevania-like SmolVania</h3><audio controls preload="metadata" class="mb-2"><source src="https://dl.dropboxusercontent.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02" type="audio/mp3"></audio><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar" type="audio/mp3"></audio></div>
+<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Spelunky-like (GameJam Entry)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/irnz9kvuzbhdo97ib4z9t/RudolfWesterholm_GameJam_SpelunkyLike.ogg?rlkey=683lacoc8jgt0wi38ot9i2htf&st=rc9fzz3s" type="audio/ogg"></audio></div>
+<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">GameJams 2023 Showreel (Compilation)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/yoy4vq3nr2jxp48bpnnuk/Showreel2023_Rudolf_GameJams.wav?rlkey=jqdiezic9da5t0oiq1eb7p75x&st=msof3m1g" type="audio/wav"></audio></div>
+</div>
+</section>
 
-        button.setAttribute('aria-expanded', String(!isExpanded));
-        panel.hidden = isExpanded;
-      });
-    });
-  </script>
+<section id="experiments" class="px-6 mb-20 opacity-0 animate-in" style="animation-delay: 0.25s">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Experiments</span></div>
+<div class="card rounded-sm p-6">
+<h3 class="card-title font-brand mb-3">Various Sound Techniques into Composition</h3>
+<audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uef5c9n180lwiqb4o967s/RudolfWesterholm_VariousSoundTechniques_Into_Composition.wav?rlkey=yx3psgpmfhr9a6mimk4uiljh5&st=uz7iexn3" type="audio/wav"></audio>
+</div>
+</div>
+</section>
 
+<section class="clients-strip py-10 px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <p class="font-brand text-[10px] tracking-[0.25em] mb-6 opacity-80">Client Highlights</p>
+    <div class="clients-logos">
+      <a href="https://yle.fi" target="_blank" rel="noreferrer"><img src="https://logo.clearbit.com/yle.fi" alt="YLE logo"></a>
+      <a href="https://housemarque.com" target="_blank" rel="noreferrer"><img src="https://logo.clearbit.com/housemarque.com" alt="Housemarque logo"></a>
+      <a href="https://www.epicmeets.com" target="_blank" rel="noreferrer"><img src="https://logo.clearbit.com/epicmeets.com" alt="Epic Meets logo"></a>
+      <a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="https://logo.clearbit.com/vacuumwoodtech.com" alt="Vacuum Wood Tech logo"></a>
+    </div>
+  </div>
+</section>
+
+</main>
 </body>
 </html>
