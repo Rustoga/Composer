@@ -1,16 +1,10 @@
 {
-  "generatedAt": "2026-07-02T18:59:21.324Z",
-  "nextUpdateAt": "2026-07-03T05:30:00.000Z",
+  "generatedAt": "2026-07-03T08:36:20.207Z",
+  "nextUpdateAt": "2026-07-03T17:30:00.000Z",
   "updateSchedule": "Twice daily around 08:30 and 20:30 (Europe/Helsinki)",
   "sources": [
-    
-    "https://tapahtumat.hel.fi/"
     "https://menot.hs.fi/",
     "https://www.stadissa.fi/tapahtumat/"
-    "https://www.vantaa.fi/en/culture-and-leisure/events"
-    "https://www.espoo.fi/en/events"
-    
-    
   ],
   "total": 0,
   "events": []
