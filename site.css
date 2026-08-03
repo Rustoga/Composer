@@ -31,9 +31,27 @@ a {
   letter-spacing: 0.2em;
 }
 
-/* Top navigation */
+/* Top navigation — matches /visuals/ header exactly */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(24, 24, 27, 0.86);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
 .top-nav-inner {
-  gap: 1rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .top-nav-links {
@@ -41,12 +59,32 @@ a {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.4rem 1rem;
+  gap: 8px 14px;
 }
 
 .nav-link {
-  font-size: clamp(11px, 1.6vw, 13px);
+  font-family: "Syncopate", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  opacity: 0.72;
+  transition: opacity 180ms ease, background 180ms ease;
+  padding: 10px 10px;
+  border-radius: 3px;
   white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+
+.nav-link.primary {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 600;
 }
 
 /* Hero (shared by homepage + cv + reach) — sizing matches /visuals/ header */
