@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-03T14:23:06.047Z",
-  "nextUpdateAt": "2026-08-03T16:00:00.000Z",
+  "generatedAt": "2026-08-03T17:47:24.473Z",
+  "nextUpdateAt": "2026-08-04T03:00:00.000Z",
   "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
   "sources": [
     "https://api.hel.fi/linkedevents/v1/event/"
@@ -2904,22 +2904,6 @@
       "sauna": false
     },
     {
-      "id": "https-api-hel-fi-linkedevents-v1-event-espoo-le-agpgrcdpyq",
-      "title": "Kesälomalle tekemistä Lippulaivan kirjastossa",
-      "date": "2026-08-05T10:00:00.000Z",
-      "location": "Helsinki",
-      "street": "",
-      "region": "Muu Suomi",
-      "category": "General",
-      "source": "Linked Events (MyHelsinki avoin data)",
-      "sourceUrl": "https://api.hel.fi/linkedevents/v1/event/espoo_le:agpgrcdpyq/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
-      "isFree": true,
-      "freeProof": "Ilmainen (is_free)",
-      "sauna": false
-    },
-    {
       "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agptwui6ci",
       "title": "Liikuntapelipäivä",
       "date": "2026-08-05T10:00:00.000Z",
@@ -2929,6 +2913,22 @@
       "category": "Outdoors",
       "source": "Linked Events (MyHelsinki avoin data)",
       "sourceUrl": "https://api.hel.fi/linkedevents/v1/event/helsinki:agptwui6ci/",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
+      "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
+      "isFree": true,
+      "freeProof": "Ilmainen (is_free)",
+      "sauna": false
+    },
+    {
+      "id": "https-api-hel-fi-linkedevents-v1-event-espoo-le-agpgrcdpyq",
+      "title": "Kesälomalle tekemistä Lippulaivan kirjastossa",
+      "date": "2026-08-05T10:00:00.000Z",
+      "location": "Helsinki",
+      "street": "",
+      "region": "Muu Suomi",
+      "category": "General",
+      "source": "Linked Events (MyHelsinki avoin data)",
+      "sourceUrl": "https://api.hel.fi/linkedevents/v1/event/espoo_le:agpgrcdpyq/",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
       "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
       "isFree": true,
@@ -4328,7 +4328,7 @@
       "sauna": false
     },
     {
-      "id": "https-api-hel-fi-linkedevents-v1-event-espoo-le-agpwu5o3da",
+      "id": "https-api-hel-fi-linkedevents-v1-event-espoo-le-agpwu5o3l4",
       "title": "Liikkuva Espoo-info Entressen kirjasto",
       "date": "2026-08-06T10:30:00.000Z",
       "location": "Helsinki",
