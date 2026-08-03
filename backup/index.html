@@ -4,12 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rudolf Westerholm Portfolio</title>
-<link rel="icon" type="image/png" href="/favicon_rudolf.png">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site.css">
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --charcoal: #1a1a1f; --accent: #0ea5e9; --text: #f1f5f9; }
+* { scrollbar-width: thin; scrollbar-color: #3d3d48 var(--charcoal); }
+body { background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(--charcoal) 100%); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-top: clamp(78px, 11vh, 118px); }
+.font-brand { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; }
+.hero {
+  position: relative;
+  background-image: url('https://dl.dropboxusercontent.com/scl/fi/ag4b6z645mhsoaw0you6g/rudolfwesterholm_portfoliocover_byStellaKeppo.png.jpg?rlkey=pls258avneh03nte7fqxkire6');
+  background-size: cover;
+  background-position: center 4%;
+  background-repeat: no-repeat;
+  min-height: clamp(280px, 42vh, 430px);
+  display: grid;
+  place-items: center;
+}
+.hero-content {
+  width: 100%;
+  padding-block: clamp(3.25rem, 9vh, 4.75rem);
+  padding-inline: clamp(1.8rem, 7vw, 3.2rem);
+  text-align: center;
+}
+.hero-title {
+  font-size: clamp(1.4rem, 2.7vw + 0.6rem, 2.55rem);
+  line-height: 1.1;
+}
+.hero-intro {
+  max-width: min(58ch, 100%);
+  margin-inline: auto;
+  font-size: clamp(0.88rem, 0.45vw + 0.76rem, 1rem);
+  line-height: 1.58;
+}
+.section-badge {
+  display: inline-block;
+  font-size: clamp(12px, 2.1vw, 16px);
+  letter-spacing: clamp(0.14em, 0.35vw, 0.3em);
+  line-height: 1.35;
+  color: var(--accent);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.card { background: linear-gradient(135deg, rgba(45,45,53,0.6) 0%, rgba(45,45,53,0.3) 100%); border: 1px solid rgba(61,61,72,0.5); border-radius: 2px; }
+.card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(14,165,233,0.25); }
+.card-title {
+  font-size: clamp(0.72rem, 0.4vw + 0.65rem, 0.88rem);
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+}
+.top-nav-inner { gap: 1rem; }
+.top-nav-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.4rem 1rem; }
+.nav-link { font-size: clamp(9px, 1.6vw, 11px); white-space: nowrap; }
+@keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.6s ease forwards; }
+@media (prefers-reduced-motion: reduce) { .animate-in { animation: none; opacity: 1; transform: none; } }
+@media (max-width: 900px) {
+  .top-nav-inner { flex-direction: column; align-items: flex-start; }
+  .top-nav-links { justify-content: flex-start; width: 100%; }
+}
+audio, video, iframe { background: rgba(0,0,0,0.4); border-radius: 4px; width: 100%; max-width: 800px; }
+audio {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.16);
+  color-scheme: dark;
+}
+audio::-webkit-media-controls-enclosure,
+audio::-webkit-media-controls-panel {
+  background: rgba(17, 24, 39, 0.92);
+}
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-volume-slider {
+  filter: brightness(0) invert(1);
+}
+video::-webkit-media-controls-panel { background: rgba(26,26,31,0.97); }
+.clients-strip {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #ffffff;
+}
+.clients-inner { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.clients-logos { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: center; min-height: 60px; }
+.clients-logos img { height: 40px; width: auto; opacity: 0.98; filter: none; }
+</style>
 </head>
 <body>
 
@@ -19,28 +102,23 @@
 <div class="top-nav-links">
 <a href="/" class="nav-link font-bold bg-white/5 hover:bg-white/10 px-3 py-2 rounded-sm transition-colors">Portfolio</a>
 <a href="/visuals/" class="nav-link font-bold bg-white/5 hover:bg-white/10 px-3 py-2 rounded-sm transition-colors">Visuals</a>
-<a href="/cv/" class="nav-link font-bold bg-white/5 hover:bg-white/10 px-3 py-2 rounded-sm transition-colors">CV</a>
+<a href="#clients" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Clients</a>
+<a href="#trailermusic" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Trailers</a>
+<a href="#personal" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Personal</a>
+<a href="#games" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Games</a>
+<a href="#experiments" class="nav-link font-brand opacity-60 hover:opacity-100 transition-colors">Experiments</a>
 </div>
 </div>
 </nav>
 
 <header class="hero text-center">
-<div class="hero-content">
-<p class="hero-kicker font-brand text-zinc-300">Composer & Sound Designer Portfolio</p>
-<h1 class="hero-title font-brand text-white">Rudolf Westerholm</h1>
-<p class="hero-intro text-zinc-300">Finnish composer and music producer known for versatile work across different medias, blending from commercial projects into contemporary sonar exploration and distinctive soundscapes.</p>
+<div class="absolute inset-0 bg-black bg-opacity-30"></div>
+<div class="hero-content relative max-w-3xl mx-auto z-10">
+<p class="text-[10px] font-bold tracking-[0.3em] text-zinc-300 mb-4">COMPOSER & SOUND DESIGNER PORTFOLIO</p>
+<h1 class="hero-title font-brand mb-6 text-white">Rudolf Westerholm</h1>
+<p class="hero-intro text-zinc-300 mb-4">Finnish composer and music producer known for versatile work across different medias, blending from commercial projects into contemporary sonar exploration and distinctive soundscapes.</p>
 </div>
 </header>
-
-<div class="section-nav-wrap">
-<nav class="section-nav font-brand" aria-label="Portfolio sections">
-<a href="#clients" class="section-nav-link">Clients</a>
-<a href="#trailermusic" class="section-nav-link">Trailers</a>
-<a href="#personal" class="section-nav-link">Personal</a>
-<a href="#games" class="section-nav-link">Games</a>
-<a href="#experiments" class="section-nav-link">Experiments</a>
-</nav>
-</div>
 
 <main class="pb-20">
 
@@ -53,7 +131,7 @@
 
 <div class="card rounded-sm p-6 mb-6">
 <h3 class="card-title font-brand mb-3">YLE - JapaniEfekti!!</h3>
-<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400" title="YLE JapaniEfekti"></iframe>
+<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400"></iframe>
 </div>
 
 <div class="card rounded-sm p-6 mb-6">
@@ -125,18 +203,18 @@
 </div>
 </section>
 
-<section class="clients-strip" aria-label="Trusted by clients">
-<p class="clients-strip-heading">Trusted By Clients Like</p>
-<div class="clients-logos">
-<a href="https://yle.fi" target="_blank" rel="noreferrer"><img src="/Yle-logo_RGB_valkoinen.png" alt="YLE logo" class="logo-invert"></a>
-<a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="/vacuumwoodtech.png" alt="Vacuum Wood Tech logo"></a>
-<a href="#" aria-label="Suomen Podcastmedia"><img src="/suomenpodcastmedia2.png" alt="Suomen Podcastmedia logo"></a>
-<a href="#" aria-label="Housemarque"><img src="/id4uTWPX4Z_1758545161429.png" alt="Housemarque logo"></a>
-<a href="https://hypeworks.fi" target="_blank" rel="noreferrer"><img src="/hypeworks.jpeg" alt="Hypeworks logo"></a>
-<a href="https://epicmeets.com" target="_blank" rel="noreferrer"><img src="/epicmeets%20new%20logo%20small2.png" alt="Epic Meets logo"></a>
-<a href="https://desucon.fi" target="_blank" rel="noreferrer"><img src="/desucon2.png" alt="Desucon logo"></a>
-</div>
-<p class="clients-strip-footer">And Many More</p>
+<section class="clients-strip py-6 px-6">
+  <div class="max-w-4xl mx-auto text-center clients-inner">
+    <p class="font-brand text-[10px] tracking-[0.25em] my-0 opacity-80">Client Highlights</p>
+    <div class="clients-logos">
+      <a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="/vacuumwoodtech.png" alt="Vacuum Wood Tech logo"></a>
+      <a href="#" aria-label="Suomen Podcastmedia"><img src="/suomenpodcastmedia2.png" alt="Suomen Podcastmedia logo"></a>
+      <a href="#" aria-label="id4uTWPX4Z"><img src="/id4uTWPX4Z_1758545161429.png" alt="ID4 logo"></a>
+      <a href="https://hypeworks.fi" target="_blank" rel="noreferrer"><img src="/hypeworks.jpeg" alt="Hypeworks logo"></a>
+      <a href="https://epicmeets.com" target="_blank" rel="noreferrer"><img src="/epicmeets%20new%20logo%20small2.png" alt="Epic Meets logo"></a>
+      <a href="https://desucon.fi" target="_blank" rel="noreferrer"><img src="/desucon2.png" alt="Desucon logo"></a>
+    </div>
+  </div>
 </section>
 
 </main>

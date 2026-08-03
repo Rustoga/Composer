@@ -1,0 +1,42 @@
+name: Update Instagram feed cache
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-feed
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch Instagram media
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: node scripts/fetch-instagram-feed.mjs
+
+      - name: Commit updated feed (if changed)
+        run: |
+          if git diff --quiet -- visuals/instagram-feed.json; then
+            echo "No changes."
+            exit 0
+          fi
+          git add visuals/instagram-feed.json
+          git commit -m "chore: update Instagram feed cache"
+          git push
+
