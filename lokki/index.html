@@ -102,6 +102,18 @@
       width: fit-content;
       text-transform: uppercase;
     }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sauna {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(56,189,248,.55);
+      color: #e0f2fe;
+      background: rgba(56,189,248,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
     .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
     .links a {
       text-decoration: none;
@@ -129,7 +141,7 @@
 <body>
   <div class="wrap">
     <h1>Lokki - Free Events</h1>
-    <p class="lede">Free events from HS Menokone and Stadissa, grouped by Helsinki, Espoo, Vantaa, and route area / central Finland.</p>
+    <p class="lede">Free events in Helsinki, Espoo and Vantaa, gathered from the Linked Events open data (MyHelsinki). Updated automatically twice a day. Look out for the ♨ Sauna badge for free sauna access.</p>
 
     <div class="topbar">
       <input id="search" placeholder="Search by title, location, category..." />
@@ -138,7 +150,7 @@
         <option value="Helsinki">Helsinki</option>
         <option value="Espoo">Espoo</option>
         <option value="Vantaa">Vantaa</option>
-        <option value="Route area / Central Finland">Route area / Central Finland</option>
+        <option value="Muu Suomi">Muu Suomi</option>
       </select>
       <button id="refreshNow">Request update now</button>
     </div>
@@ -159,7 +171,7 @@
   </div>
 
   <script>
-    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Route area / Central Finland']
+    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
     let snapshot = { events: [] }
     let searchTerm = ''
     let regionFilter = 'ALL'
@@ -204,7 +216,7 @@
     function groupByRegion(events) {
       const map = new Map()
       for (const e of events) {
-        const r = e.region || 'Route area / Central Finland'
+        const r = e.region || 'Muu Suomi'
         if (!map.has(r)) map.set(r, [])
         map.get(r).push(e)
       }
@@ -234,16 +246,18 @@
             <div class="grid">
               ${items.map((e) => `
                 <article class="card">
-                  <span class="free">Maksuton / Free</span>
+                  <div class="badges">
+                    <span class="free">Maksuton / Free</span>
+                    ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
+                  </div>
                   <div class="title">${e.title || 'Untitled event'}</div>
-                  <div class="meta">📍 ${e.location || 'Unknown location'}</div>
+                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Unknown location'}</div>
                   <div class="meta">📅 ${fmtDate(e.date)}</div>
                   <div class="meta">🏷️ ${e.category || 'General'}</div>
-                  <div class="meta">✅ ${e.freeProof || 'Free marker verified from source text'}</div>
-                  <div class="meta">Source: ${e.source || 'Unknown'}</div>
                   <div class="links">
-                    <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event proof</a>
-                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Map</a>
+                    <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
+                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
+                    <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
                   </div>
                 </article>
               `).join('')}

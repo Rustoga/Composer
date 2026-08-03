@@ -1,118 +1,167 @@
 import { writeFile } from 'node:fs/promises'
+import https from 'node:https'
+import http from 'node:http'
 
-const ROUTE_AREA_CITIES = [
-  'Riihimaki',
-  'Hikia',
-  'Kouvola',
-  'Varkaus',
-  'Heinavesi',
-  'Lieksa',
-  'Toivakka',
-  'Pihlajavesi',
-  'Keuruu',
-  'Valkeakoski',
-  'Tarttila',
-  'Jyväskylä',
-  'Nuorlahti',
-]
+// Lokki - Free events scraper for Helsinki, Espoo and Vantaa.
+// Source: Linked Events open API (MyHelsinki avoin data) - reliable JSON with
+// is_free flag, coordinates, addresses and info_url. This replaces the old
+// fragile HTML scraping of HS Menokone / Stadissa.
 
-const SOURCE_URLS = [
-  { source: 'HS Menokone', url: 'https://menot.hs.fi/' },
-  { source: 'Stadissa', url: 'https://www.stadissa.fi/tapahtumat/' },
-]
+const UA =
+  'LokkiBot/1.0 (+https://rudolfwesterholm.com; rudolf@westerholm.com)'
+const API_BASE = 'https://api.hel.fi/linkedevents/v1/event/'
 
-const FREE_PATTERNS = [
-  /maksuton/i,
-  /\bfree\b/i,
-  /\bilmainen\b/i,
-  /\b0\s?€\b/i,
-  /\b€\s?0\b/i,
-  /\bno charge\b/i,
-]
+const FREE_PRICE = /ilmainen|vapaa\s*pääsy|maksuton|\bfree\b|no charge|0\s?€|€\s?0/i
 
-const CITY_PATTERNS = [
-  { city: 'Helsinki', region: 'Helsinki', re: /\bhelsinki\b/i },
-  { city: 'Espoo', region: 'Espoo', re: /\bespoo\b/i },
-  { city: 'Vantaa', region: 'Vantaa', re: /\bvantaa\b/i },
-]
+function fetchText(url, redirects = 4) {
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? https : http
+    const req = lib.get(
+      url,
+      { headers: { 'user-agent': UA, accept: 'application/json' } },
+      (res) => {
+        const { statusCode, headers } = res
+        if (
+          statusCode >= 300 &&
+          statusCode < 400 &&
+          headers.location &&
+          redirects > 0
+        ) {
+          res.resume()
+          const next = new URL(headers.location, url).toString()
+          return resolve(fetchText(next, redirects - 1))
+        }
+        if (statusCode !== 200) {
+          res.resume()
+          return reject(new Error(`HTTP ${statusCode} for ${url}`))
+        }
+        let data = ''
+        res.setEncoding('utf8')
+        res.on('data', (c) => (data += c))
+        res.on('end', () => resolve(data))
+      }
+    )
+    req.on('error', reject)
+    req.setTimeout(30000, () => req.destroy(new Error('timeout')))
+  })
+}
 
-function cleanText(s) {
+async function fetchJson(url) {
+  return JSON.parse(await fetchText(url))
+}
+
+function pick(obj, lang = 'fi') {
+  if (!obj) return ''
+  return (
+    obj[lang] || obj.fi || obj.en || obj.sv || Object.values(obj)[0] || ''
+  )
+}
+
+function stripHtml(s) {
   return String(s || '')
-    .replace(/\s+/g, ' ')
     .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim()
 }
 
-function normalizeUrl(base, href) {
-  try {
-    return new URL(href, base).toString()
-  } catch {
-    return ''
+function slug(s) {
+  return String(s || 'event')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+}
+
+function isFreeEvent(ev) {
+  const off = (ev.offers && ev.offers[0]) || {}
+  if (off.is_free === true) return true
+  const price = pick(off.price) || ''
+  return FREE_PRICE.test(price)
+}
+
+function freeProof(ev) {
+  const off = (ev.offers && ev.offers[0]) || {}
+  if (off.is_free === true) return 'Ilmainen (is_free)'
+  const price = pick(off.price)
+  return price ? `Hinta: ${price}` : 'Ilmainen'
+}
+
+function regionFromId(id, locality) {
+  if (locality && ['Helsinki', 'Espoo', 'Vantaa'].includes(locality))
+    return locality
+  const m = /event\/([a-z0-9]+):/i.exec(id || '')
+  const src = m ? m[1].toLowerCase() : ''
+  const MAP = { helsinki: 'Helsinki', hkm: 'Helsinki', espoo: 'Espoo', vantaa: 'Vantaa' }
+  if (MAP[src]) return MAP[src]
+  return locality || 'Muu Suomi'
+}
+
+function getLocation(ev) {
+  const loc = ev.location || {}
+  const locality = pick(loc.address_locality) || ''
+  const street = pick(loc.street_address) || ''
+  const lat = loc.lat != null ? Number(loc.lat) : null
+  const lon = loc.lon != null ? Number(loc.lon) : null
+  const region = regionFromId(ev['@id'], locality)
+  return { locality, street, lat, lon, region }
+}
+
+function mapsUrl(loc) {
+  if (loc.lat != null && loc.lon != null) {
+    return `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lon}`
   }
+  const q = encodeURIComponent(
+    [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
+  )
+  return `https://www.google.com/maps/search/?api=1&query=${q}`
 }
 
-function slugFromUrl(u) {
-  try {
-    const p = new URL(u).pathname.replace(/\/+$/g, '')
-    return p.split('/').filter(Boolean).join('_') || 'event'
-  } catch {
-    return 'event'
+function reittiopasUrl(loc) {
+  if (loc.lat != null && loc.lon != null) {
+    return `https://www.reittiopas.fi/#!to@${loc.lon},${loc.lat}`
   }
+  const q = encodeURIComponent(
+    [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
+  )
+  return `https://www.reittiopas.fi/?to=${q}`
 }
 
-function detectRegion(text) {
-  const t = text || ''
-  for (const p of CITY_PATTERNS) {
-    if (p.re.test(t)) {
-      return { city: p.city, region: p.region }
-    }
-  }
-
-  const routeHit = ROUTE_AREA_CITIES.find((c) => new RegExp(`\\b${c}\\b`, 'i').test(t))
-  if (routeHit) {
-    return { city: routeHit, region: 'Route area / Central Finland' }
-  }
-
-  return { city: 'Other Finland', region: 'Route area / Central Finland' }
-}
-
-function containsFreeMarker(text) {
-  return FREE_PATTERNS.some((re) => re.test(text))
-}
-
-function parseDateLoose(text) {
-  if (!text) return ''
-  const d = new Date(text)
-  if (Number.isNaN(d.getTime())) return ''
-  return d.toISOString()
-}
-
-function isFuture(iso) {
-  if (!iso) return true
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return true
-  return d.getTime() >= Date.now() - 24 * 60 * 60 * 1000
+function isSauna(ev, name, desc) {
+  return /sauna|uimala|kylpyl|uimahalli|uima-allas/i.test(
+    `${name} ${desc}`
+  )
 }
 
 function inferCategory(text) {
   const t = (text || '').toLowerCase()
   if (/(sauna|uimala|swim|kylpy)/i.test(t)) return 'Sauna & Wellness'
   if (/(ferry|lautta|risteily|boat)/i.test(t)) return 'Ferries & Boats'
-  if (/(music|konsertti|live|dj|band)/i.test(t)) return 'Music'
-  if (/(museum|museo|näyttely|exhibition|gallery)/i.test(t)) return 'Art & Museum'
-  if (/(market|markkina|food|ruoka|kahvila)/i.test(t)) return 'Food & Market'
-  if (/(nature|national park|puisto|retki|hike|trail)/i.test(t)) return 'Outdoors'
+  if (/(music|konsertti|live|dj|band|keikka|festivaali)/i.test(t))
+    return 'Music'
+  if (/(museum|museo|näyttely|exhibition|gallery|taide)/i.test(t))
+    return 'Art & Museum'
+  if (/(market|markkina|food|ruoka|kahvila|ravintola)/i.test(t))
+    return 'Food & Market'
+  if (/(nature|national park|puisto|retki|hike|trail|ulkoilma)/i.test(t))
+    return 'Outdoors'
   return 'General'
 }
 
-function buildGoogleMapsUrl(location) {
-  const q = encodeURIComponent(location || 'Finland')
-  return `https://www.google.com/maps/search/?api=1&query=${q}`
+function parseIso(s) {
+  if (!s) return null
+  const d = new Date(s)
+  if (isNaN(d.getTime())) return null
+  const y = d.getUTCFullYear()
+  if (y < 2000 || y > 2100) return null // guard against malformed years (e.g. 0026)
+  return d
 }
 
-function nextUpdateIsoNow() {
-  // target 08:30 and 20:30 Helsinki time
-  const now = new Date()
+function isFuture(d) {
+  if (!d) return false
+  return d.getTime() >= Date.now() - 24 * 3600 * 1000
+}
+
+function helsinkiParts() {
   const fmt = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Helsinki',
     year: 'numeric',
@@ -122,113 +171,103 @@ function nextUpdateIsoNow() {
     minute: '2-digit',
     hour12: false,
   })
-  const parts = Object.fromEntries(fmt.formatToParts(now).map((p) => [p.type, p.value]))
-  const helHour = Number(parts.hour)
-  const helMinute = Number(parts.minute)
-
-  const toUtcIso = (dateStr, hour, minute) => {
-    const d = new Date(`${dateStr}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00+03:00`)
-    // This +03:00 is close enough for summer; winter will be +02:00 and still acceptable for display.
-    return d.toISOString()
-  }
-
-  const dateStr = `${parts.year}-${parts.month}-${parts.day}`
-  if (helHour < 8 || (helHour === 8 && helMinute < 30)) return toUtcIso(dateStr, 8, 30)
-  if (helHour < 20 || (helHour === 20 && helMinute < 30)) return toUtcIso(dateStr, 20, 30)
-
-  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-  const tparts = Object.fromEntries(fmt.formatToParts(tomorrow).map((p) => [p.type, p.value]))
-  const tDateStr = `${tparts.year}-${tparts.month}-${tparts.day}`
-  return toUtcIso(tDateStr, 8, 30)
+  return Object.fromEntries(fmt.formatToParts(new Date()).map((p) => [p.type, p.value]))
 }
 
-async function scrapeSource({ source, url }) {
-  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 LokkiBot' } })
-  if (!res.ok) throw new Error(`${source}: ${res.status}`)
-  const html = await res.text()
+function nextUpdateIso() {
+  const p = helsinkiParts()
+  const h = Number(p.hour)
+  const minute = Number(p.minute)
+  const dateStr = `${p.year}-${p.month}-${p.day}`
+  let targetHour
+  if (h < 6) targetHour = 6
+  else if (h < 19) targetHour = 19
+  else targetHour = 30 // next day 06:00
+  if (targetHour === 30) {
+    const t = new Date(Date.now() + 24 * 3600 * 1000)
+    const tp = Object.fromEntries(
+      new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Helsinki',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+        .formatToParts(t)
+        .map((x) => [x.type, x.value])
+    )
+    return new Date(
+      `${tp.year}-${tp.month}-${tp.day}T06:00:00+03:00`
+    ).toISOString()
+  }
+  return new Date(
+    `${dateStr}T${String(targetHour).padStart(2, '0')}:00:00+03:00`
+  ).toISOString()
+}
 
-  // Lightweight anchor-centric extraction for static pages.
-  const anchorRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi
+async function collect() {
   const events = []
-  let m
-  while ((m = anchorRe.exec(html)) !== null) {
-    const href = normalizeUrl(url, m[1] || '')
-    const body = cleanText(m[2] || '')
-    if (!href || !body) continue
+  const seen = new Set()
+  const today = new Date().toISOString().slice(0, 10)
+  let url = `${API_BASE}?language=fi&page_size=100&sort=start_time&start=${today}`
+  let pages = 0
 
-    const contextStart = Math.max(0, m.index - 500)
-    const contextEnd = Math.min(html.length, m.index + 1500)
-    const context = cleanText(html.slice(contextStart, contextEnd))
+  while (url && pages < 8) {
+    pages++
+    const data = await fetchJson(url)
+    for (const ev of data.data || []) {
+      if (!isFreeEvent(ev)) continue
+      const start = parseIso(ev.start_time)
+      if (!isFuture(start)) continue
 
-    const joined = `${body} ${context}`
-    if (!containsFreeMarker(joined)) continue
-    if (body.length < 4) continue
+      const name = pick(ev.name) || 'Tapahtuma'
+      const desc = stripHtml(pick(ev.description))
+      const loc = getLocation(ev)
+      const infoUrl = pick(ev.info_url) || ev['@id'] || ''
+      const id = ev['@id'] || infoUrl || name
+      const dateKey = start ? start.toISOString().slice(0, 10) : ''
+      const key = `${name}|${dateKey}|${loc.locality}|${loc.street}`
 
-    const region = detectRegion(joined)
-    const date = parseDateLoose(joined)
-    if (!isFuture(date)) continue
+      if (seen.has(key)) continue
+      seen.add(key)
 
-    const id = `${source.toLowerCase().replace(/\s+/g, '-')}_${slugFromUrl(href)}`
-    events.push({
-      id,
-      title: body.slice(0, 140),
-      category: inferCategory(joined),
-      date: date || '',
-      location: region.city,
-      region: region.region,
-      source,
-      sourceUrl: href,
-      isFree: true,
-      freeProof: 'Contains explicit "maksuton/free/0€" marker in source content',
-      mapsUrl: buildGoogleMapsUrl(region.city),
-    })
+      const sauna = isSauna(ev, name, desc)
+      events.push({
+        id: slug(id),
+        title: name,
+        date: start ? start.toISOString() : '',
+        location: loc.locality || 'Helsinki',
+        street: loc.street,
+        region: loc.region,
+        category: inferCategory(`${name} ${desc}`),
+        source: 'Linked Events (MyHelsinki avoin data)',
+        sourceUrl: infoUrl,
+        mapsUrl: mapsUrl(loc),
+        reittiopasUrl: reittiopasUrl(loc),
+        isFree: true,
+        freeProof: freeProof(ev),
+        sauna,
+      })
+    }
+    url = (data.meta && data.meta.next) || null
   }
 
+  events.sort((a, b) => (a.date || '').localeCompare(b.date || ''))
   return events
 }
 
-function dedupe(events) {
-  const seen = new Set()
-  return events.filter((e) => {
-    const k = `${e.title.toLowerCase()}|${e.sourceUrl}`
-    if (seen.has(k)) return false
-    seen.add(k)
-    return true
-  })
-}
-
-function sortEvents(events) {
-  return [...events].sort((a, b) => {
-    const ra = a.region || ''
-    const rb = b.region || ''
-    if (ra !== rb) return ra.localeCompare(rb)
-    return (a.date || '').localeCompare(b.date || '')
-  })
-}
-
 async function run() {
-  const out = []
-
-  for (const src of SOURCE_URLS) {
-    try {
-      const items = await scrapeSource(src)
-      out.push(...items)
-    } catch (err) {
-      console.warn(`Failed scraping ${src.source}:`, err.message || err)
-    }
-  }
-
-  const events = sortEvents(dedupe(out))
+  const events = await collect()
   const payload = {
     generatedAt: new Date().toISOString(),
-    nextUpdateAt: nextUpdateIsoNow(),
-    updateSchedule: 'Twice daily around 08:30 and 20:30 (Europe/Helsinki)',
-    sources: SOURCE_URLS.map((s) => s.url),
+    nextUpdateAt: nextUpdateIso(),
+    updateSchedule: 'Twice daily at 06:00 and 19:00 (Europe/Helsinki)',
+    sources: ['https://api.hel.fi/linkedevents/v1/event/'],
     total: events.length,
     events,
   }
 
-  await writeFile(new URL('../lokki/events.json', import.meta.url), JSON.stringify(payload, null, 2) + '\n', 'utf8')
+  const outPath = new URL('../lokki/events.json', import.meta.url)
+  await writeFile(outPath, JSON.stringify(payload, null, 2) + '\n', 'utf8')
   console.log(`Lokki events saved: ${events.length}`)
 }
 
