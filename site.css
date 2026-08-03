@@ -49,10 +49,10 @@ a {
   white-space: nowrap;
 }
 
-/* Hero (shared by homepage + cv) */
+/* Hero (shared by homepage + cv + reach) — sizing matches /visuals/ header */
 .hero {
   position: relative;
-  min-height: clamp(300px, 44vh, 460px);
+  min-height: clamp(280px, 42vh, 430px);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -68,15 +68,15 @@ a {
     linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65));
 }
 
-/* Background image: better cover scaling, ~30% less transparent than before */
+/* Background image: cover scaling, made more visible (~+10%) */
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
   background: url("/Rustoga_2023_Promo_small_2.jpg") center center / cover no-repeat;
-  opacity: 0.22;
-  transform: scale(1.04);
-  filter: saturate(0.95) contrast(1.05);
+  opacity: 0.32;
+  transform: scale(1.02);
+  filter: saturate(0.9) contrast(1.05);
 }
 
 .hero-content {
@@ -90,22 +90,22 @@ a {
 
 .hero-kicker {
   margin: 0 0 12px;
-  font-size: clamp(11px, 1.2vw, 13px);
+  font-size: 10px;
   letter-spacing: 0.3em;
   opacity: 0.75;
 }
 
 .hero-title {
-  font-size: clamp(1.65rem, 3vw + 0.6rem, 3rem);
+  font-size: clamp(1.4rem, 2.7vw + 0.6rem, 2.55rem);
   line-height: 1.1;
   margin: 0 0 18px;
 }
 
 .hero-intro {
-  max-width: min(65ch, 100%);
   margin: 0 auto;
-  font-size: clamp(1rem, 0.5vw + 0.88rem, 1.2rem);
-  line-height: 1.65;
+  max-width: min(65ch, 100%);
+  font-size: clamp(0.9rem, 0.45vw + 0.78rem, 1.05rem);
+  line-height: 1.6;
   opacity: 0.88;
 }
 
