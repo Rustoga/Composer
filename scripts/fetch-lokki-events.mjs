@@ -89,11 +89,12 @@ function freeProof(ev) {
 function regionFromId(id, locality) {
   if (locality && ['Helsinki', 'Espoo', 'Vantaa'].includes(locality))
     return locality
-  const m = /event\/([a-z0-9]+):/i.exec(id || '')
+  const m = /event\/([a-z0-9_]+):/i.exec(id || '')
   const src = m ? m[1].toLowerCase() : ''
-  const MAP = { helsinki: 'Helsinki', hkm: 'Helsinki', espoo: 'Espoo', vantaa: 'Vantaa' }
+  const MAP = { helsinki: 'Helsinki', 'helsinki-extra': 'Helsinki', hkm: 'Helsinki', espoo: 'Espoo', espoo_le: 'Espoo', vantaa: 'Vantaa' }
   if (MAP[src]) return MAP[src]
-  return locality || 'Muu Suomi'
+  if (['Helsinki', 'Espoo', 'Vantaa'].includes(locality)) return locality
+  return null
 }
 
 function getLocation(ev) {
@@ -230,6 +231,7 @@ async function collect() {
       if (seen.has(key)) continue
       seen.add(key)
 
+      if (!loc.region) continue
       const sauna = isSauna(ev, name, desc)
       events.push({
         id: slug(id),
