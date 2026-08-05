@@ -184,8 +184,8 @@ a {
 
 .section-badge {
   display: inline-block;
-  font-size: clamp(14px, 2.1vw, 18px);
-  letter-spacing: clamp(0.14em, 0.35vw, 0.3em);
+  font-size: 13px;
+  letter-spacing: 0.26em;
   line-height: 1.35;
   color: var(--accent);
   text-transform: uppercase;
@@ -251,6 +251,15 @@ iframe {
   border-radius: 4px;
   width: 100%;
   max-width: 800px;
+  display: block;
+  margin: 0 auto;
+}
+
+iframe,
+video {
+  border: 1px solid rgba(61, 61, 72, 0.5);
+  aspect-ratio: 16 / 9;
+  height: auto;
 }
 
 audio {
@@ -421,7 +430,6 @@ video::-webkit-media-controls-panel {
 }
 
 .cv-header h1 {
-  font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.2rem);
   margin: 0 0 0.5rem;
 }
 
