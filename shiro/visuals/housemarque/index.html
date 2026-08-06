@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Housemarque — Rudolf Westerholm</title>
+<meta name="description" content="Visual and motion design work for Housemarque titles." />
+<link rel="icon" type="image/png" href="/favicon_rudolf.png" />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#fbfbfa; color:#111; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#666560; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#666560; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#111; }
+  .nav-link-sh.active { color:#111; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
+  .rel-card { display:block; text-align:left; }
+  .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
+  .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
+  .rel-card:hover .rc-thumb img { transform:scale(1.03); }
+  .rel-card .rc-title { font-family:"Cormorant Garamond",serif; font-size:20px; margin-top:12px; }
+</style>
+</head>
+<body class="flex flex-col items-start min-h-screen w-full">
+
+<nav class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#e8e5dd]">
+  <a href="/shiro/" class="font-semibold leading-normal text-[#111] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="flex gap-5 md:gap-[40px] items-center">
+    <a href="/shiro/" class="nav-link-sh">MUSIC</a>
+    <a href="/shiro/visuals/" class="nav-link-sh active">VISUALS</a>
+    <a href="/shiro/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/shiro/cv/" class="nav-link-sh">CV</a>
+    <a href="/shiro/reach/" class="nav-link-sh">REACH</a>
+  </div>
+</nav>
+
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[40px]">
+  <p class="eyebrow mb-[16px]">Visuals / Game Studio</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Housemarque</h1>
+</header>
+
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
+  <div class="flex flex-col lg:flex-row gap-[64px] w-full">
+    <div class="lg:w-[55%] shrink-0">
+      <div class="rounded-[8px] overflow-hidden shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)]">
+        <img alt="Housemarque" src="/shiro/visuals/assets/housemarque-thumb.jpg" class="w-full h-auto object-cover" />
+      </div>
+    </div>
+    <div class="flex-1 min-w-0 flex flex-col gap-[24px]">
+      <div class="grid grid-cols-2 gap-[20px]">
+        <div><p class="eyebrow">Client</p><p class="mt-[4px] text-[15px]">Housemarque</p></div>
+        <div><p class="eyebrow">Role</p><p class="mt-[4px] text-[15px]">Visual & Motion</p></div>
+        <div><p class="eyebrow">Category</p><p class="mt-[4px] text-[15px]">Game Studio</p></div>
+      </div>
+      <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Visual and motion design work for Housemarque — logo animations and UI motion for their game titles, blending clean craft with the studio's signature style.</p>
+    </div>
+  </div>
+
+  <div class="w-full mt-[120px]">
+    <p class="eyebrow mb-[32px]">Related projects</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-[32px]">
+      <a class="rel-card" href="/shiro/visuals/torchia/">
+        <div class="rc-thumb"><img alt="Torchia" src="/shiro/visuals/assets/torchia-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Torchia</div>
+      </a>
+      <a class="rel-card" href="/shiro/visuals/jukio-kallio/">
+        <div class="rc-thumb"><img alt="Jukio Kallio" src="/shiro/visuals/assets/jukio-kallio-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Jukio Kallio</div>
+      </a>
+      <a class="rel-card" href="/shiro/visuals/whispered/">
+        <div class="rc-thumb"><img alt="Whispered" src="/shiro/visuals/assets/whispered-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Whispered</div>
+      </a>
+    </div>
+    <a href="/shiro/projects/" class="inline-block mt-[40px] text-[13px] tracking-[0.04em] text-[#666560] hover:text-[#111] transition-colors">View all projects →</a>
+  </div>
+</main>
+
+<footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#666560] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+</body></html>
