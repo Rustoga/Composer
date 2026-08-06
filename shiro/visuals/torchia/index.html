@@ -25,6 +25,11 @@
   .gallery { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
   .gallery img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:8px; display:block; }
   @media (max-width:640px){ .gallery { grid-template-columns:1fr; } }
+  .feature-img img, .gallery img { cursor:pointer; transition:opacity 160ms ease; }
+  .feature-img img:hover, .gallery img:hover { opacity:0.85; }
+  #lightbox { position:fixed; inset:0; background:rgba(20,20,18,0.92); display:none; align-items:center; justify-content:center; z-index:100; padding:5vw; cursor:zoom-out; }
+  #lightbox.open { display:flex; }
+  #lightbox img { max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; }
   .rel-card { display:block; text-align:left; }
   .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
   .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
@@ -113,4 +118,18 @@
   </div>
 </footer>
 <script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+<div id="lightbox"><img alt=""></div>
+<script>
+  (function(){
+    var lb = document.getElementById('lightbox');
+    var lbImg = lb.querySelector('img');
+    function open(src, alt){ lbImg.src = src; lbImg.alt = alt || ''; lb.classList.add('open'); }
+    function close(){ lb.classList.remove('open'); lbImg.src = ''; }
+    document.querySelectorAll('.feature-img img, .gallery img').forEach(function(img){
+      img.addEventListener('click', function(){ open(img.src, img.alt); });
+    });
+    lb.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+  })();
+</script>
 </body></html>
