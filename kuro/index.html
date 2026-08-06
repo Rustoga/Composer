@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCUL.PT — Museum</title>
+<link rel="icon" type="image/png" href="/favicon_rudolf.png">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Playfair Display"', 'Georgia', 'serif'],
+          sans: ['Raleway', '"Helvetica Neue"', 'sans-serif'],
+        },
+        colors: {
+          ink: '#1a1a1a',
+          accent: '#c96030',
+        },
+      },
+    },
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: Raleway, "Helvetica Neue", sans-serif; }
+  .font-display { font-family: "Playfair Display", Georgia, serif; }
+</style>
+</head>
+<body class="bg-[#1a1a1a] text-white antialiased">
+
+<!-- Nav -->
+<nav class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-8 lg:px-10 py-6">
+  <a href="#top" class="flex items-center gap-2.5">
+    <span class="w-3.5 h-3.5 bg-[#c96030] inline-block"></span>
+    <span class="text-white tracking-[0.3em] text-xs font-semibold" style="font-family: Raleway, 'Helvetica Neue', sans-serif;">SCUL.PT</span>
+  </a>
+  <ul class="hidden md:flex items-center gap-8">
+    <li><a href="#visit" class="text-white/60 hover:text-white text-xs tracking-widest transition-colors">Visit</a></li>
+    <li><a href="#exhibitions" class="text-white/60 hover:text-white text-xs tracking-widest transition-colors">Exhibitions</a></li>
+    <li><a href="#events" class="text-white/60 hover:text-white text-xs tracking-widest transition-colors">Events</a></li>
+    <li><a href="#learn" class="text-white/60 hover:text-white text-xs tracking-widest transition-colors">Learn</a></li>
+    <li><a href="#shop" class="text-white/60 hover:text-white text-xs tracking-widest transition-colors">Shop</a></li>
+  </ul>
+  <button class="md:hidden text-white" aria-label="Menu">
+    <div class="flex flex-col gap-1.5 w-5">
+      <span class="block h-px bg-white"></span>
+      <span class="block h-px bg-white"></span>
+      <span class="block h-px bg-white"></span>
+    </div>
+  </button>
+</nav>
+
+<!-- Hero -->
+<section class="relative min-h-screen flex items-center overflow-hidden" id="top">
+  <div class="absolute inset-0">
+    <img src="/kuro/assets/photo-1575223970966-76ae61ee7838" alt="" class="w-full h-full object-cover grayscale opacity-25">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#1a1a1a]/50 via-[#1a1a1a]/30 to-[#1a1a1a]"></div>
+  </div>
+
+  <!-- Social rail -->
+  <div class="hidden lg:flex flex-col items-center gap-4 absolute right-5 top-1/2 -translate-y-1/2 z-20">
+    <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+    </a>
+    <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Twitter">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+    </a>
+    <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Facebook">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    </a>
+    <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Location">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg>
+    </a>
+  </div>
+
+  <div class="relative z-10 w-full max-w-6xl mx-auto px-8 lg:px-10 pt-28 pb-20">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 items-start">
+      <div class="max-w-lg">
+        <p class="text-white/40 text-[11px] tracking-[0.2em] mb-7 flex items-center gap-3">September 26, 2016<span class="inline-block w-8 h-px bg-white/30"></span>Bus excursion</p>
+        <h1 class="text-[3.6rem] lg:text-[4.5rem] text-white font-normal leading-[1.1] tracking-tight mb-10 font-display">Exploring Old<br>Architecture</h1>
+        <button class="border border-[#c96030] text-[#c96030] hover:bg-[#c96030] hover:text-white px-7 py-2.5 text-[11px] tracking-[0.2em] transition-all duration-200 mb-14">Read more</button>
+        <div class="flex items-center gap-5">
+          <button class="flex items-center gap-1.5 text-white/30 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+            <span class="text-[10px] tracking-widest">Prev</span>
+          </button>
+          <span class="text-white/80 text-sm">1<span class="text-white/20">/</span><span class="text-white/30">4</span></span>
+          <button class="flex items-center gap-1.5 text-white/30 hover:text-white transition-colors">
+            <span class="text-[10px] tracking-widest">Next</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hidden lg:block self-start mt-4">
+        <div class="relative">
+          <div class="w-[300px] h-[220px] overflow-hidden">
+            <img src="/kuro/assets/photo-1558611913-d707111c702e" alt="Classical sculpture" class="w-full h-full object-cover grayscale">
+          </div>
+          <div class="absolute top-0 right-0 w-0.5 h-full bg-[#c96030]/60"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+    <div class="w-5 h-8 rounded-full border border-white/25 flex justify-center items-start pt-2">
+      <span class="w-px h-2.5 bg-white/50 rounded-full animate-bounce"></span>
+    </div>
+  </div>
+</section>
+
+<!-- Latest events -->
+<section class="bg-[#181818] py-20 px-8 lg:px-10 overflow-hidden" id="events">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-white/25 text-[10px] tracking-[0.25em] uppercase mb-2">explore art of sculpture with us</p>
+    <div class="flex items-center gap-5 mb-12">
+      <div class="w-8 h-px bg-[#c96030]"></div>
+      <h2 class="text-[2.4rem] text-[#c96030] font-normal tracking-[0.08em] font-display">Latest events</h2>
+      <div class="flex-1 h-px bg-white/8"></div>
+    </div>
+
+    <div class="relative flex items-stretch">
+      <div class="hidden xl:flex items-center mr-4 self-center">
+        <span class="text-white/15 text-[10px] tracking-[0.25em] uppercase -rotate-90 whitespace-nowrap origin-center">Sep 15</span>
+        <div class="w-px h-16 bg-white/10 ml-3"></div>
+      </div>
+
+      <div class="flex-1 flex flex-col lg:flex-row border border-white/5">
+        <div class="lg:w-[52%] h-64 lg:h-auto overflow-hidden relative">
+          <img src="/kuro/assets/photo-1572780639748-7a06927ef6df" alt="Sculpture" class="w-full h-full object-cover grayscale">
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 -translate-x-8 -rotate-90 origin-right">
+            <span class="text-white/20 text-[10px] tracking-[0.2em] whitespace-nowrap">Greek and Roman Art</span>
+          </div>
+        </div>
+        <div class="lg:w-[48%] bg-[#202020] p-10 lg:p-12 flex flex-col justify-center">
+          <p class="text-[#c96030] text-[10px] tracking-[0.25em] uppercase mb-5">Guided tour</p>
+          <h3 class="text-[1.7rem] text-white font-normal leading-[1.25] mb-5 font-display">Great Sculpture:<br>Ancient to Contemporary</h3>
+          <p class="text-white/40 text-[13px] leading-relaxed mb-7">From the beginnings of Christianity to the rise of the Renaissance, travel through a millennium of great monuments that conjure imperial courts, Gothic cathedrals, and princely castles.</p>
+          <div class="flex flex-col gap-2.5 mb-8">
+            <div class="flex items-center gap-3">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span class="text-white/45 text-[12px]">10:45–11:45 A.M.</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span class="text-white/45 text-[12px]">Monday / September 26</span>
+            </div>
+          </div>
+          <button class="self-start border border-[#c96030] text-[#c96030] hover:bg-[#c96030] hover:text-white px-7 py-2.5 text-[11px] tracking-[0.2em] transition-all">Buy ticket</button>
+        </div>
+      </div>
+
+      <div class="hidden xl:flex items-center ml-4 self-center">
+        <div class="w-px h-16 bg-white/10 mr-3"></div>
+        <span class="text-white/15 text-[10px] tracking-[0.25em] uppercase rotate-90 whitespace-nowrap origin-center">Museum Highlights</span>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-4 mt-7">
+      <button class="text-[#c96030] hover:text-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+      </button>
+      <span class="text-white/40 text-[13px]">3 / 4</span>
+      <button class="text-[#c96030] hover:text-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Quick links -->
+<section class="bg-[#151515] py-16 px-8 lg:px-10" id="shop">
+  <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10">
+    <a href="#" class="group flex flex-col items-center gap-4">
+      <div class="text-white/25 group-hover:text-[#c96030] transition-colors duration-300">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="6" width="30" height="27" rx="1"></rect><line x1="3" y1="14" x2="33" y2="14"></line><line x1="11" y1="3" x2="11" y2="9"></line><line x1="25" y1="3" x2="25" y2="9"></line><rect x="8" y="18" width="5" height="4"></rect><rect x="16" y="18" width="5" height="4"></rect><rect x="24" y="18" width="5" height="4"></rect><rect x="8" y="26" width="5" height="4"></rect><rect x="16" y="26" width="5" height="4"></rect><rect x="24" y="26" width="5" height="4"></rect></svg>
+      </div>
+      <span class="text-[#c96030] text-[11px] tracking-[0.25em] uppercase group-hover:text-white transition-colors">Calendar</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-4">
+      <div class="text-white/25 group-hover:text-[#c96030] transition-colors duration-300">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1"><circle cx="18" cy="18" r="14"></circle><line x1="18" y1="4" x2="18" y2="8"></line><line x1="18" y1="28" x2="18" y2="32"></line><line x1="4" y1="18" x2="8" y2="18"></line><line x1="28" y1="18" x2="32" y2="18"></line><line x1="9" y1="9" x2="12" y2="12"></line><line x1="24" y1="24" x2="27" y2="27"></line><line x1="27" y1="9" x2="24" y2="12"></line><line x1="12" y1="24" x2="9" y2="27"></line><line x1="18" y1="18" x2="18" y2="11"></line><line x1="18" y1="18" x2="23" y2="18"></line></svg>
+      </div>
+      <span class="text-[#c96030] text-[11px] tracking-[0.25em] uppercase group-hover:text-white transition-colors">Hours</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-4">
+      <div class="text-white/25 group-hover:text-[#c96030] transition-colors duration-300">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 12 L22 12 L22 8 L32 8 L32 16 Q28 16 28 20 Q28 24 32 24 L32 28 L22 28 L22 24 L4 24 Z"></path><line x1="22" y1="16" x2="22" y2="20"></line></svg>
+      </div>
+      <span class="text-[#c96030] text-[11px] tracking-[0.25em] uppercase group-hover:text-white transition-colors">Tickets</span>
+    </a>
+    <a href="#" class="group flex flex-col items-center gap-4">
+      <div class="text-white/25 group-hover:text-[#c96030] transition-colors duration-300">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="30" height="30" rx="1"></rect><line x1="3" y1="14" x2="33" y2="14"></line><rect x="12" y="20" width="12" height="13"></rect><line x1="12" y1="7" x2="12" y2="11"></line><line x1="24" y1="7" x2="24" y2="11"></line></svg>
+      </div>
+      <span class="text-[#c96030] text-[11px] tracking-[0.25em] uppercase group-hover:text-white transition-colors">Shop</span>
+    </a>
+  </div>
+</section>
+
+<!-- Blog -->
+<section class="bg-[#181818] py-20 px-8 lg:px-10" id="learn">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-white/25 text-[10px] tracking-[0.25em] uppercase mb-2">latest blog posts</p>
+    <h2 class="text-[2.4rem] text-[#c96030] font-normal italic mb-12 font-display">Interesting</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <article class="group">
+        <div class="overflow-hidden mb-5 h-52">
+          <img src="/kuro/assets/photo-1544213456-bc37cb97df74" alt="Museum gallery with sculptures" class="w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-700">
+        </div>
+        <p class="text-[#c96030] text-[10px] tracking-[0.25em] uppercase mb-2">September 20, 2016</p>
+        <div class="w-7 h-px bg-[#c96030] mb-4"></div>
+        <h3 class="text-xl text-white font-normal leading-snug mb-3 font-display">Big Ideas behind Small Things</h3>
+        <p class="text-white/40 text-[13px] leading-relaxed">Along with material, color, line, shape, and context, scale is fundamental to the making and reception of works of art. <span class="text-[#c96030] font-medium cursor-pointer hover:underline">MORE</span></p>
+      </article>
+      <article class="group">
+        <div class="overflow-hidden mb-5 h-72">
+          <img src="/kuro/assets/photo-1591102972305-213abaa76d6f" alt="Ancient bust sculpture" class="w-full h-full object-cover object-top grayscale group-hover:scale-105 transition-transform duration-700">
+        </div>
+        <p class="text-[#c96030] text-[10px] tracking-[0.25em] uppercase mb-2">September 18, 2016</p>
+        <div class="w-7 h-px bg-[#c96030] mb-4"></div>
+        <h3 class="text-xl text-white font-normal leading-snug mb-3 font-display">Ancient and Modern Statues</h3>
+        <p class="text-white/40 text-[13px] leading-relaxed mb-6">We are enthralled by gigantic statues. The ancient Greeks called them kolossos, a word first used by Herodotus to describe the statues of Pharaonic Egypt. <span class="text-[#c96030] font-medium cursor-pointer hover:underline">MORE</span></p>
+      </article>
+    </div>
+    <div class="flex justify-end mt-8">
+      <button class="border border-[#c96030]/50 text-[#c96030] hover:bg-[#c96030] hover:text-white px-8 py-2.5 text-[11px] tracking-[0.2em] transition-all">All posts</button>
+    </div>
+  </div>
+</section>
+
+<!-- Stay in touch -->
+<section class="bg-[#151515] py-20 px-8 lg:px-10" id="visit">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
+    <div>
+      <h2 class="text-[2.4rem] text-[#c96030] font-normal mb-10 font-display">Stay in touch</h2>
+      <div class="flex flex-col gap-4 mb-9">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone text-white/30 shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          <span class="text-white/60 text-sm">+4 (878) 8723578</span>
+        </div>
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin text-white/30 shrink-0 mt-0.5"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="text-white/60 text-sm leading-relaxed">220–248 Kensington High Street<br>London<br>W8 6AG</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail text-white/30 shrink-0"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+          <a href="mailto:questions@sculptmuseum.com" class="text-[#c96030] text-sm hover:underline">questions@sculptmuseum.com</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-5 mb-10">
+        <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+        </a>
+        <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Twitter">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+        </a>
+        <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Facebook">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a href="#" class="text-white/30 hover:text-[#c96030] transition-colors" aria-label="Location">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg>
+        </a>
+      </div>
+      <input type="email" placeholder="Enter email for newsletter..." class="w-full bg-transparent border-b border-white/15 focus:border-[#c96030] text-white/50 text-[13px] py-2.5 placeholder:text-white/20 focus:outline-none transition-colors mb-6">
+      <button class="border border-[#c96030] text-[#c96030] hover:bg-[#c96030] hover:text-white px-9 py-2.5 text-[11px] tracking-[0.2em] transition-all">Subscribe</button>
+    </div>
+
+    <div class="hidden lg:flex">
+      <div class="w-full bg-[#1e1e1e] border border-white/5 flex flex-col items-center justify-center gap-3 relative overflow-hidden min-h-[240px]">
+        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 1px, transparent 1px); background-size: 18px 18px;"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin text-[#c96030] relative z-10"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <p class="text-white/35 text-[11px] tracking-widest text-center relative z-10 leading-relaxed">Waiting for<br>you here!</p>
+        <div class="w-1.5 h-1.5 rounded-full bg-[#c96030]/60 relative z-10 mt-1"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-[#111] border-t border-white/5 py-5 px-8 lg:px-10">
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span class="text-white/20 text-[11px]">SculptMuseum © 2016 All rights reserved</span>
+    <a href="#top" class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 bg-[#c96030] inline-block"></span>
+      <span class="text-white/25 text-[10px] tracking-[0.3em]">SCUL.PT</span>
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>
