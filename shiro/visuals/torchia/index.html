@@ -20,6 +20,11 @@
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
   .video-shell { background:#000; border-radius:8px; overflow:hidden; aspect-ratio:16/9; }
   .video-shell iframe { width:100%; height:100%; border:0; display:block; }
+  .feature-img { border-radius:8px; overflow:hidden; box-shadow:0 16px 32px rgba(0,0,0,0.05); }
+  .feature-img img { width:100%; height:auto; display:block; }
+  .gallery { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .gallery img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:8px; display:block; }
+  @media (max-width:640px){ .gallery { grid-template-columns:1fr; } }
   .rel-card { display:block; text-align:left; }
   .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
   .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
@@ -60,6 +65,11 @@
       </div>
       <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Videography and visual work for Torchia — capturing the band's performances and atmosphere on camera for their music videos.</p>
     </div>
+  </div>
+
+  <div class="gallery mt-[16px]">
+    <img alt="Torchia 2" src="/shiro/visuals/assets/torchia-2.jpg" loading="lazy">
+    <img alt="Torchia 3" src="/shiro/visuals/assets/torchia-3.jpg" loading="lazy">
   </div>
 
   <div class="w-full mt-[80px] flex flex-col gap-[40px]">

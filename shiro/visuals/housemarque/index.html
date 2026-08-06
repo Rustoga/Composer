@@ -18,6 +18,11 @@
   .nav-link-sh:hover { color:#111; }
   .nav-link-sh.active { color:#111; }
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
+  .feature-img { border-radius:8px; overflow:hidden; box-shadow:0 16px 32px rgba(0,0,0,0.05); }
+  .feature-img img { width:100%; height:auto; display:block; }
+  .gallery { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .gallery img, .gallery video { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:8px; display:block; background:#000; }
+  @media (max-width:640px){ .gallery { grid-template-columns:1fr; } }
   .rel-card { display:block; text-align:left; }
   .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
   .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
@@ -44,20 +49,14 @@
 </header>
 
 <main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
-  <div class="flex flex-col lg:flex-row gap-[64px] w-full">
-    <div class="lg:w-[55%] shrink-0">
-      <div class="rounded-[8px] overflow-hidden shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)]">
-        <img alt="Housemarque" src="/shiro/visuals/assets/housemarque-thumb.jpg" class="w-full h-auto object-cover" />
-      </div>
-    </div>
-    <div class="flex-1 min-w-0 flex flex-col gap-[24px]">
-      <div class="grid grid-cols-2 gap-[20px]">
-        <div><p class="eyebrow">Client</p><p class="mt-[4px] text-[15px]">Housemarque</p></div>
-        <div><p class="eyebrow">Role</p><p class="mt-[4px] text-[15px]">Visual & Motion</p></div>
-        <div><p class="eyebrow">Category</p><p class="mt-[4px] text-[15px]">Game Studio</p></div>
-      </div>
-      <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Visual and motion design work for Housemarque — logo animations and UI motion for their game titles, blending clean craft with the studio's signature style.</p>
-    </div>
+  <p class="text-[14px] tracking-[0.04em] text-[#666560] mb-[32px]">Motion Design</p>
+
+  <div class="feature-img">
+    <img alt="Housemarque" src="/shiro/visuals/assets/housemarque-thumb.jpg" />
+  </div>
+
+  <div class="gallery mt-[16px]">
+    <video src="/shiro/visuals/assets/housemarque-logo.mp4" autoplay muted loop playsinline></video>
   </div>
 
   <div class="w-full mt-[120px]">

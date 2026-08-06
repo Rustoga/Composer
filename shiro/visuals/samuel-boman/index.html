@@ -20,6 +20,8 @@
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
   .video-shell { background:#000; border-radius:8px; overflow:hidden; aspect-ratio:16/9; }
   .video-shell iframe { width:100%; height:100%; border:0; display:block; }
+  .feature-img { border-radius:8px; overflow:hidden; box-shadow:0 16px 32px rgba(0,0,0,0.05); }
+  .feature-img img { width:100%; height:auto; display:block; }
   .rel-card { display:block; text-align:left; }
   .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
   .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
@@ -46,20 +48,10 @@
 </header>
 
 <main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
-  <div class="flex flex-col lg:flex-row gap-[64px] w-full">
-    <div class="lg:w-[55%] shrink-0">
-      <div class="rounded-[8px] overflow-hidden shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)]">
-        <img alt="Samuel Boman" src="/shiro/visuals/assets/samuel-boman-thumb.jpg" class="w-full h-auto object-cover" />
-      </div>
-    </div>
-    <div class="flex-1 min-w-0 flex flex-col gap-[24px]">
-      <div class="grid grid-cols-2 gap-[20px]">
-        <div><p class="eyebrow">Client</p><p class="mt-[4px] text-[15px]">Samuel Boman</p></div>
-        <div><p class="eyebrow">Role</p><p class="mt-[4px] text-[15px]">Visuals</p></div>
-        <div><p class="eyebrow">Category</p><p class="mt-[4px] text-[15px]">Artist</p></div>
-      </div>
-      <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Visuals and videography for artist Samuel Boman — performance and promo material shot and edited for release campaigns.</p>
-    </div>
+  <p class="text-[14px] tracking-[0.04em] text-[#666560] mb-[32px]">Videography</p>
+
+  <div class="feature-img">
+    <img alt="Samuel Boman" src="/shiro/visuals/assets/samuel-1.jpg" />
   </div>
 
   <div class="w-full mt-[80px]">

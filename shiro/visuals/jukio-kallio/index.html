@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jukio Kallio — Rudolf Westerholm</title>
-<meta name="description" content="Promo and visual work for composer Jukio Kallio." />
+<meta name="description" content="Visuals and promo work for composer Jukio Kallio." />
 <link rel="icon" type="image/png" href="/favicon_rudolf.png" />
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,6 +18,11 @@
   .nav-link-sh:hover { color:#111; }
   .nav-link-sh.active { color:#111; }
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
+  .feature-img { border-radius:8px; overflow:hidden; box-shadow:0 16px 32px rgba(0,0,0,0.05); }
+  .feature-img img { width:100%; height:auto; display:block; }
+  .gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .gallery img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:8px; display:block; }
+  @media (max-width:640px){ .gallery { grid-template-columns:repeat(2,1fr); } }
   .rel-card { display:block; text-align:left; }
   .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
   .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
@@ -38,26 +43,24 @@
   </div>
 </nav>
 
-<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[40px]">
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[24px]">
   <p class="eyebrow mb-[16px]">Visuals / Composer</p>
   <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Jukio Kallio</h1>
 </header>
 
 <main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
-  <div class="flex flex-col lg:flex-row gap-[64px] w-full">
-    <div class="lg:w-[55%] shrink-0">
-      <div class="rounded-[8px] overflow-hidden shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)]">
-        <img alt="Jukio Kallio" src="/shiro/visuals/assets/jukio-kallio-thumb.jpg" class="w-full h-auto object-cover" />
-      </div>
-    </div>
-    <div class="flex-1 min-w-0 flex flex-col gap-[24px]">
-      <div class="grid grid-cols-2 gap-[20px]">
-        <div><p class="eyebrow">Client</p><p class="mt-[4px] text-[15px]">Jukio Kallio</p></div>
-        <div><p class="eyebrow">Role</p><p class="mt-[4px] text-[15px]">Visuals</p></div>
-        <div><p class="eyebrow">Category</p><p class="mt-[4px] text-[15px]">Composer</p></div>
-      </div>
-      <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Promo and visual work for composer Jukio Kallio — a series of promo images and motion pieces supporting his releases and online presence.</p>
-    </div>
+  <p class="text-[14px] tracking-[0.04em] text-[#666560] mb-[32px]">Photography</p>
+
+  <div class="feature-img">
+    <img alt="Jukio Kallio" src="/shiro/visuals/assets/jukio-1.jpg" />
+  </div>
+
+  <div class="gallery mt-[16px]">
+    <img alt="Jukio Kallio 2" src="/shiro/visuals/assets/jukio-2.jpg" loading="lazy">
+    <img alt="Jukio Kallio 3" src="/shiro/visuals/assets/jukio-3.jpg" loading="lazy">
+    <img alt="Jukio Kallio 4" src="/shiro/visuals/assets/jukio-4.jpg" loading="lazy">
+    <img alt="Jukio Kallio 5" src="/shiro/visuals/assets/jukio-5.jpg" loading="lazy">
+    <img alt="Jukio Kallio 6" src="/shiro/visuals/assets/jukio-6.jpg" loading="lazy">
   </div>
 
   <div class="w-full mt-[120px]">
