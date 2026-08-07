@@ -1,146 +1,381 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rudolf Westerholm Portfolio</title>
-<link rel="icon" type="image/png" href="/favicon_rudolf.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rudolf Westerholm — Shiro</title>
+<meta name="description" content="Rudolf Westerholm — Finnish composer and music producer. A light, editorial take on the portfolio." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site.css">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #fbfbfa;
+    --line: #e8e5dd;
+    --ink: #111111;
+    --muted: #666560;
+    --panel: #f5f3ed;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Instrument Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-display { font-family: "Cormorant Garamond", serif; }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .nav-link-sh {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 4px;
+    background: none;
+    border: none;
+    transition: color 160ms ease;
+  }
+  .nav-link-sh:hover { color: var(--ink); }
+  .nav-link-sh.active { color: var(--ink); }
+  .nav-link-sh.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .work-card { cursor: pointer; text-align: left; background: none; border: none; padding: 0; width: 100%; }
+  .work-card .thumb { overflow: hidden; border-radius: 8px; }
+  .work-card .thumb img { transition: transform 500ms ease; }
+  .work-card:hover .thumb img { transform: scale(1.03); }
+  .audio-shell {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .play-btn {
+    background: var(--ink);
+    border: none;
+    border-radius: 20px;
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 160ms ease;
+  }
+  .play-btn:hover { background: #333; }
+  .track-shell audio { width: 100%; display: block; }
+  audio {
+    height: 38px;
+    border-radius: 8px;
+    color-scheme: light;
+  }
+  .project-card { display: block; text-align: left; width: 100%; }
+  .project-card .pc-thumb { overflow: hidden; border-radius: 8px; aspect-ratio: 4 / 3; position: relative; background: var(--panel); }
+  .project-card .pc-thumb img { transition: transform 500ms ease; width: 100%; height: 100%; object-fit: cover; }
+  .project-card:hover .pc-thumb img { transform: scale(1.03); }
+  .project-card .pc-meta { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .project-card .pc-year { font-size: 12px; color: var(--muted); }
+  .project-card .pc-title { font-family: "Cormorant Garamond", serif; font-size: 22px; line-height: 1.2; }
+  .project-card:hover .pc-title { opacity: 0.7; transition: opacity 160ms ease; }
+  .view-all-btn {
+    display: inline-block;
+    margin: 8px auto 0;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #111;
+    border: 1px solid #111;
+    border-radius: 9999px;
+    padding: 14px 32px;
+    transition: background 180ms ease, color 180ms ease;
+  }
+  .view-all-btn:hover { background: #111; color: #fff; }
+  .clients-logos img { height: 56px; width: auto; opacity: 0.85; object-fit: contain; }
+  .clients-logos a { transition: transform 220ms ease, opacity 220ms ease; }
+  .clients-logos a:hover { transform: scale(1.05); opacity: 1; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .reveal { opacity: 0; animation: rise 0.7s ease forwards; }
+  @media (prefers-reduced-motion: reduce) { .reveal { animation: none; opacity: 1; } }
+  @media (max-width: 640px) {
+    nav.shiro-nav { flex-direction: column; gap: 14px; align-items: flex-start; }
+    nav.shiro-nav .shiro-nav-links { flex-wrap: wrap; gap: 14px 20px; }
+    .shiro-featured { flex-direction: column !important; gap: 32px !important; }
+    .shiro-featured > div:first-child { width: 100% !important; height: auto !important; }
+    .audio-shell { flex-direction: column; align-items: stretch; text-align: center; gap: 14px; }
+    .audio-shell .play-btn { align-self: center; }
+    .clients-logos { gap: 28px !important; }
+  }
+</style>
 </head>
-<body>
+<body class="flex flex-col items-start min-h-screen w-full">
 
-<nav class="top-nav" aria-label="Primary">
-  <div class="top-nav-inner">
-    <a href="/" class="font-brand" style="font-size: 12px; font-weight: 700">Rudolf Westerholm</a>
-    <div class="top-nav-links">
-      <a class="nav-link font-brand primary" href="/">Music</a>
-      <a class="nav-link font-brand" href="/visuals/">Visuals</a>
-      <a class="nav-link font-brand" href="/cv/">CV</a>
-      <a class="nav-link font-brand" href="/reach/">Reach</a>
-    </div>
+<!-- Top navigation -->
+<nav class="shiro-nav bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#e8e5dd]">
+  <a href="/" class="font-semibold leading-normal text-[#111] text-[16px] whitespace-nowrap" style="font-family:'Instrument Sans',sans-serif">RUDOLF WESTERHOLM</a>
+  <div class="shiro-nav-links flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh active">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh">REACH</a>
   </div>
 </nav>
 
-<header class="hero text-center">
-<div class="hero-content">
-<p class="hero-kicker font-brand text-zinc-300">Composer & Sound Designer Portfolio</p>
-<h1 class="hero-title font-brand text-white">Music</h1>
-<p class="hero-intro text-zinc-300">Finnish composer and music producer known for versatile work across different medias, blending from commercial projects into contemporary sonar exploration and distinctive soundscapes.</p>
-</div>
+<!-- Hero -->
+<header class="flex flex-col h-[520px] md:h-[640px] items-center justify-center relative shrink-0 w-full">
+  <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+    <img alt="" class="absolute max-w-none object-cover size-full" src="/assets/Rustoga_2023_Promo_small_2.jpg" />
+    <div class="absolute bg-[rgba(17,17,17,0.45)] inset-0"></div>
+  </div>
+  <div class="flex flex-col gap-[16px] items-center p-[32px] relative text-center text-white z-10">
+    <p class="eyebrow text-white/80" style="color:#fff">WELCOME</p>
+    <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Rudolf Westerholm</h1>
+    <p class="font-normal text-[14px] md:text-[16px] text-white/90 m-0">COMPOSER &amp; SOUND DESIGNER</p>
+  </div>
 </header>
 
-<div class="section-nav-wrap">
-<nav class="section-nav font-brand" aria-label="Portfolio sections">
-<a href="#clients" class="section-nav-link">Clients</a>
-<a href="#trailermusic" class="section-nav-link">Trailers</a>
-<a href="#personal" class="section-nav-link">Personal</a>
-<a href="#games" class="section-nav-link">Games</a>
-<a href="#experiments" class="section-nav-link">Experiments</a>
-</nav>
-</div>
+<main class="flex flex-col items-start w-full">
 
-<main class="pb-20">
+  <!-- What I've been doing recently -->
+  <section class="bg-[#fbfbfa] flex flex-col gap-[40px] items-start px-5 md:px-[80px] pt-[120px] w-full">
+    <div class="flex flex-col gap-[8px] items-start w-full">
+      <p class="eyebrow">What I've been doing recently</p>
+      <p class="font-display text-[36px] leading-[1.2] m-0">Recent Work</p>
+    </div>
 
-<section id="clients" class="px-6 mt-10 md:mt-12 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Clients</span>
-</div>
+    <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[32px] w-full"></div>
 
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">YLE - JapaniEfekti!!</h3>
-<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400" title="YLE JapaniEfekti"></iframe>
-<p class="text-xs text-zinc-500 mt-3">If YLE shows a cookie prompt, choose “Vain välttämättömät” (Only necessary) to watch.</p>
-</div>
+    <div class="w-full flex justify-center mt-[8px]">
+      <a href="/projects/" class="view-all-btn">VIEW ALL PROJECTS &#8594;</a>
+    </div>
+  </section>
 
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Epic Meets</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/b0FK7TGEHdI" title="Epic Meets" frameborder="0" allowfullscreen></iframe>
-</div>
+  <!-- Featured release -->
+  <section class="bg-[#fbfbfa] flex flex-col gap-[64px] items-start px-5 md:px-[80px] py-[120px] w-full">
+    <div class="flex flex-col gap-[8px] items-start w-full">
+      <p class="eyebrow">Featured Release</p>
+      <p class="font-display text-[36px] leading-[1.2] m-0">Showreel — Cinematic</p>
+    </div>
 
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Vacuum Wood Tech</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/M0W-rCrrg0E" title="Vacuum Wood Tech" frameborder="0" allowfullscreen></iframe>
-</div>
+    <div class="shiro-featured flex flex-col lg:flex-row gap-[80px] items-start lg:items-center w-full">
+      <div class="rounded-[8px] shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)] shrink-0 w-full lg:w-[480px] lg:h-[480px] aspect-square relative overflow-hidden">
+        <img alt="Rustoga promo" class="absolute inset-0 max-w-none object-cover rounded-[8px] size-full" src="/assets/Rustoga_2023_Promo_small_2.jpg" />
+      </div>
 
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Hypeworks event production</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0fkT4cHags8" title="Hypeworks" frameborder="0" allowfullscreen></iframe>
-</div>
+      <div class="flex flex-1 flex-col gap-[32px] items-start min-w-0">
+        <p class="font-display text-[22px] md:text-[32px] leading-[1.3] m-0">A sonic journey through stillness and movement.</p>
+        <p class="font-normal leading-[1.7] text-[#666560] text-[16px] m-0 max-w-[52ch]">
+          Finnish composer and music producer known for versatile work across different medias — blending from
+          commercial projects into contemporary sonar exploration and distinctive soundscapes.
+        </p>
 
-<div class="card rounded-sm p-6">
-<h3 class="card-title font-brand mb-3">Desucon - Dance Anthem</h3>
-<audio controls preload="metadata">
-<source src="https://dl.dropboxusercontent.com/scl/fi/h1xg0v1hfovhvtz1917ti/AnimeIdol_EditMyy_2.wav?rlkey=b3bt0e3lt25i4s3mieqh5tdeg&st=a6rs0y2w" type="audio/wav">
-</audio>
-</div>
-</div>
-</section>
+        <div class="track-shell w-full">
+          <div class="audio-shell">
+            <button class="play-btn" aria-label="Play Showreel" onclick="document.getElementById('feat-audio').play()">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M6 12.8338C8.76164 12.8338 11.0004 10.2219 11.0004 7C11.0004 3.77808 8.76164 1.1662 6 1.1662C3.23836 1.1662 0.9996 3.77808 0.9996 7C0.9996 10.2219 3.23836 12.8338 6 12.8338Z" stroke="white" stroke-width="2"/><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+            </button>
+            <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+              <p class="font-semibold leading-normal text-[#111] text-[14px] whitespace-nowrap m-0">Showreel — Cinematic</p>
+              <audio id="feat-audio" controls preload="metadata">
+                <source src="https://dl.dropboxusercontent.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3" type="audio/wav">
+              </audio>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<section id="trailermusic" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Trailers</span>
-</div>
+  <!-- Selected tracks -->
+  <section class="bg-[#fbfbfa] flex flex-col gap-[40px] items-start px-5 md:px-[80px] pb-[120px] w-full">
+    <p class="eyebrow">Selected Tracks</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-[24px] w-full">
 
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa 1 (Main Theme)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa Rauha (Peace)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Space within Power (Sci-fi)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uqel62rv2u05i0g2qs3ld/TrailerMusic_Sci-fi_RudolfWesterholm.wav?rlkey=1r6wlivsg8uvhi400rk2yszle&st=r4kx4krr&dl=0" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Nosferatu</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/hcg29nfikg6cp976irq7k/TrailerMusic_Nosferatu_RudolfWesterholm.wav?rlkey=ftz1ocr49fg8b18wd10465eem&st=tjex94gd&dl=0" type="audio/wav"></audio></div>
-</div>
-</section>
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play Pohjanmaa 1" onclick="document.getElementById('t1').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">Pohjanmaa 1 (Main Theme)</p>
+            <audio id="t1" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
 
-<section id="personal" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.15s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Personal</span></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Lush Release</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Sensory Integration Techno</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/pn9fpd6kjhvhp3xy65g35/03_Touch_Rustoga_Feat_Albin_Sensory-Intergration.wav?rlkey=92fbvk9o43vx6ifz2uvterng6" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">RAILO</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Choral Reef Ghostestra Album</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7" type="audio/wav"></audio></div>
-</div>
-</section>
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play Space within Power" onclick="document.getElementById('t2').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">Space within Power (Sci-fi)</p>
+            <audio id="t2" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uqel62rv2u05i0g2qs3ld/TrailerMusic_Sci-fi_RudolfWesterholm.wav?rlkey=1r6wlivsg8uvhi400rk2yszle&st=r4kx4krr&dl=0" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
 
-<section id="games" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.2s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Games</span></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Stormdivers Menu Song</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Entangled Mecha Game Audio</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88rto734zqh33qkuoc0nl/Rustoga_EntangledMecha_Explore2.wav?rlkey=el7y8z319cmo4sjlv8p6v9fbs&st=810alzmd" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Castlevania-like SmolVania</h3><audio controls preload="metadata" class="mb-2"><source src="https://dl.dropboxusercontent.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02" type="audio/mp3"></audio><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar" type="audio/mp3"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Spelunky-like (GameJam Entry)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/irnz9kvuzbhdo97ib4z9t/RudolfWesterholm_GameJam_SpelunkyLike.ogg?rlkey=683lacoc8jgt0wi38ot9i2htf&st=rc9fzz3s" type="audio/ogg"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">GameJams 2023 Showreel (Compilation)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/yoy4vq3nr2jxp48bpnnuk/Showreel2023_Rudolf_GameJams.wav?rlkey=jqdiezic9da5t0oiq1eb7p75x&st=msof3m1g" type="audio/wav"></audio></div>
-</div>
-</section>
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play RAILO" onclick="document.getElementById('t3').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">RAILO</p>
+            <audio id="t3" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
 
-<section id="experiments" class="px-6 mb-20 opacity-0 animate-in" style="animation-delay: 0.25s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Experiments</span></div>
-<div class="card rounded-sm p-6">
-<h3 class="card-title font-brand mb-3">Various Sound Techniques into Composition</h3>
-<audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uef5c9n180lwiqb4o967s/RudolfWesterholm_VariousSoundTechniques_Into_Composition.wav?rlkey=yx3psgpmfhr9a6mimk4uiljh5&st=uz7iexn3" type="audio/wav"></audio>
-</div>
-</div>
-</section>
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play Sensory Integration Techno" onclick="document.getElementById('t4').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">Sensory Integration Techno</p>
+            <audio id="t4" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/pn9fpd6kjhvhp3xy65g35/03_Touch_Rustoga_Feat_Albin_Sensory-Intergration.wav?rlkey=92fbvk9o43vx6ifz2uvterng6" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
 
-<section class="clients-strip" aria-label="Trusted by clients">
-<p class="clients-strip-heading">Trusted By Clients Like</p>
-<div class="clients-logos">
-<a href="https://yle.fi" target="_blank" rel="noreferrer"><img src="/Yle-logo_RGB_valkoinen.png" alt="YLE logo" class="logo-invert"></a>
-<a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="/vacuumwoodtech.png" alt="Vacuum Wood Tech logo"></a>
-<a href="#" aria-label="Suomen Podcastmedia"><img src="/suomenpodcastmedia2.png" alt="Suomen Podcastmedia logo"></a>
-<a href="#" aria-label="Housemarque"><img src="/id4uTWPX4Z_1758545161429.png" alt="Housemarque logo"></a>
-<a href="https://hypeworks.fi" target="_blank" rel="noreferrer"><img src="/hypeworks.jpeg" alt="Hypeworks logo"></a>
-<a href="https://epicmeets.com" target="_blank" rel="noreferrer"><img src="/epicmeets%20new%20logo%20small2.png" alt="Epic Meets logo"></a>
-<a href="https://desucon.fi" target="_blank" rel="noreferrer"><img src="/desucon2.png" alt="Desucon logo"></a>
-</div>
-<p class="clients-strip-footer">And Many More</p>
-</section>
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play Stormdivers Menu Song" onclick="document.getElementById('t5').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">Stormdivers Menu Song</p>
+            <audio id="t5" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-shell">
+        <div class="audio-shell">
+          <button class="play-btn" aria-label="Play Choral Reef" onclick="document.getElementById('t6').play()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+          </button>
+          <div class="flex flex-1 flex-col gap-[4px] items-start min-w-0">
+            <p class="font-semibold leading-normal text-[#111] text-[14px] m-0">Choral Reef — Ghostestra</p>
+            <audio id="t6" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7" type="audio/wav"></audio>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Trusted by -->
+  <section class="clients-strip w-full bg-white border-t border-b border-[#e8e5dd] py-[80px] md:py-[120px] text-center">
+    <p class="eyebrow" style="color:#666560">Trusted By Clients Like</p>
+    <div class="clients-logos flex flex-wrap items-center justify-center gap-[40px] md:gap-[64px] max-w-[1100px] mx-auto mt-[48px] px-6">
+      <a href="https://yle.fi" target="_blank" rel="noreferrer"><img src="/assets/Yle-logo_RGB_valkoinen.png" alt="YLE" style="filter:invert(1)" /></a>
+      <a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="/assets/vacuumwoodtech.png" alt="Vacuum Wood Tech" /></a>
+      <a href="#" aria-label="Suomen Podcastmedia"><img src="/assets/suomenpodcastmedia2.png" alt="Suomen Podcastmedia" /></a>
+      <a href="#" aria-label="Housemarque"><img src="/assets/id4uTWPX4Z_1758545161429.png" alt="Housemarque" style="filter:invert(1)" /></a>
+      <a href="https://hypeworks.fi" target="_blank" rel="noreferrer"><img src="/assets/hypeworks.jpeg" alt="Hypeworks" /></a>
+      <a href="https://epicmeets.com" target="_blank" rel="noreferrer"><img src="/assets/epicmeets-new-logo-small2.png" alt="Epic Meets" /></a>
+      <a href="https://desucon.fi" target="_blank" rel="noreferrer"><img src="/assets/desucon2.png" alt="Desucon" /></a>
+    </div>
+    <p class="eyebrow mt-[48px]" style="color:#666560">And Many More</p>
+  </section>
 
 </main>
+
+<footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© 2025 Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#666560] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rustoga" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+
+<script>
+  const RECENT = [
+    {
+      title: "YLE — JapaniEfekti!!",
+      year: "2022",
+      category: "Film & TV",
+      image: "/assets/JapaniEfekti_cover.jpg",
+      link: "/portfolio-item/japaniefekti/"
+    },
+    {
+      title: "Epic Meets",
+      year: "2021",
+      category: "Commercial",
+      image: "/assets/epicmeets-new-logo-small2.png",
+      link: "/portfolio-item/epic-meets/"
+    },
+    {
+      title: "Vacuum Wood Tech",
+      year: "2022",
+      category: "Commercial",
+      image: "/assets/vacuumwoodtech.png",
+      link: "/portfolio-item/vacuum-wood-tech/"
+    },
+    {
+      title: "Hypeworks — Event Production",
+      year: "2023",
+      category: "Commercial",
+      image: "/assets/hypeworks.jpeg",
+      link: "/portfolio-item/hypeworks/"
+    },
+    {
+      title: "Stormdivers",
+      year: "2019",
+      category: "Gaming",
+      image: "/assets/id4uTWPX4Z_1758545161429.png",
+      link: "/portfolio-item/stormdivers/"
+    },
+    {
+      title: "Pohjanmaa",
+      year: "2023",
+      category: "Trailers",
+      image: "/assets/Rustoga_2023_Promo_small_2.jpg",
+      link: "/portfolio-item/pohjanmaa/"
+    }
+  ];
+
+  (function () {
+    const grid = document.getElementById('recent-grid');
+    if (!grid) return;
+    grid.innerHTML = RECENT.map(p => `
+      <a class="project-card" href="${p.link}" ${p.link.startsWith('http') ? 'target="_blank" rel="noreferrer"' : ''}>
+        <div class="pc-thumb"><img alt="${p.title}" src="${p.image}" loading="lazy"></div>
+        <div class="pc-meta">
+          <span class="pc-year">${p.year} — ${p.category}</span>
+          <span class="pc-title">${p.title}</span>
+        </div>
+      </a>
+    `).join('');
+  })();
+
+  (function () {
+    var flipLink = document.querySelector('a.nav-link-sh[href="/visuals/"]');
+    if (flipLink) {
+      flipLink.addEventListener('click', function () {
+        try { sessionStorage.setItem('shiroThemeFlip', '1'); } catch (e) {}
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>

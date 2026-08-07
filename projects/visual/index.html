@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Visual Projects — Rudolf Westerholm</title>
+<meta name="description" content="Visual projects by Rudolf Westerholm — client photography, music videos, product and motion design." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#0e0e0f; color:#f2f1ee; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#9a978f; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#9a978f; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#fff; }
+  .nav-link-sh.active { color:#fff; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #fff; }
+  .proj-card { display:block; text-align:left; width:100%; }
+  .proj-card .pc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; position:relative; background:#1a1a1c; }
+  .proj-card .pc-thumb img { transition:transform 500ms ease; width:100%; height:100%; object-fit:cover; }
+  .proj-card:hover .pc-thumb img { transform:scale(1.03); }
+  .proj-card .pc-meta { margin-top:16px; display:flex; flex-direction:column; gap:4px; }
+  .proj-card .pc-year { font-size:12px; color:#9a978f; }
+  .proj-card .pc-title { font-family:"Cormorant Garamond",serif; font-size:22px; line-height:1.2; }
+  .proj-card:hover .pc-title { opacity:0.7; transition:opacity 160ms ease; }
+  .view-all-btn {
+    display:inline-block;
+    margin: 8px auto 0;
+    font-size:13px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    font-weight:600;
+    color:#f2f1ee;
+    border:1px solid #f2f1ee;
+    border-radius:9999px;
+    padding:14px 32px;
+    transition:background 180ms ease, color 180ms ease;
+  }
+  .view-all-btn:hover { background:#f2f1ee; color:#0e0e0f; }
+  @media (max-width: 640px) {
+    nav.shiro-nav { flex-direction: column; gap: 14px; align-items: flex-start; }
+    nav.shiro-nav .shiro-nav-links { flex-wrap: wrap; gap: 14px 20px; }
+  }
+</style>
+</head>
+<body class="flex flex-col items-start min-h-screen w-full">
+
+<nav class="shiro-nav bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#26262a]">
+  <a href="/" class="font-semibold leading-normal text-[#f2f1ee] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="shiro-nav-links flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh active">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh">REACH</a>
+  </div>
+</nav>
+
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[40px]">
+  <p class="eyebrow mb-[16px]">Portfolio</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Visual Projects</h1>
+  <p class="font-normal leading-[1.6] text-[#9a978f] text-[16px] max-w-[60ch] mt-[20px] m-0">
+    A selection of portraits, product and documentary visuals — works in music videos, artist and product images, and corporate & motion design for a range of clients.
+  </p>
+</header>
+
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px] w-full">
+
+  <a class="proj-card" href="/visuals/torchia/">
+    <div class="pc-thumb"><img alt="Torchia" src="/assets/visuals/assets/torchia-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Music Video</span>
+      <span class="pc-title">Torchia</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Music videos and videography — Die Amor and Moon, Rise.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/swallow-the-sun/">
+    <div class="pc-thumb"><img alt="Swallow The Sun" src="/assets/visuals/assets/swallow-the-sun-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Music Video</span>
+      <span class="pc-title">Swallow The Sun</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Music video visuals for the metal band Swallow The Sun.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/samuel-boman/">
+    <div class="pc-thumb"><img alt="Samuel Boman" src="/assets/visuals/assets/samuel-boman-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Artist</span>
+      <span class="pc-title">Samuel Boman</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Visuals and videography for artist Samuel Boman.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/housemarque/">
+    <div class="pc-thumb"><img alt="Housemarque" src="/assets/visuals/assets/housemarque-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Game Studio</span>
+      <span class="pc-title">Housemarque</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Visual and motion work for Housemarque titles.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/jukio-kallio/">
+    <div class="pc-thumb"><img alt="Jukio Kallio" src="/assets/visuals/assets/jukio-kallio-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Composer</span>
+      <span class="pc-title">Jukio Kallio</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Promo and visual work for composer Jukio Kallio.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/whispered/">
+    <div class="pc-thumb"><img alt="Whispered" src="/assets/visuals/assets/whispered-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Music Video</span>
+      <span class="pc-title">Whispered</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Live and music video visuals for Whispered.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/aalto/">
+    <div class="pc-thumb"><img alt="Aalto University" src="/assets/visuals/assets/aalto-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Education</span>
+      <span class="pc-title">Aalto University</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Visual and motion work created during studies at Aalto University.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/markus/">
+    <div class="pc-thumb"><img alt="Markus" src="/assets/visuals/assets/markus-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Portrait</span>
+      <span class="pc-title">Markus</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Portrait and photography session with Markus.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/nex-machina/">
+    <div class="pc-thumb"><img alt="Nex Machina" src="/assets/visuals/assets/nex-machina-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Game Studio</span>
+      <span class="pc-title">Nex Machina</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Visual and motion design work for Nex Machina.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/sam-jamsen/">
+    <div class="pc-thumb"><img alt="Sam Jamsen" src="/assets/visuals/assets/sam-jamsen-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Videography</span>
+      <span class="pc-title">Sam Jamsen</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Videography and visual collaboration with Sam Jamsen.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/tuomas/">
+    <div class="pc-thumb"><img alt="Tuomas" src="/assets/visuals/assets/tuomas-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Portrait</span>
+      <span class="pc-title">Tuomas</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Portrait and photography session with Tuomas.</span>
+    </div>
+  </a>
+
+  <a class="proj-card" href="/visuals/wedding/">
+    <div class="pc-thumb"><img alt="Wedding" src="/assets/visuals/assets/wedding-thumb.jpg" loading="lazy"></div>
+    <div class="pc-meta">
+      <span class="pc-year">Event</span>
+      <span class="pc-title">Wedding</span>
+      <span class="text-[14px] text-[#9a978f] leading-[1.5]">Wedding videography and photography.</span>
+    </div>
+  </a>
+
+  </div>
+
+  <div class="w-full flex justify-center mt-[64px]">
+    <a href="/visuals/" class="view-all-btn">BACK TO VISUALS &#8594;</a>
+  </div>
+</main>
+
+<footer class="bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#26262a] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#9a978f] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#9a978f] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+</body></html>

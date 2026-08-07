@@ -1,169 +1,148 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rudolf Westerholm Portfolio</title>
-<link rel="icon" type="image/png" href="/favicon_rudolf.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reach — Rudolf Westerholm</title>
+<meta name="description" content="Get in touch with Rudolf Westerholm — composer and sound designer. Streaming, social, and contact links." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/site.css">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#fbfbfa; color:#111; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#666560; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#666560; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#111; }
+  .nav-link-sh.active { color:#111; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
+  .social-logo { display:flex; align-items:center; justify-content:center; width:56px; height:56px; border:1px solid #e8e5dd; border-radius:50%; background:#fff; transition:transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  .social-logo:hover { transform:translateY(-3px); border-color:#111; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+  .social-logo svg { width:24px; height:24px; fill:#111; }
+  .contact-note { font-family:"Cormorant Garamond",serif; font-size:20px; line-height:1.6; color:#666560; }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-size:12px; letter-spacing:0.04em; color:#666560; font-weight:500; }
+  .field input, .field textarea {
+    font-family:inherit; font-size:15px; color:#111; background:#fff;
+    border:1px solid #e8e5dd; border-radius:8px; padding:12px 14px; width:100%;
+    transition:border-color 160ms ease;
+  }
+  .field input:focus, .field textarea:focus { outline:none; border-color:#111; }
+  .field textarea { resize:vertical; min-height:140px; }
+  .send-btn {
+    font-family:inherit; font-weight:600; font-size:14px; letter-spacing:0.04em;
+    background:#111; color:#fff; border:none; border-radius:24px; padding:14px 32px;
+    cursor:pointer; transition:background 160ms ease; align-self:flex-start;
+  }
+  .send-btn:hover { background:#333; }
+  .form-status { font-size:14px; color:#666560; min-height:20px; }
+</style>
 </head>
-<body>
+<body class="flex flex-col items-start min-h-screen w-full">
 
-<nav class="top-nav" aria-label="Primary">
-  <div class="top-nav-inner">
-    <a href="/" class="font-brand" style="font-size: 12px; font-weight: 700">Rudolf Westerholm</a>
-    <div class="top-nav-links">
-      <a class="nav-link font-brand" href="/">Music</a>
-      <a class="nav-link font-brand" href="/visuals/">Visuals</a>
-      <a class="nav-link font-brand" href="/cv/">CV</a>
-      <a class="nav-link font-brand primary" href="/reach/">Reach</a>
-    </div>
+<nav class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#e8e5dd]">
+  <a href="/" class="font-semibold leading-normal text-[#111] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh active">REACH</a>
   </div>
 </nav>
 
-<header class="hero text-center">
-<div class="hero-content">
-<p class="hero-kicker font-brand text-zinc-300">Composer & Sound Designer Portfolio</p>
-<h1 class="hero-title font-brand text-white">Reach</h1>
-<p class="hero-intro text-zinc-300">Music Composer, Master of Sound, Visualist — Finnish composer and music producer known for versatile work across different medias.</p>
-</div>
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[24px]">
+  <p class="eyebrow mb-[16px]">Say hello</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Get in touch</h1>
 </header>
 
-<section id="connect" class="px-6 mt-8 mb-12 opacity-0 animate-in" style="animation-delay: 0.02s">
-<div class="social-section">
-<div class="flex items-center gap-3 mb-6 justify-center">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Connect</span>
-</div>
-<p class="social-tagline">Find me across platforms — streaming, social, and contact.</p>
-<div class="social-grid">
-<a class="social-link" href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer">Spotify</a>
-<a class="social-link" href="https://rustoga.bandcamp.com" target="_blank" rel="noreferrer">Bandcamp</a>
-<a class="social-link" href="https://soundcloud.com/rustoga" target="_blank" rel="noreferrer">SoundCloud</a>
-<a class="social-link" href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer">Apple Music</a>
-<a class="social-link" href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer">YouTube</a>
-<a class="social-link" href="https://instagram.com/rustoga" target="_blank" rel="noreferrer">Instagram</a>
-<a class="social-link" href="https://tiktok.com/@rustoga" target="_blank" rel="noreferrer">TikTok</a>
-<a class="social-link" href="https://x.com/rustoga" target="_blank" rel="noreferrer">X</a>
-<a class="social-link" href="https://www.facebook.com/rudolf.westerholm/" target="_blank" rel="noreferrer">Facebook</a>
-<a class="social-link" href="https://twitch.tv/rustoga" target="_blank" rel="noreferrer">Twitch</a>
-<a class="social-link" href="https://www.linkedin.com/in/rudolf-westerholm/" target="_blank" rel="noreferrer">LinkedIn</a>
-<a class="social-link" href="mailto:Rustoga@gmail.com">Email</a>
-</div>
-</div>
-</section>
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px] max-w-[820px]">
+  <p class="contact-note mb-[48px] m-0">
+    Music Composer, Master of Sound, Visualist — Finnish composer and music producer known for versatile work across different medias.
+    For commissions, collaborations, and licensing, reach out through any of the channels below.
+  </p>
 
-<div class="section-nav-wrap">
-<nav class="section-nav font-brand" aria-label="Portfolio sections">
-<a href="#clients" class="section-nav-link">Clients</a>
-<a href="#trailermusic" class="section-nav-link">Trailers</a>
-<a href="#personal" class="section-nav-link">Personal</a>
-<a href="#games" class="section-nav-link">Games</a>
-<a href="#experiments" class="section-nav-link">Experiments</a>
-</nav>
-</div>
+  <p class="eyebrow mb-[24px]">Find me on</p>
+  <div class="flex flex-wrap items-center gap-[16px] mb-[80px]">
+    <a class="social-logo" href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" aria-label="Spotify" title="Spotify">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.59 14.43a.62.62 0 0 1-.86.21c-2.35-1.44-5.3-1.76-8.79-.96a.62.62 0 1 1-.28-1.21c3.82-.87 7.08-.5 9.72 1.11.3.18.39.57.21.85zm1.23-2.74a.78.78 0 0 1-1.07.26c-2.69-1.65-6.79-2.13-9.97-1.17a.78.78 0 1 1-.45-1.49c3.64-1.1 8.16-.56 11.24 1.33.37.23.49.71.25 1.07zm.11-2.85C14.73 8.89 9.5 8.71 6.42 9.64a.93.93 0 1 1-.54-1.79c3.53-1.07 9.3-.86 12.99 1.39a.93.93 0 1 1-.95 1.6z"/></svg>
+    </a>
+    <a class="social-logo" href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" aria-label="Apple Music" title="Apple Music">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.6 3.1c.1 1.3-.4 2.6-1.2 3.6-.9 1-2.3 1.7-3.6 1.6-.1-1.3.4-2.6 1.2-3.6.9-1 2.4-1.7 3.6-1.6zM20.6 17c-.5 1.2-.8 1.7-1.5 2.7-.9 1.3-2.2 2.9-3.7 2.9-1.4.1-1.8-.9-3.7-.9s-2.4 1-3.7.9c-1.5 0-2.6-1.5-3.5-2.8C1.7 16.3 1 12.9 2.5 10.6c1-1.5 2.5-2.4 4-2.4 1.5 0 2.4 1 3.7 1 1.2 0 2-1 3.7-1 1.4 0 2.9.8 3.9 2.1-3.4 1.9-2.9 6.8.8 6.7z"/></svg>
+    </a>
+    <a class="social-logo" href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" aria-label="YouTube" title="YouTube">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .6 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23.4 12 31 31 0 0 0 23 7.5zM9.8 15.3V8.7l5.7 3.3-5.7 3.3z"/></svg>
+    </a>
+    <a class="social-logo" href="https://instagram.com/rustoga" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9.0 3.2 0 3.6-.1 4.9-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4a3.8 3.8 0 0 1-1.4-.9 3.8 3.8 0 0 1-.9-1.4c-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.3.8-.4.4-.6.8-.8 1.3-.2.4-.3 1-.4 2.1C2.6 10 2.6 10.4 2.6 12s0 2 .1 3.2c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.3.4.4.8.6 1.3.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.3-.8.4-.4.6-.8.8-1.3.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.2s0-2-.1-3.2c-.1-1.1-.2-1.7-.4-2.1a3.5 3.5 0 0 0-.8-1.3 3.5 3.5 0 0 0-1.3-.8c-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8.1a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zm6.2-8.3a1.1 1.1 0 1 1-2.3 0 1.1 1.1 0 0 1 2.3 0z"/></svg>
+    </a>
+    <a class="social-logo" href="https://soundcloud.com/rustoga" target="_blank" rel="noreferrer" aria-label="SoundCloud" title="SoundCloud">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v4h1v-4H4zm2 1v3h1v-3H6zm2-1v4h1v-4H8zm2 1v3h1v-3h-1zm3.5-3.2c-.3 0-.6.1-.8.2v4.8h5.6c1.6 0 2.9-1.3 2.9-2.9 0-1.6-1.3-2.9-2.9-2.9-.5 0-1 .1-1.4.3-1-1.4-2.6-2.3-4.4-2.3-2.4 0-4.4 1.7-4.9 4h-.1v5h12.8c2.3 0 4.2-1.9 4.2-4.2S21.3 9 19 9c-1.5 0-2.8.8-3.5 2"/></svg>
+    </a>
+    <a class="social-logo" href="https://rustoga.bandcamp.com" target="_blank" rel="noreferrer" aria-label="Bandcamp" title="Bandcamp">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16.5 12 6l9 10.5h-3.6L12 11.1 6.6 16.5H3z"/></svg>
+    </a>
+    <a class="social-logo" href="https://tiktok.com/@rustoga" target="_blank" rel="noreferrer" aria-label="TikTok" title="TikTok">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3c.3 2 1.5 3.4 3.5 3.7v2.6c-1.2.1-2.4-.2-3.5-.8v5.7c0 3-2.3 5.4-5.2 5.4A5.1 5.1 0 0 1 5.7 14c0-3.1 2.4-5.5 5.6-5.3v2.7c-.4-.1-.8-.1-1.2 0-1.3.2-2.2 1.4-2 2.7.2 1.3 1.4 2.2 2.7 2 1.2-.2 2.1-1.3 1.9-2.6V3h4.8z"/></svg>
+    </a>
+    <a class="social-logo" href="https://x.com/rustoga" target="_blank" rel="noreferrer" aria-label="X" title="X">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.7 21h-6l-4.7-6.1L5.3 21H2.3l7-8L2.6 3h6.1l4.3 5.6L17.5 3zm-1 16h1.7L7.6 4.8H5.8L16.5 19z"/></svg>
+    </a>
+    <a class="social-logo" href="https://www.facebook.com/rudolf.westerholm/" target="_blank" rel="noreferrer" aria-label="Facebook" title="Facebook">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7h2.3l.4-2.8h-2.7V9.4c0-.8.2-1.4 1.4-1.4h1.4V5.5c-.7-.1-1.4-.1-2.1-.1-2.1 0-3.5 1.3-3.5 3.6v2H8v2.8h2.3V21h3.2z"/></svg>
+    </a>
+    <a class="social-logo" href="https://twitch.tv/rustoga" target="_blank" rel="noreferrer" aria-label="Twitch" title="Twitch">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3 3 6.5V20h4.5v2h3l2-2H17l5-5V3H4zm15 9-3 3h-4l-2 2v-2H7V5h12v7zM16 8.5h-2V11h2V8.5zm-5 0h-2V11h2V8.5z"/></svg>
+    </a>
+    <a class="social-logo" href="https://www.linkedin.com/in/rudolf-westerholm/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.9 8.5H4V20h2.9V8.5zM5.4 3.5A1.7 1.7 0 1 0 5.4 7a1.7 1.7 0 0 0 0-3.5zM20 13.4c0-2.7-1.5-4-3.5-4-1.6 0-2.4.9-2.8 1.5V8.5H11v11.5h2.9v-5.7c0-1.5.3-2.8 1.9-2.8s1.7 1.1 1.7 2.8v5.7H20V13.4z"/></svg>
+    </a>
+    <a class="social-logo" href="mailto:Rustoga@gmail.com" aria-label="Email" title="Email">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7L4 7v.01L12 12l8-4.99V7l-9 5z"/></svg>
+    </a>
+  </div>
 
-<main class="pb-20">
-
-<section id="clients" class="px-6 mt-10 md:mt-12 mb-24 opacity-0 animate-in" style="animation-delay: 0.05s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Clients</span>
-</div>
-
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">YLE - JapaniEfekti!!</h3>
-<iframe src="https://areena.yle.fi/1-77353148" width="100%" height="400" title="YLE JapaniEfekti"></iframe>
-</div>
-
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Epic Meets</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/b0FK7TGEHdI" title="Epic Meets" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Vacuum Wood Tech</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/M0W-rCrrg0E" title="Vacuum Wood Tech" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<div class="card rounded-sm p-6 mb-6">
-<h3 class="card-title font-brand mb-3">Hypeworks event production</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0fkT4cHags8" title="Hypeworks" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<div class="card rounded-sm p-6">
-<h3 class="card-title font-brand mb-3">Desucon - Dance Anthem</h3>
-<audio controls preload="metadata">
-<source src="https://dl.dropboxusercontent.com/scl/fi/h1xg0v1hfovhvtz1917ti/AnimeIdol_EditMyy_2.wav?rlkey=b3bt0e3lt25i4s3mieqh5tdeg&st=a6rs0y2w" type="audio/wav">
-</audio>
-</div>
-</div>
-</section>
-
-<section id="trailermusic" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.1s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8">
-<span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-<span class="section-badge">Trailers</span>
-</div>
-
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa 1 (Main Theme)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Pohjanmaa Rauha (Peace)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Space within Power (Sci-fi)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uqel62rv2u05i0g2qs3ld/TrailerMusic_Sci-fi_RudolfWesterholm.wav?rlkey=1r6wlivsg8uvhi400rk2yszle&st=r4kx4krr&dl=0" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Nosferatu</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/hcg29nfikg6cp976irq7k/TrailerMusic_Nosferatu_RudolfWesterholm.wav?rlkey=ftz1ocr49fg8b18wd10465eem&st=tjex94gd&dl=0" type="audio/wav"></audio></div>
-</div>
-</section>
-
-<section id="personal" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.15s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Personal</span></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Lush Release</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/ftrl626oyfsxg0469rqu3/01-Rustoga-As-dream-in-sleep-I-was-born-into-this-world-And-the-mind-so-featherlight-As-a-dew-into-the-morning-I-will-some-M1_24-48000.wav?rlkey=h42ixb89ic7slqvcttw12720i&st=cmbm0uz3" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Sensory Integration Techno</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/pn9fpd6kjhvhp3xy65g35/03_Touch_Rustoga_Feat_Albin_Sensory-Intergration.wav?rlkey=92fbvk9o43vx6ifz2uvterng6" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">RAILO</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/kwkjqzsaxub5u1512kjr7/DOOM_1_RAILO.wav?rlkey=0l9e78tz5p2l64ovj1qw7sv8o&st=qcotl924" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">Choral Reef Ghostestra Album</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/xdwqlidijq0o4vxxqwfyl/5-Choral-Reef.wav?rlkey=i4p2fgu7927tkuumr3s17ssk7" type="audio/wav"></audio></div>
-</div>
-</section>
-
-<section id="games" class="px-6 mb-24 opacity-0 animate-in" style="animation-delay: 0.2s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Games</span></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Stormdivers Menu Song</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/cm4s7b511h2lkys5d7cr4/Stormdivers_menusong_by-rudolf.wav?rlkey=5ja3a9dsk4zcpbzmj78kqcgck&st=9iwej3fk" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Entangled Mecha Game Audio</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88rto734zqh33qkuoc0nl/Rustoga_EntangledMecha_Explore2.wav?rlkey=el7y8z319cmo4sjlv8p6v9fbs&st=810alzmd" type="audio/wav"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Castlevania-like SmolVania</h3><audio controls preload="metadata" class="mb-2"><source src="https://dl.dropboxusercontent.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02" type="audio/mp3"></audio><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar" type="audio/mp3"></audio></div>
-<div class="card rounded-sm p-6 mb-6"><h3 class="card-title font-brand mb-3">Spelunky-like (GameJam Entry)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/irnz9kvuzbhdo97ib4z9t/RudolfWesterholm_GameJam_SpelunkyLike.ogg?rlkey=683lacoc8jgt0wi38ot9i2htf&st=rc9fzz3s" type="audio/ogg"></audio></div>
-<div class="card rounded-sm p-6"><h3 class="card-title font-brand mb-3">GameJams 2023 Showreel (Compilation)</h3><audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/yoy4vq3nr2jxp48bpnnuk/Showreel2023_Rudolf_GameJams.wav?rlkey=jqdiezic9da5t0oiq1eb7p75x&st=msof3m1g" type="audio/wav"></audio></div>
-</div>
-</section>
-
-<section id="experiments" class="px-6 mb-20 opacity-0 animate-in" style="animation-delay: 0.25s">
-<div class="max-w-4xl mx-auto">
-<div class="flex items-center gap-3 mb-8"><span class="w-1 h-1 rounded-full bg-zinc-700"></span><span class="section-badge">Experiments</span></div>
-<div class="card rounded-sm p-6">
-<h3 class="card-title font-brand mb-3">Various Sound Techniques into Composition</h3>
-<audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/uef5c9n180lwiqb4o967s/RudolfWesterholm_VariousSoundTechniques_Into_Composition.wav?rlkey=yx3psgpmfhr9a6mimk4uiljh5&st=uz7iexn3" type="audio/wav"></audio>
-</div>
-</div>
-</section>
-
-<section class="clients-strip" aria-label="Trusted by clients">
-<p class="clients-strip-heading">Trusted By Clients Like</p>
-<div class="clients-logos">
-<a href="https://yle.fi" target="_blank" rel="noreferrer"><img src="/Yle-logo_RGB_valkoinen.png" alt="YLE logo" class="logo-invert"></a>
-<a href="https://vacuumwoodtech.com" target="_blank" rel="noreferrer"><img src="/vacuumwoodtech.png" alt="Vacuum Wood Tech logo"></a>
-<a href="#" aria-label="Suomen Podcastmedia"><img src="/suomenpodcastmedia2.png" alt="Suomen Podcastmedia logo"></a>
-<a href="#" aria-label="Housemarque"><img src="/id4uTWPX4Z_1758545161429.png" alt="Housemarque logo"></a>
-<a href="https://hypeworks.fi" target="_blank" rel="noreferrer"><img src="/hypeworks.jpeg" alt="Hypeworks logo"></a>
-<a href="https://epicmeets.com" target="_blank" rel="noreferrer"><img src="/epicmeets%20new%20logo%20small2.png" alt="Epic Meets logo"></a>
-<a href="https://desucon.fi" target="_blank" rel="noreferrer"><img src="/desucon2.png" alt="Desucon logo"></a>
-</div>
-<p class="clients-strip-footer">And Many More</p>
-</section>
-
+  <div class="w-full border-t border-[#e8e5dd] pt-[56px]">
+    <p class="eyebrow mb-[24px]">Contact form</p>
+    <form id="contact-form" class="flex flex-col gap-[20px]" action="https://formsubmit.co/Rustoga@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="New message from rudolfwesterholm.com/shiro" />
+      <input type="hidden" name="_next" value="https://rudolfwesterholm.com/reach/" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-[20px]">
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="subject">Subject</label>
+        <input id="subject" name="subject" type="text" required placeholder="What is this about?" />
+      </div>
+      <div class="field">
+        <label for="message">Write your message</label>
+        <textarea id="message" name="message" required placeholder="Tell me about your project..."></textarea>
+      </div>
+      <button class="send-btn" type="submit">Send &#8594;</button>
+      <p class="form-status" id="form-status"></p>
+    </form>
+  </div>
 </main>
+
+<footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#666560] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rustoga" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>

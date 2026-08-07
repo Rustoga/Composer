@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Samuel Boman — Rudolf Westerholm</title>
+<meta name="description" content="Visuals and videography for artist Samuel Boman." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#0e0e0f; color:#f2f1ee; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; transition:background-color 750ms ease; }
+  .theme-flip-in { opacity:0; animation: themeFade 750ms ease forwards; }
+  @keyframes themeFade { from { opacity:0; } to { opacity:1; } }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#9a978f; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#9a978f; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#fff; }
+  .nav-link-sh.active { color:#fff; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #fff; }
+  .video-shell { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; }
+  .video-shell iframe, .video-shell video { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+  .feature-img { border-radius:8px; overflow:hidden; box-shadow:0 16px 32px rgba(0,0,0,0.05); }
+  .feature-img img { width:100%; height:auto; display:block; }
+  .rel-card { display:block; text-align:left; }
+  .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#1a1a1c; }
+  .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
+  .rel-card:hover .rc-thumb img { transform:scale(1.03); }
+  .rel-card .rc-title { font-family:"Cormorant Garamond",serif; font-size:20px; margin-top:12px; }
+  .back-link { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:0.04em; font-weight:500; color:#9a978f; margin:24px 0 0 0; transition:color 160ms ease; }
+  .back-link:hover { color:#fff; }
+   @media (max-width:640px) {
+    nav.shiro-nav { flex-direction: column; gap: 14px; align-items: flex-start; }
+    nav.shiro-nav .shiro-nav-links { flex-wrap: wrap; gap: 14px 20px; }
+  }
+</style>
+</head>
+<body class="flex flex-col items-start min-h-screen w-full">
+
+<nav class="shiro-nav bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#26262a]">
+  <a href="/" class="font-semibold leading-normal text-[#f2f1ee] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="shiro-nav-links flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh active">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh">REACH</a>
+  </div>
+</nav>
+
+<a href="/visuals/" class="back-link px-5 md:px-[80px]">&larr; Back to Visuals</a>
+
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[40px]">
+  <p class="eyebrow mb-[16px]">Visuals / Artist</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Samuel Boman</h1>
+</header>
+
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
+  <p class="text-[14px] tracking-[0.04em] text-[#9a978f] mb-[32px]">Videography</p>
+
+  <div class="video-shell"><iframe src="https://www.youtube.com/embed/39JtQ47ud-I?si=9FcFt8lXGrbC39JC" title="Samuel Boman" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+
+  <div class="w-full mt-[120px]">
+    <p class="eyebrow mb-[32px]">Related projects</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-[32px]">
+      <a class="rel-card" href="/visuals/torchia/">
+        <div class="rc-thumb"><img alt="Torchia" src="/assets/visuals/assets/torchia-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Torchia</div>
+      </a>
+      <a class="rel-card" href="/visuals/swallow-the-sun/">
+        <div class="rc-thumb"><img alt="Swallow The Sun" src="/assets/visuals/assets/swallow-the-sun-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Swallow The Sun</div>
+      </a>
+      <a class="rel-card" href="/visuals/housemarque/">
+        <div class="rc-thumb"><img alt="Housemarque" src="/assets/visuals/assets/housemarque-thumb.jpg" loading="lazy"></div>
+        <div class="rc-title">Housemarque</div>
+      </a>
+    </div>
+    <a href="/projects/visual" class="inline-block mt-[40px] text-[13px] tracking-[0.04em] text-[#9a978f] hover:text-[#fff] transition-colors">View all projects →</a>
+  </div>
+</main>
+
+<footer class="bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#26262a] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#9a978f] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#9a978f] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+<script>
+  (function () {
+    var doFlip = false;
+    try { doFlip = sessionStorage.getItem("shiroThemeFlip") === "1"; } catch (e) {}
+    if (!doFlip) return;
+    try { sessionStorage.removeItem("shiroThemeFlip"); } catch (e) {}
+    var body = document.body;
+    var content = document.querySelector("main");
+    body.style.transition = "none";
+    body.style.backgroundColor = "#fbfbfa";
+    if (content) { content.classList.add("theme-flip-in"); }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        body.style.transition = "";
+        body.style.backgroundColor = "#0e0e0f";
+      });
+    });
+  })();
+</script>
+</body></html>

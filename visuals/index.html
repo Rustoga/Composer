@@ -1,607 +1,160 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Rudolf Westerholm – Visuals: photography & client work." />
-    <title>Visuals – Rudolf Westerholm</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Visuals — Rudolf Westerholm</title>
+<meta name="description" content="Rudolf Westerholm — Visuals: client photography, music videos, product and motion design." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#0e0e0f; color:#f2f1ee; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; transition:background-color 750ms ease; }
+  .theme-flip-in { opacity:0; animation: themeFade 750ms ease forwards; }
+  @keyframes themeFade { from { opacity:0; } to { opacity:1; } }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#9a978f; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#9a978f; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#fff; }
+  .nav-link-sh.active { color:#fff; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #fff; }
+  .proj-card { display:block; text-align:left; width:100%; }
+  .proj-card .pc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; position:relative; background:#1a1a1c; }
+  .proj-card .pc-thumb img { transition:transform 500ms ease; width:100%; height:100%; object-fit:cover; }
+  .proj-card:hover .pc-thumb img { transform:scale(1.03); }
+  .proj-card .pc-meta { margin-top:16px; display:flex; flex-direction:column; gap:4px; }
+  .proj-card .pc-year { font-size:12px; color:#9a978f; }
+  .proj-card .pc-title { font-family:"Cormorant Garamond",serif; font-size:22px; line-height:1.2; }
+  .proj-card:hover .pc-title { opacity:0.7; transition:opacity 160ms ease; }
+  .video-shell { background:#000; border-radius:8px; overflow:hidden; aspect-ratio:4/3; }
+  .video-shell iframe { width:100%; height:100%; border:0; display:block; }
+  .more-strip { border-top:1px solid #26262a; border-bottom:1px solid #26262a; padding:clamp(3rem,8vw,5rem) clamp(1.25rem,5vw,2rem); text-align:center; }
+  .more-strip h2 { font-family:"Cormorant Garamond",serif; font-weight:400; font-size:clamp(1.5rem,3vw,2.25rem); margin:0 0 1.5rem; color:#f2f1ee; }
+  .more-links { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 28px; max-width:900px; margin:0 auto; }
+  .more-links a { font-size:13px; letter-spacing:0.04em; color:#9a978f; transition:color 160ms ease; }
+  .more-links a:hover { color:#fff; }
+  .view-all-btn {
+    display: inline-block;
+    margin: 8px auto 0;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #f2f1ee;
+    border: 1px solid #f2f1ee;
+    border-radius: 9999px;
+    padding: 14px 32px;
+    transition: background 180ms ease, color 180ms ease;
+  }
+  .view-all-btn:hover { background: #f2f1ee; color: #0e0e0f; }
+  @media (max-width: 640px) {
+    nav.shiro-nav { flex-direction: column; gap: 14px; align-items: flex-start; }
+    nav.shiro-nav .shiro-nav-links { flex-wrap: wrap; gap: 14px 20px; }
+    .more-links { gap: 12px 18px; }
+  }
+</style>
+</head>
+<body class="flex flex-col items-start min-h-screen w-full">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+<nav class="shiro-nav bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#26262a]">
+  <a href="/" class="font-semibold leading-normal text-[#f2f1ee] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="shiro-nav-links flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh active">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh">PROJECTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh">REACH</a>
+  </div>
+</nav>
 
-    <style>
-      :root {
-        --charcoal: #1a1a1f;
-        --accent: #0ea5e9;
-        --text: #f1f5f9;
-      }
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[24px]">
+  <p class="eyebrow mb-[16px]">Client Photography & Visuals</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Visuals</h1>
+  <p class="font-normal leading-[1.6] text-[#9a978f] text-[16px] max-w-[60ch] mt-[20px] m-0">
+    A selection of portraits, product and documentary visuals — works in music videos, artist and product images, and corporate & motion design for a range of clients.
+  </p>
+</header>
 
-      * {
-        box-sizing: border-box;
-      }
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[80px]">
+  <p class="eyebrow mb-[32px]">Client Work</p>
+  <div id="client-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px] w-full"></div>
 
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-      }
+  <div class="w-full flex justify-center mt-[48px]">
+    <a href="/projects/visual" class="view-all-btn">VIEW ALL PROJECTS &#8594;</a>
+  </div>
+</main>
 
-      body {
-        background: linear-gradient(135deg, var(--charcoal) 0%, #12121a 50%, var(--charcoal) 100%);
-        color: var(--text);
-        font-family: "Inter", sans-serif;
-        padding-top: clamp(78px, 11vh, 118px);
-      }
+<section class="more-strip w-full">
+  <h2>And many more</h2>
+  <div class="more-links">
+    <a href="/projects/visual" class="font-semibold">View all projects →</a>
+    <a href="https://housemarque.com" target="_blank" rel="noreferrer">Housemarque</a>
+    <a href="https://www.youtube.com/rustogaMusic" target="_blank" rel="noreferrer">YouTube</a>
+    <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer">Instagram</a>
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer">Spotify</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer">Apple Music</a>
+  </div>
+</section>
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
+<footer class="bg-[#0e0e0f] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#26262a] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#9a978f] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2025</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#9a978f] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#fff] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
 
-      .font-brand {
-        font-family: "Syncopate", sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-      }
+<script>
+  const CLIENTS = [
+    { name:"Torchia", tag:"Music Video", slug:"torchia", image:"/assets/visuals/assets/torchia-thumb.jpg", desc:"Music videos and videography — Die Amor and Moon, Rise." },
+    { name:"Swallow The Sun", tag:"Music Video", slug:"swallow-the-sun", image:"/assets/visuals/assets/swallow-the-sun-thumb.jpg", desc:"Music video visuals for the metal band Swallow The Sun." },
+    { name:"Samuel Boman", tag:"Artist", slug:"samuel-boman", image:"/assets/visuals/assets/samuel-boman-thumb.jpg", desc:"Visuals and videography for artist Samuel Boman." },
+    { name:"Housemarque", tag:"Game Studio", slug:"housemarque", image:"/assets/visuals/assets/housemarque-thumb.jpg", desc:"Visual and motion work for Housemarque titles." },
+    { name:"Jukio Kallio", tag:"Composer", slug:"jukio-kallio", image:"/assets/visuals/assets/jukio-kallio-thumb.jpg", desc:"Promo and visual work for composer Jukio Kallio." },
+    { name:"Whispered", tag:"Music Video", slug:"whispered", image:"/assets/visuals/assets/whispered-thumb.jpg", desc:"Live and music video visuals for Whispered." },
+    { name:"Aalto University", tag:"Education", slug:"aalto", image:"/assets/visuals/assets/aalto-thumb.jpg", desc:"Visual and motion work created during studies at Aalto University." },
+    { name:"Tuomas", tag:"Portrait", slug:"tuomas", image:"/assets/visuals/assets/tuomas-thumb.jpg", desc:"Portrait and photography session with Tuomas." },
+    { name:"Wedding", tag:"Event", slug:"wedding", image:"/assets/visuals/assets/wedding-thumb.jpg", desc:"Wedding videography and photography." },
+    { name:"Nex Machina", tag:"Game Studio", slug:"nex-machina", image:"/assets/visuals/assets/nex-machina-thumb.jpg", desc:"Visual and motion design work for Nex Machina." },
+    { name:"Markus", tag:"Portrait", slug:"markus", image:"/assets/visuals/assets/markus-thumb.jpg", desc:"Portrait and photography session with Markus." },
+    { name:"Sam Jamsen", tag:"Videography", slug:"sam-jamsen", image:"/assets/visuals/assets/sam-jamsen-thumb.jpg", desc:"Videography and visual collaboration with Sam Jamsen." }
+  ];
 
-      .top-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 50;
-        background: rgba(24, 24, 27, 0.86);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-      }
-
-      .top-nav-inner {
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 16px 18px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-
-      .top-nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 8px 14px;
-      }
-
-      .nav-link {
-        font-size: 11px;
-        letter-spacing: 0.22em;
-        opacity: 0.72;
-        transition: opacity 180ms ease, background 180ms ease;
-        padding: 10px 10px;
-        border-radius: 3px;
-      }
-
-      .nav-link:hover,
-      .nav-link:focus-visible {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.06);
-        outline: none;
-      }
-
-      .nav-link.primary {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.06);
-        font-weight: 600;
-      }
-
-      .hero {
-        position: relative;
-        min-height: clamp(280px, 42vh, 430px);
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(1200px 500px at 10% 10%, rgba(14, 165, 233, 0.18) 0%, rgba(0, 0, 0, 0) 60%),
-          radial-gradient(900px 420px at 90% 20%, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0) 62%),
-          linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65));
-      }
-
-      .hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: url("/Rustoga_2023_Promo_small_2.jpg") center center / cover no-repeat;
-        opacity: 0.32;
-        transform: scale(1.02);
-        filter: saturate(0.9) contrast(1.05);
-      }
-
-      .hero-content {
-        position: relative;
-        width: 100%;
-        max-width: 820px;
-        text-align: center;
-        padding: clamp(3.25rem, 9vh, 4.75rem) clamp(1.2rem, 7vw, 3.2rem);
-      }
-
-      .hero-title {
-        font-size: clamp(1.4rem, 2.7vw + 0.6rem, 2.55rem);
-        line-height: 1.1;
-        margin: 0 0 18px;
-      }
-
-      .hero-intro {
-        margin: 0 auto;
-        max-width: min(65ch, 100%);
-        font-size: clamp(0.9rem, 0.45vw + 0.78rem, 1.05rem);
-        line-height: 1.6;
-        opacity: 0.88;
-      }
-
-      .section {
-        padding: 0 18px;
-        margin: 42px 0 88px;
-      }
-
-      .container {
-        max-width: 1120px;
-        margin: 0 auto;
-      }
-
-      .section-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin: 0 0 18px;
-      }
-
-      .dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.22);
-      }
-
-      .section-badge {
-        display: inline-block;
-        font-size: 13px;
-        letter-spacing: 0.26em;
-        line-height: 1.35;
-        color: var(--accent);
-        text-transform: uppercase;
-        overflow-wrap: anywhere;
-      }
-
-      .lede {
-        margin: 0 0 26px;
-        max-width: 82ch;
-        line-height: 1.65;
-        opacity: 0.86;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        gap: 14px;
-      }
-
-      .tile {
-        grid-column: span 4;
-        border: 1px solid rgba(61, 61, 72, 0.55);
-        background: linear-gradient(135deg, rgba(45, 45, 53, 0.58) 0%, rgba(45, 45, 53, 0.28) 100%);
-        border-radius: 6px;
-        overflow: hidden;
-        position: relative;
-        transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-        min-height: 220px;
-      }
-
-      .tile:hover {
-        border-color: rgba(14, 165, 233, 0.8);
-        box-shadow: 0 16px 48px rgba(14, 165, 233, 0.12);
-        transform: translateY(-2px);
-      }
-
-      .tile a {
-        display: block;
-        height: 100%;
-      }
-
-      .thumb {
-        width: 100%;
-        height: 240px;
-        object-fit: cover;
-        display: block;
-        background: rgba(0, 0, 0, 0.32);
-      }
-
-      .thumb-embed {
-        width: 100%;
-        height: 240px;
-        border: 0;
-        display: block;
-        background: #0f0f14;
-      }
-
-      .tile-meta {
-        padding: 12px 14px 14px;
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .tile-title {
-        margin: 0;
-        font-size: 12px;
-        letter-spacing: 0.18em;
-        opacity: 0.92;
-      }
-
-      .pill {
-        font-size: 10px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        padding: 6px 8px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 999px;
-        opacity: 0.78;
-        white-space: nowrap;
-      }
-
-      .note {
-        margin-top: 14px;
-        opacity: 0.74;
-        font-size: 0.95rem;
-        line-height: 1.6;
-      }
-
-      .empty {
-        border: 1px dashed rgba(255, 255, 255, 0.18);
-        border-radius: 10px;
-        padding: 18px;
-        opacity: 0.88;
-        line-height: 1.6;
-      }
-
-      .more-tile {
-        grid-column: 1 / -1;
-        position: relative;
-        border: 1px solid rgba(61, 61, 72, 0.55);
-        border-radius: 10px;
-        overflow: hidden;
-        min-height: 230px;
-        background: #101018;
-      }
-
-      .more-bg {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-      }
-
-      .more-bg img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.22;
-      }
-
-      .more-fade {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          180deg,
-          rgba(16, 16, 24, 0.15) 0%,
-          rgba(16, 16, 24, 0.55) 35%,
-          rgba(16, 16, 24, 0.9) 70%,
-          rgba(16, 16, 24, 1) 100%
-        );
-      }
-
-      .more-content {
-        position: relative;
-        z-index: 1;
-        min-height: 230px;
-        padding: 28px 18px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        gap: 10px;
-      }
-
-      .more-title {
-        margin: 0;
-        font-size: clamp(1rem, 1.5vw + 0.55rem, 1.35rem);
-        letter-spacing: 0.14em;
-      }
-
-      .more-copy {
-        margin: 0;
-        max-width: 65ch;
-        opacity: 0.86;
-      }
-
-      footer {
-        padding: 30px 18px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        opacity: 0.9;
-      }
-
-      footer .container {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      @media (max-width: 980px) {
-        .tile {
-          grid-column: span 6;
-        }
-      }
-
-      @media (max-width: 620px) {
-        .tile {
-          grid-column: span 12;
-        }
-
-        .thumb {
-          height: 220px;
-        }
-
-        .top-nav-links {
-          justify-content: flex-start;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="top-nav" aria-label="Primary">
-      <div class="top-nav-inner">
-        <a href="/" class="font-brand" style="font-size: 12px; font-weight: 700">Rudolf Westerholm</a>
-        <div class="top-nav-links">
-          <a class="nav-link font-brand" href="/">Music</a>
-          <a class="nav-link font-brand primary" href="/visuals/">Visuals</a>
-          <a class="nav-link font-brand" href="/cv/">CV</a>
-          <a class="nav-link font-brand" href="/reach/">Reach</a>
-          <a class="nav-link font-brand" href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer">
-            Instagram
-          </a>
-        </div>
+  const grid = document.getElementById('client-grid');
+  grid.innerHTML = CLIENTS.map(c => `
+    <a class="proj-card" href="/visuals/${c.slug}/">
+      <div class="pc-thumb"><img alt="${c.name}" src="${c.image}" loading="lazy"></div>
+      <div class="pc-meta">
+        <span class="pc-year">${c.tag}</span>
+        <span class="pc-title">${c.name}</span>
+        <span class="text-[14px] text-[#9a978f] leading-[1.5]">${c.desc}</span>
       </div>
-    </nav>
+    </a>`).join('');
+</script>
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+<script>
+  (function () {
+    var doFlip = false;
+    try { doFlip = sessionStorage.getItem('shiroThemeFlip') === '1'; } catch (e) {}
+    if (!doFlip) return;
+    try { sessionStorage.removeItem('shiroThemeFlip'); } catch (e) {}
+    var body = document.body;
+    var content = document.querySelector('main');
+    body.style.transition = 'none';
+    body.style.backgroundColor = '#fbfbfa';
+    if (content) { content.classList.add('theme-flip-in'); }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        body.style.transition = '';
+        body.style.backgroundColor = '#0e0e0f';
+      });
+    });
+  })();
+</script>
 
-    <header class="hero">
-      <div class="hero-content">
-        <p class="font-brand" style="margin: 0 0 12px; font-size: 10px; letter-spacing: 0.3em; opacity: 0.75">
-          CLIENT PHOTOGRAPHY & VISUALS
-        </p>
-        <h1 class="hero-title font-brand">Visuals</h1>
-        <p class="hero-intro">
-          A selection of portrait, product, and documentary visuals — continuously updated from my Instagram feed.
-        </p>
-      </div>
-    </header>
-
-    <main>
-      <section class="section" aria-labelledby="section-photography">
-        <div class="container">
-          <div class="section-head">
-            <span class="dot" aria-hidden="true"></span>
-            <span class="section-badge" id="section-photography">Different Works</span>
-          </div>
-          <p class="lede">
-            Works in Music Videos, Artist and Product Images, Corporate Design and Motion Design realm.
-          </p>
-
-          <div id="ig-grid" class="grid" role="list" aria-label="Instagram gallery"></div>
-
-          <div id="ig-empty" class="empty" hidden>
-            <strong>Instagram feed not loaded yet.</strong>
-            <div class="note">
-              Add posts to <code>/visuals/instagram-manual.json</code> now for a manual launch, or set up the scheduled API
-              updater later with <code>/visuals/instagram-feed.json</code>.
-            </div>
-          </div>
-
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container">
-        <div style="opacity: 0.8">© <span id="year"></span> Rudolf Westerholm</div>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap">
-          <a href="mailto:Rudolf.westerholm@gmail.com" class="nav-link" style="padding: 8px 10px">Contact</a>
-          <a href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer" class="nav-link" style="padding: 8px 10px">
-            @rudolf_visual
-          </a>
-        </div>
-      </div>
-    </footer>
-
-    <script>
-      document.getElementById("year").textContent = String(new Date().getFullYear());
-
-      function guessType(item) {
-        const t = (item.media_type || "").toUpperCase();
-        if (t === "VIDEO") return "Video";
-        if (t === "CAROUSEL_ALBUM") return "Carousel";
-        return "Photo";
-      }
-
-      function safeText(s) {
-        return typeof s === "string" ? s : "";
-      }
-
-      function previewImageUrl(permalink) {
-        const p = safeText(permalink).trim();
-        if (!p) return "";
-        try {
-          const u = new URL(p);
-          const parts = u.pathname.split("/").filter(Boolean);
-          if (parts.length < 2) return "";
-          const [kind, code] = parts;
-          if (kind !== "p" && kind !== "reel" && kind !== "tv") return "";
-          return `https://www.instagram.com/${kind}/${code}/media/?size=l`;
-        } catch (e) {
-          return "";
-        }
-      }
-
-      function embedFrameUrl(permalink) {
-        const p = safeText(permalink).trim();
-        if (!p) return "";
-        try {
-          const u = new URL(p);
-          const parts = u.pathname.split("/").filter(Boolean);
-          if (parts.length < 2) return "";
-          const [kind, code] = parts;
-          const type = kind === "reel" || kind === "tv" ? kind : "p";
-          return `https://www.instagram.com/${type}/${code}/embed/captioned/?utm_source=ig_embed&utm_campaign=loading&theme=dark`;
-        } catch (e) {
-          return "";
-        }
-      }
-
-      function onThumbError(img) {
-        const embed = img.dataset.embed || "";
-        if (embed && img.dataset.embedTried !== "1") {
-          img.dataset.embedTried = "1";
-          const frame = document.createElement("iframe");
-          frame.className = "thumb-embed";
-          frame.loading = "lazy";
-          frame.src = embed;
-          frame.title = img.alt || "Instagram preview";
-          frame.referrerPolicy = "strict-origin-when-cross-origin";
-          img.replaceWith(frame);
-          return;
-        }
-        img.onerror = null;
-      }
-
-      function buildMoreTile(items) {
-        const bg = items
-          .slice(0, 12)
-          .map((item) => {
-            const permalink = safeText(item.permalink);
-            const src = safeText(item.thumbnail_url) || safeText(item.media_url) || previewImageUrl(permalink);
-            return src
-              ? `<img src="${src}" loading="lazy" alt="" aria-hidden="true" onerror="this.style.display='none'" />`
-              : "";
-          })
-          .join("");
-
-        return `
-          <div class="more-tile" role="listitem">
-            <div class="more-bg">${bg}</div>
-            <div class="more-fade" aria-hidden="true"></div>
-            <div class="more-content">
-              <p class="more-title font-brand">More On Instagram</p>
-              <p class="more-copy">For the full archive and newest visual posts, continue on @rudolf_visual.</p>
-              <a class="pill" href="https://instagram.com/rudolf_visual/" target="_blank" rel="noreferrer">Open Instagram</a>
-            </div>
-          </div>
-        `;
-      }
-
-      async function loadJson(path) {
-        const res = await fetch(path, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Missing ${path}`);
-        return res.json();
-      }
-
-      async function loadInstagram() {
-        const grid = document.getElementById("ig-grid");
-        const empty = document.getElementById("ig-empty");
-
-        try {
-          // Prefer automated feed, fallback to manual curation file.
-          let feed;
-          try {
-            feed = await loadJson("./instagram-feed.json");
-          } catch (err) {
-            feed = await loadJson("./instagram-manual.json");
-          }
-          let items = Array.isArray(feed?.items) ? feed.items : [];
-
-          // If automated cache exists but is empty, use manual fallback content.
-          if (!items.length) {
-            try {
-              const manual = await loadJson("./instagram-manual.json");
-              items = Array.isArray(manual?.items) ? manual.items : [];
-            } catch (err) {
-              // Keep empty state if no manual file exists.
-            }
-          }
-
-          if (!items.length) {
-            empty.hidden = false;
-            return;
-          }
-
-          const visibleItems = items.slice(0, 12);
-          const remainingItems = items.slice(12);
-          const html = visibleItems
-            .map((item) => {
-              const permalink = safeText(item.permalink) || "https://instagram.com/rudolf_visual/";
-              const title = safeText(item.caption).trim() ? safeText(item.caption).trim().slice(0, 60) : "Instagram post";
-              const label = guessType(item);
-              const directThumb = safeText(item.thumbnail_url) || safeText(item.media_url);
-              const embed = embedFrameUrl(permalink);
-
-              if (!directThumb && embed) {
-                return `
-                  <div class="tile" role="listitem">
-                    <iframe class="thumb-embed" loading="lazy" src="${embed}" title="${title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                    <div class="tile-meta">
-                      <p class="tile-title font-brand">${label}</p>
-                      <a class="pill" href="${permalink}" target="_blank" rel="noreferrer">Open</a>
-                    </div>
-                  </div>
-                `;
-              }
-
-              return `
-                <div class="tile" role="listitem">
-                  <a href="${permalink}" target="_blank" rel="noreferrer" aria-label="${title}">
-                    <img class="thumb" loading="lazy" src="${directThumb}" data-embed="${embed}" onerror="onThumbError(this)" alt="${title}" />
-                    <div class="tile-meta">
-                      <p class="tile-title font-brand">${label}</p>
-                      <span class="pill">Open</span>
-                    </div>
-                  </a>
-                </div>
-              `;
-            })
-            .join("");
-
-          grid.innerHTML = `${html}${buildMoreTile(remainingItems.length ? remainingItems : items)}`;
-        } catch (e) {
-          empty.hidden = false;
-        }
-      }
-
-      loadInstagram();
-    </script>
-  </body>
+</body>
 </html>
-
