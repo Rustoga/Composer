@@ -93,7 +93,7 @@
 </main>
 
 <footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
-  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© 2025 Rudolf Westerholm. All rights reserved.</p>
+  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
   <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#666560] text-[11px] whitespace-nowrap">
     <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">SPOTIFY</a>
     <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">APPLE MUSIC</a>
@@ -101,5 +101,5 @@
     <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">YOUTUBE</a>
   </div>
 </footer>
-
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body></html>
