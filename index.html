@@ -356,7 +356,7 @@
   (function () {
     const grid = document.getElementById('recent-grid');
     if (!grid) return;
-    grid.innerHTML = RECENT.map(p => `
+    grid.innerHTML = RECENT.slice(0, 6).map(p => `
       <a class="project-card" href="${p.link}" ${p.link.startsWith('http') ? 'target="_blank" rel="noreferrer"' : ''}>
         <div class="pc-thumb"><img alt="${p.title}" src="${p.image}" loading="lazy"></div>
         <div class="pc-meta">
