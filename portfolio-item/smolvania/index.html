@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Castlevania-like SmolVania — Rudolf Westerholm</title>
+<meta name="description" content="Castlevania-like SmolVania — gothic, orchestral game audio inspired by Castlevania, by Rustoga (Rudolf Westerholm)." />
+<link rel="icon" type="image/png" href="/assets/favicon_rudolf.png" />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { background:#fbfbfa; color:#111; font-family:"Instrument Sans",sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-display { font-family:"Cormorant Garamond",serif; }
+  .eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#666560; font-weight:600; }
+  .nav-link-sh { font-size:12px; letter-spacing:0.04em; font-weight:500; color:#666560; cursor:pointer; position:relative; padding-bottom:4px; background:none; border:none; transition:color 160ms ease; }
+  .nav-link-sh:hover { color:#111; }
+  .nav-link-sh.active { color:#111; }
+  .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
+  .audio-shell { background:#f5f3ed; border-radius:12px; padding:24px; display:flex; gap:20px; align-items:center; }
+  .play-btn { background:#111; border:none; border-radius:20px; width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 160ms ease; }
+  .play-btn:hover { background:#333; }
+  .audio-shell audio { width:100%; display:block; height:38px; border-radius:8px; color-scheme:light; }
+  .rel-card { display:block; text-align:left; }
+  .rel-card .rc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; background:#f5f3ed; }
+  .rel-card .rc-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 500ms ease; }
+  .rel-card:hover .rc-thumb img { transform:scale(1.03); }
+  .rel-card .rc-year { font-size:12px; color:#666560; margin-top:12px; }
+  .rel-card .rc-title { font-family:"Cormorant Garamond",serif; font-size:20px; }
+  .back-link { display:inline-flex; align-items:center; gap:8px; font-size:12px; letter-spacing:0.04em; font-weight:500; color:#666560; margin:24px 0 0 0; transition:color 160ms ease; }
+  .back-link:hover { color:#111; }
+</style>
+</head>
+<body class="flex flex-col items-start min-h-screen w-full">
+
+<nav class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[32px] relative shrink-0 w-full border-b border-[#e8e5dd]">
+  <a href="/" class="font-semibold leading-normal text-[#111] text-[16px] whitespace-nowrap">RUDOLF WESTERHOLM</a>
+  <div class="flex gap-5 md:gap-[40px] items-center">
+    <a href="/" class="nav-link-sh">MUSIC</a>
+    <a href="/visuals/" class="nav-link-sh">VISUALS</a>
+    <a href="/projects/" class="nav-link-sh active">PROJECTS</a>
+    <a href="/osts/" class="nav-link-sh">OSTS</a>
+    <a href="/cv/" class="nav-link-sh">CV</a>
+    <a href="/reach/" class="nav-link-sh">REACH</a>
+  </div>
+</nav>
+
+<a href="/projects/" class="back-link px-5 md:px-[80px]">&larr; Back to Projects</a>
+
+<header class="flex flex-col items-start w-full px-5 md:px-[80px] pt-[80px] pb-[40px]">
+  <p class="eyebrow mb-[16px]">Projects / Games</p>
+  <h1 class="font-display font-light text-[48px] md:text-[80px] leading-[1.1] m-0">Castlevania-like SmolVania</h1>
+</header>
+
+<main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
+  <div class="flex flex-col lg:flex-row gap-[64px] w-full">
+    <div class="lg:w-[55%] shrink-0">
+      <div class="rounded-[8px] overflow-hidden shadow-[0px_16px_32px_0px_rgba(0,0,0,0.05)]">
+        <img alt="Castlevania-like SmolVania" src="/assets/Imagination.png" class="w-full h-auto object-cover" />
+      </div>
+    </div>
+    <div class="flex-1 min-w-0 flex flex-col gap-[24px]">
+      <div class="grid grid-cols-2 gap-[20px]">
+        <div><p class="eyebrow">Client</p><p class="mt-[4px] text-[15px]">Rustoga</p></div>
+        <div><p class="eyebrow">Role</p><p class="mt-[4px] text-[15px]">Composer</p></div>
+        <div><p class="eyebrow">Category</p><p class="mt-[4px] text-[15px]">Games</p></div>
+      </div>
+      <p class="font-normal leading-[1.7] text-[#666560] text-[16px]">Gothic, orchestral game audio inspired by Castlevania.</p>
+
+      <div class="audio-shell">
+        <button class="play-btn" aria-label="Play SmolVania Level Music" onclick="document.getElementById('pa').play()">
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+        </button>
+        <div class="flex flex-1 flex-col gap-[4px] min-w-0">
+          <p class="font-semibold text-[#111] text-[14px] m-0">Level Music</p>
+          <audio id="pa" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/4llt0uhjc84fpmikzk3f3/SmolVania_RudolfWesterholm_LevelMusic.mp3?rlkey=i3p0fuekxdxxbzzau98vsp9hq&st=m5pd3a02" type="audio/mp3"></audio>
+        </div>
+      </div>
+
+      <div class="audio-shell">
+        <button class="play-btn" aria-label="Play SmolVania Game Over" onclick="document.getElementById('pb').play()">
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M5 4.5L8.5 7L5 9.5V4.5Z" fill="white"/></svg>
+        </button>
+        <div class="flex flex-1 flex-col gap-[4px] min-w-0">
+          <p class="font-semibold text-[#111] text-[14px] m-0">Game Over</p>
+          <audio id="pb" controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/3rzvykxw2ypeayup5o517/SmolVania_RudolfWesterholm_GameOver.mp3?rlkey=rmm14xevh13t0gxpa7jt4ynaw&st=0ldztyar" type="audio/mp3"></audio>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full mt-[120px]">
+    <p class="eyebrow mb-[32px]">Related projects</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-[32px]">
+      <a class="rel-card" href="/portfolio-item/stormdivers/">
+        <div class="rc-thumb"><img alt="Stormdivers" src="/assets/stormdivers-thumbnail.jpeg" loading="lazy"></div>
+        <div class="rc-title">Stormdivers</div>
+      </a>
+      <a class="rel-card" href="/portfolio-item/epic-meets/">
+        <div class="rc-thumb"><img alt="Epic Meets" src="/assets/epicmeets-thumbnail.jpeg" loading="lazy"></div>
+        <div class="rc-title">Epic Meets</div>
+      </a>
+      <a class="rel-card" href="/portfolio-item/vacuum-wood-tech/">
+        <div class="rc-thumb"><img alt="Vacuum Wood Tech" src="/assets/vacuumwoodtech-thumbnail.jpeg" loading="lazy"></div>
+        <div class="rc-title">Vacuum Wood Tech</div>
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
+  <p class="font-normal leading-normal text-[#666560] text-[12px] whitespace-nowrap m-0">© <span class="copyright-year">2026</span> Rudolf Westerholm. All rights reserved.</p>
+  <div class="flex font-semibold gap-[24px] items-start leading-normal text-[#666560] text-[11px] whitespace-nowrap">
+    <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">SPOTIFY</a>
+    <a href="https://music.apple.com/fi/artist/rustoga/1132754124" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">APPLE MUSIC</a>
+    <a href="https://instagram.com/rustoga" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">INSTAGRAM</a>
+    <a href="https://youtube.com/rustogaMusic" target="_blank" rel="noreferrer" class="hover:text-[#111] transition-colors">YOUTUBE</a>
+  </div>
+</footer>
+<script>document.querySelectorAll(".copyright-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+</body></html>
