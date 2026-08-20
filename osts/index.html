@@ -23,15 +23,20 @@
   .nav-link-sh.active { color:#111; }
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
   .ost-card { display:flex; flex-direction:column; gap:16px; background:#fff; border:1px solid #e8e5dd; border-radius:12px; padding:20px; }
-  .ost-cover { overflow:hidden; border-radius:8px; aspect-ratio:1/1; background:#f5f3ed; }
+  .ost-media { display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; }
+  .ost-cover { overflow:hidden; border-radius:8px; width:100%; max-width:340px; aspect-ratio:1/1; background:#f5f3ed; }
   .ost-cover img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 500ms ease; }
   .ost-card:hover .ost-cover img { transform:scale(1.03); }
+  .ost-embed { width:100%; max-width:340px; height:340px; border:0; border-radius:8px; }
+  .ost-audio { width:100%; max-width:340px; background:#f5f3ed; border-radius:12px; padding:16px; box-sizing:border-box; }
+  .ost-audio .oa-label { font-size:13px; font-weight:600; margin:0 0 8px 0; }
+  .ost-audio .oa-label + audio { margin-top:0; }
+  .ost-audio audio { width:100%; display:block; height:40px; border-radius:8px; color-scheme:light; }
   .ost-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
   .ost-title { font-family:"Cormorant Garamond",serif; font-size:24px; line-height:1.2; margin:0; }
   .ost-sub { font-size:14px; color:#666560; line-height:1.5; margin:0; }
   .ost-link { font-size:13px; font-weight:500; color:#111; white-space:nowrap; transition:color 160ms ease; }
   .ost-link:hover { color:#666560; }
-  .ost-embed { width:100%; border:0; border-radius:8px; }
 </style>
 </head>
 <body class="flex flex-col items-start min-h-screen w-full">
@@ -62,76 +67,109 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-[40px] w-full">
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="JapaniEfekti — OST" src="https://f4.bcbits.com/img/a2482134251_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="JapaniEfekti — OST" src="https://f4.bcbits.com/img/a2482134251_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=1554622172/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/japaniefekti-ost">JapaniEfekti — OST by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">JapaniEfekti — OST</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/japaniefekti-ost" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Original score for YLE's JapaniEfekti.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=1554622172/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/japaniefekti-ost">JapaniEfekti — OST by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Nurturing Growth" src="https://f4.bcbits.com/img/a0564732154_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Nurturing Growth" src="https://f4.bcbits.com/img/a0564732154_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=485095952/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/nurturing-growth">Nurturing Growth by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Nurturing Growth</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/nurturing-growth" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Original soundtrack album by Rustoga.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=485095952/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/nurturing-growth">Nurturing Growth by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Sensory Integration" src="https://f4.bcbits.com/img/a3910106390_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Sensory Integration" src="https://f4.bcbits.com/img/a3910106390_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=2179392842/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/sensory-integration">Sensory Integration by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Sensory Integration</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/sensory-integration" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Electronic techno release designed for dark-room gigs.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=2179392842/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/sensory-integration">Sensory Integration by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Paint On Me" src="https://f4.bcbits.com/img/a1452860575_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Paint On Me" src="https://f4.bcbits.com/img/a1452860575_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=1683189868/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/paint-on-me">Paint On Me by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Paint On Me</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/paint-on-me" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Album by Rustoga — available on Bandcamp.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=1683189868/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/paint-on-me">Paint On Me by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Krusadis: Lightchasers" src="https://f4.bcbits.com/img/a1986211981_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Krusadis: Lightchasers" src="https://f4.bcbits.com/img/a1986211981_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=2886275335/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/krusadis-lightchasers">Krusadis: Lightchasers by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Krusadis: Lightchasers</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/krusadis-lightchasers" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Original game soundtrack by Rustoga.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=2886275335/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/krusadis-lightchasers">Krusadis: Lightchasers by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Krusadis: Runeseekers" src="https://f4.bcbits.com/img/a0181823205_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Krusadis: Runeseekers" src="https://f4.bcbits.com/img/a0181823205_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=4200700478/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/krusadis-runeseekers">Krusadis: Runeseekers by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Krusadis: Runeseekers</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/krusadis-runeseekers" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">Original game soundtrack by Rustoga.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=4200700478/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/krusadis-runeseekers">Krusadis: Runeseekers by Rustoga</a></iframe>
     </div>
 
     <div class="ost-card">
-      <div class="ost-cover"><img alt="Leaves and Roots (EP)" src="https://f4.bcbits.com/img/a0796100466_5.jpg" loading="lazy"></div>
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Leaves and Roots (EP)" src="https://f4.bcbits.com/img/a0796100466_5.jpg" loading="lazy"></div>
+        <iframe class="ost-embed" src="https://bandcamp.com/EmbeddedPlayer/album=356910281/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/leaves-and-roots-ep">Leaves and Roots (EP) by Rustoga</a></iframe>
+      </div>
       <div class="ost-head">
         <h3 class="ost-title">Leaves and Roots (EP)</h3>
         <a class="ost-link" href="https://rustoga.bandcamp.com/album/leaves-and-roots-ep" target="_blank" rel="noreferrer">Listen &rarr;</a>
       </div>
       <p class="ost-sub">EP by Rustoga — available on Bandcamp.</p>
-      <iframe class="ost-embed" style="border:0; width:100%; height:500px;" src="https://bandcamp.com/EmbeddedPlayer/album=356910281/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" seamless><a href="https://rustoga.bandcamp.com/album/leaves-and-roots-ep">Leaves and Roots (EP) by Rustoga</a></iframe>
+    </div>
+
+    <div class="ost-card">
+      <div class="ost-media">
+        <div class="ost-cover"><img alt="Pohjanmaa" src="/assets/pohjanmaa-merisumu.jpg" loading="lazy"></div>
+        <div class="ost-audio">
+          <p class="oa-label">Pohjanmaa 1 (Main Theme)</p>
+          <audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/vks09u0i720hgrq84wf6i/Pohjoismaa_1.wav?rlkey=70o8dm7sqxrpv0ha4mv7t0xph&st=gb4a5tfr" type="audio/wav"></audio>
+          <p class="oa-label" style="margin-top:12px;">Pohjanmaa Rauha (Peace)</p>
+          <audio controls preload="metadata"><source src="https://dl.dropboxusercontent.com/scl/fi/88pfwvwt09iy955erkmpr/Pohjoismaa_rauha.wav?rlkey=e03z4ul80v9fyv3a9y7yne75q&st=gesetd7z" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="ost-head">
+        <h3 class="ost-title">Pohjanmaa</h3>
+        <a class="ost-link" href="https://rudolfwesterholm.com/portfolio-item/pohjanmaa/" target="_blank" rel="noreferrer">View project &rarr;</a>
+      </div>
+      <p class="ost-sub">Trailer score — main theme and peace cue for the Pohjanmaa campaign. (Not on Bandcamp yet.)</p>
     </div>
 
   </div>
+
+  <p class="w-full text-center font-display text-[28px] text-[#666560] mt-[64px]">— and many more</p>
 </main>
 
 <footer class="bg-[#fbfbfa] flex items-center justify-between px-5 md:px-[80px] py-[48px] relative shrink-0 w-full border-t border-[#e8e5dd] flex-wrap gap-6">
