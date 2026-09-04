@@ -1,59 +1,10 @@
 {
-  "generatedAt": "2026-09-03T19:03:23.791Z",
-  "nextUpdateAt": "2026-09-04T03:00:00.000Z",
+  "generatedAt": "2026-09-04T07:39:28.895Z",
+  "nextUpdateAt": "2026-09-04T16:00:00.000Z",
   "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
   "sources": [
     "https://api.hel.fi/linkedevents/v1/event/"
   ],
-  "total": 3,
-  "events": [
-    {
-      "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agpp46v2au",
-      "title": "Open House Helsinki 2026",
-      "date": "2026-09-02T21:01:00.000Z",
-      "location": "Helsinki",
-      "street": "",
-      "region": "Helsinki",
-      "category": "General",
-      "source": "Linked Events (MyHelsinki avoin data)",
-      "sourceUrl": "http://www.openhousehelsinki.fi",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
-      "isFree": true,
-      "freeProof": "Ilmainen (is_free)",
-      "sauna": false
-    },
-    {
-      "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agp4ngeere",
-      "title": "Pingis",
-      "date": "2026-09-03T05:00:00.000Z",
-      "location": "Helsinki",
-      "street": "",
-      "region": "Helsinki",
-      "category": "General",
-      "source": "Linked Events (MyHelsinki avoin data)",
-      "sourceUrl": "https://www.hel.fi/kampin-palvelukeskus",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
-      "isFree": true,
-      "freeProof": "Ilmainen (is_free)",
-      "sauna": false
-    },
-    {
-      "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agpnilobs4",
-      "title": "Kuntosalilaiteopastus",
-      "date": "2026-09-03T05:00:00.000Z",
-      "location": "Helsinki",
-      "street": "",
-      "region": "Helsinki",
-      "category": "General",
-      "source": "Linked Events (MyHelsinki avoin data)",
-      "sourceUrl": "https://api.hel.fi/linkedevents/v1/event/helsinki:agpnilobs4/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?to=Helsinki",
-      "isFree": true,
-      "freeProof": "Ilmainen (is_free)",
-      "sauna": false
-    }
-  ]
+  "total": 0,
+  "events": []
 }
