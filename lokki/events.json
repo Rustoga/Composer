@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-02T09:17:21.608Z",
-  "nextUpdateAt": "2026-10-02T16:00:00.000Z",
+  "generatedAt": "2026-10-02T20:17:43.401Z",
+  "nextUpdateAt": "2026-10-03T03:00:00.000Z",
   "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
   "sources": [
     "https://api.hel.fi/linkedevents/v1/event/"
