@@ -3,9 +3,9 @@ import https from 'node:https'
 import http from 'node:http'
 
 // Lokki - Free events scraper for Helsinki, Espoo and Vantaa.
-// Source: Linked Events open API (MyHelsinki avoin data) - reliable JSON with
-// is_free flag, coordinates, addresses and info_url. This replaces the old
-// fragile HTML scraping of HS Menokone / Stadissa.
+// Source: Linked Events open API (MyHelsinki avoin data). This filters on the
+// API's `is_free=true` flag when available and also falls back to scanning the
+// pricing text in case some events omit the explicit free flag.
 
 const UA =
   'LokkiBot/1.0 (+https://rudolfwesterholm.com; rudolf@westerholm.com)'
@@ -72,17 +72,51 @@ function slug(s) {
     .slice(0, 80)
 }
 
+function priceTextFromEvent(ev) {
+  const offers = Array.isArray(ev && ev.offers) ? ev.offers : []
+  const textParts = []
+
+  if (ev && typeof ev.price === 'string') textParts.push(ev.price)
+  if (ev && typeof ev.price === 'object') textParts.push(pick(ev.price))
+
+  for (const offer of offers) {
+    if (!offer) continue
+    if (typeof offer.price === 'string') textParts.push(offer.price)
+    if (offer.price && typeof offer.price === 'object') textParts.push(pick(offer.price))
+    if (typeof offer.description === 'string') textParts.push(offer.description)
+    if (offer.description && typeof offer.description === 'object') textParts.push(pick(offer.description))
+  }
+
+  const eventText = [
+    pick(ev && ev.name),
+    stripHtml(pick(ev && ev.description)),
+    ...textParts,
+  ].join(' ')
+
+  return eventText
+}
+
 function isFreeEvent(ev) {
-  const off = (ev.offers && ev.offers[0]) || {}
-  if (off.is_free === true) return true
-  const price = pick(off.price) || ''
-  return FREE_PRICE.test(price)
+  if (!ev) return false
+
+  if (ev.is_free === true) return true
+
+  const offers = Array.isArray(ev.offers) ? ev.offers : []
+  if (offers.some((offer) => offer && offer.is_free === true)) return true
+
+  const priceText = priceTextFromEvent(ev)
+  return FREE_PRICE.test(priceText)
 }
 
 function freeProof(ev) {
-  const off = (ev.offers && ev.offers[0]) || {}
-  if (off.is_free === true) return 'Ilmainen (is_free)'
-  const price = pick(off.price)
+  if (!ev) return 'Ilmainen'
+  if (ev.is_free === true) return 'Ilmainen (is_free)'
+
+  const offers = Array.isArray(ev.offers) ? ev.offers : []
+  const offer = offers.find((entry) => entry && entry.is_free === true)
+  if (offer) return 'Ilmainen (offer.is_free)'
+
+  const price = pick((offers[0] && offers[0].price) || ev.price) || ''
   return price ? `Hinta: ${price}` : 'Ilmainen'
 }
 
@@ -153,7 +187,7 @@ function parseIso(s) {
   const d = new Date(s)
   if (isNaN(d.getTime())) return null
   const y = d.getUTCFullYear()
-  if (y < 2000 || y > 2100) return null // guard against malformed years (e.g. 0026)
+  if (y < 2000 || y > 2100) return null
   return d
 }
 
@@ -178,12 +212,12 @@ function helsinkiParts() {
 function nextUpdateIso() {
   const p = helsinkiParts()
   const h = Number(p.hour)
-  const minute = Number(p.minute)
   const dateStr = `${p.year}-${p.month}-${p.day}`
   let targetHour
   if (h < 6) targetHour = 6
   else if (h < 19) targetHour = 19
-  else targetHour = 30 // next day 06:00
+  else targetHour = 30
+
   if (targetHour === 30) {
     const t = new Date(Date.now() + 24 * 3600 * 1000)
     const tp = Object.fromEntries(
@@ -196,27 +230,26 @@ function nextUpdateIso() {
         .formatToParts(t)
         .map((x) => [x.type, x.value])
     )
-    return new Date(
-      `${tp.year}-${tp.month}-${tp.day}T06:00:00+03:00`
-    ).toISOString()
+    return new Date(`${tp.year}-${tp.month}-${tp.day}T06:00:00+03:00`).toISOString()
   }
-  return new Date(
-    `${dateStr}T${String(targetHour).padStart(2, '0')}:00:00+03:00`
-  ).toISOString()
+
+  return new Date(`${dateStr}T${String(targetHour).padStart(2, '0')}:00:00+03:00`).toISOString()
 }
 
 async function collect() {
   const events = []
   const seen = new Set()
   const today = new Date().toISOString().slice(0, 10)
-  let url = `${API_BASE}?language=fi&page_size=100&sort=start_time&start=${today}`
+  let url = `${API_BASE}?language=fi&is_free=true&page_size=100&sort=start_time&start=${today}`
   let pages = 0
 
   while (url && pages < 8) {
     pages++
     const data = await fetchJson(url)
+
     for (const ev of data.data || []) {
       if (!isFreeEvent(ev)) continue
+
       const start = parseIso(ev.start_time)
       if (!isFuture(start)) continue
 
@@ -232,7 +265,9 @@ async function collect() {
       seen.add(key)
 
       if (!loc.region) continue
+
       const sauna = isSauna(ev, name, desc)
+      const free = isFreeEvent(ev)
       events.push({
         id: slug(id),
         title: name,
@@ -245,11 +280,12 @@ async function collect() {
         sourceUrl: infoUrl,
         mapsUrl: mapsUrl(loc),
         reittiopasUrl: reittiopasUrl(loc),
-        isFree: true,
+        isFree: free,
         freeProof: freeProof(ev),
         sauna,
       })
     }
+
     url = (data.meta && data.meta.next) || null
   }
 
