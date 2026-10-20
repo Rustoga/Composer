@@ -1,0 +1,26 @@
+/* Shared responsive site navigation (used by every page with the shiro nav) */
+
+nav.shiro-nav {
+  flex-wrap: wrap;
+  row-gap: 14px;
+}
+
+nav.shiro-nav .shiro-nav-links {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  nav.shiro-nav {
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  nav.shiro-nav .shiro-nav-links {
+    gap: 14px 20px;
+  }
+  nav.shiro-nav .shiro-nav-brand {
+    white-space: normal;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
