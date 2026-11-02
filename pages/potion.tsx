@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Album, Track, Link, loadStore, saveStore, uid } from '../../lib/potion'
+import { Album, Track, Link, loadStore, saveStore, uid } from '../lib/potion'
 
 export default function Workspace() {
   const [store, setStore] = useState<{ albums: Album[]; tracks: Track[] }>({ albums: [], tracks: [] })
@@ -54,5 +54,3 @@ export default function Workspace() {
     </div>
   )
 }
-EOF
-echo done

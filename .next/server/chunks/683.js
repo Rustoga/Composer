@@ -1,0 +1,1 @@
+"use strict";exports.id=683,exports.ids=[683],exports.modules={8683:(t,o,r)=>{function loadStore(){return{albums:[],tracks:[]}}function saveStore(t){}function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}r.d(o,{Ti:()=>saveStore,hQ:()=>uid,qB:()=>loadStore})}};

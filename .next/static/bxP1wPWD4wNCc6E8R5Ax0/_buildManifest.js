@@ -1,0 +1,1 @@
+self.__BUILD_MANIFEST={__rewrites:{afterFiles:[],beforeFiles:[],fallback:[]},"/_error":["static/chunks/pages/_error-56a1a2eec59e6cbd.js"],"/potion":["static/chunks/pages/potion-998c63a84ae2b786.js"],"/potion/[id]":["static/chunks/pages/potion/[id]-ddd4080a976acb35.js"],sortedPages:["/_app","/_error","/potion","/potion/[id]"]},self.__BUILD_MANIFEST_CB&&self.__BUILD_MANIFEST_CB();
