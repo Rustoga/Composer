@@ -3,8 +3,8 @@ name: Update Lokki events
 on:
   workflow_dispatch: {}
   schedule:
-    # 06:00 and 19:00 Finnish time (EEST = UTC+3 in summer: 03:00 / 16:00 UTC)
-    - cron: "0 3,16 * * *"
+    # 06:00 and 19:00 Finnish time (EET = UTC+2 in winter: 04:00 / 17:00 UTC)
+    - cron: "0 4,17 * * *"
 
 permissions:
   contents: write

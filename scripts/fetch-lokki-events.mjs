@@ -61,6 +61,13 @@ function pick(obj, lang = 'fi') {
 function stripHtml(s) {
   return String(s || '')
     .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&apos;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -173,30 +180,29 @@ function getLocation(ev) {
   const loc = ev.location || {}
   const locality = pick(loc.address_locality) || ''
   const street = pick(loc.street_address) || ''
-  const lat = loc.lat != null ? Number(loc.lat) : null
-  const lon = loc.lon != null ? Number(loc.lon) : null
+  const pos = loc && loc.position ? loc.position : null
+  const coordinates = pos && Array.isArray(pos.coordinates) ? pos.coordinates : null
+  // GeoJSON: coordinates = [lon, lat]
+  const lon = coordinates ? Number(coordinates[0]) : null
+  const lat = coordinates ? Number(coordinates[1]) : null
   const region = regionFromId(ev['@id'], locality)
   return { locality, street, lat, lon, region }
 }
 
 function mapsUrl(loc) {
+  const q = [loc.street, loc.locality].filter(Boolean).join(', ')
+  if (q) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
+  }
   if (loc.lat != null && loc.lon != null) {
     return `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lon}`
   }
-  const q = encodeURIComponent(
-    [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
-  )
-  return `https://www.google.com/maps/search/?api=1&query=${q}`
+  return `https://www.google.com/maps/search/?api=1&query=Helsinki`
 }
 
 function reittiopasUrl(loc) {
-  if (loc.lat != null && loc.lon != null) {
-    return `https://www.reittiopas.fi/#!to@${loc.lon},${loc.lat}`
-  }
-  const q = encodeURIComponent(
-    [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
-  )
-  return `https://www.reittiopas.fi/?to=${q}`
+  const to = [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
+  return `https://www.reittiopas.fi/?from=Lauttasaari%20M&to=${encodeURIComponent(to)}`
 }
 
 function isSauna(ev, name, desc) {
@@ -218,6 +224,54 @@ function inferCategory(text) {
   if (/(nature|national park|puisto|retki|hike|trail|ulkoilma)/i.test(t))
     return 'Outdoors'
   return 'General'
+}
+
+function eventPathFromId(id) {
+  const m = /event\/([a-z0-9_]+):([a-z0-9_-]+)/i.exec(id || '')
+  if (m) return `https://tapahtumat.hel.fi/fi/events/${m[1]}:${m[2]}/`
+  return null
+}
+
+function audienceTag(desc) {
+  const t = stripHtml(desc || '')
+  const m = t.match(/tapahtuma on tarkoitettu[^.]*\.?/i)
+  if (!m) return ''
+  const segment = m[0]
+  const low = segment.toLowerCase()
+  if (/palvelukeskuskortti/.test(low)) return 'palvelukeskuskortti'
+  if (/koko perhe|perhe/.test(low)) return 'Koko perhe'
+  if (/aikuis/.test(low)) return 'Aikuisille'
+  if (/lapsi/.test(low)) return 'Lapsille'
+  if (/nuori/.test(low)) return 'Nuorille'
+  if (/eläkel/.test(low)) return 'Eläkeläisille'
+  if (/työtön/.test(low)) return 'Työttömille'
+  return ''
+}
+
+const ACTIVITY_VERBS = [
+  'maalaillaan', 'maalataan', 'muovaillaan', 'leikataan', 'liimataan',
+  'piirretään', 'askarrellaan', 'luetaan', 'lasketaan', 'lasketaan',
+  'lauletaan', 'tanssitaan', 'soitetaan', 'liikutaan', 'ulkoillaan',
+  'pelataan', 'harjoitellaan', 'opetellaan', 'kokeillaan', 'tehdään',
+  'rakennetaan', 'ommellaan', 'neulotaan', 'kirjoitetaan', 'luodaan',
+]
+
+function shortDesc(desc, title) {
+  const t = stripHtml(desc || '')
+  if (!t) return ''
+  const titleNorm = stripHtml(title || '').toLowerCase()
+  const sentences = t.split(/(?<=[.!?])\s+/).filter(Boolean)
+  let chosen = ''
+  for (const s of sentences) {
+    const sLow = s.toLowerCase()
+    if (sLow === titleNorm || sLow.includes(titleNorm)) continue
+    chosen += (chosen ? ' ' : '') + s
+    if (chosen.length > 150) break
+  }
+  chosen = chosen.trim().slice(0, 150)
+  if (!chosen) return ''
+  const hasVerb = ACTIVITY_VERBS.some((v) => chosen.toLowerCase().includes(v))
+  return hasVerb || chosen.length < 150 ? chosen : ''
 }
 
 function parseIso(s) {
@@ -278,7 +332,7 @@ async function collect() {
   const events = []
   const seen = new Set()
   const today = new Date().toISOString().slice(0, 10)
-  let url = `${API_BASE}?language=fi&page_size=100&sort=start_time&start=${today}`
+  let url = `${API_BASE}?language=fi&page_size=100&start=${today}&include=location`
   let pages = 0
 
   while (url && pages < 20) {
@@ -294,7 +348,9 @@ async function collect() {
       const name = pick(ev.name) || 'Tapahtuma'
       const desc = stripHtml(pick(ev.description))
       const loc = getLocation(ev)
-      const infoUrl = pick(ev.info_url) || ev['@id'] || ''
+      const humanUrl = eventPathFromId(ev['@id'])
+      const infoUrl = pick(ev.info_url) || ''
+      const sourceUrl = humanUrl || infoUrl || ev['@id'] || ''
       const id = ev['@id'] || infoUrl || name
       const dateKey = start ? start.toISOString().slice(0, 10) : ''
       const key = `${name}|${dateKey}|${loc.locality}|${loc.street}`
@@ -314,9 +370,11 @@ async function collect() {
         region: loc.region,
         category: inferCategory(`${name} ${desc}`),
         source: 'Linked Events (MyHelsinki avoin data)',
-        sourceUrl: infoUrl,
+        sourceUrl: sourceUrl,
         mapsUrl: mapsUrl(loc),
         reittiopasUrl: reittiopasUrl(loc),
+        shortDesc: shortDesc(desc, name),
+        audienceTag: audienceTag(desc),
         isFree: true,
         freeProof: freeProof(ev),
         sauna,
