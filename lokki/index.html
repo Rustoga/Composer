@@ -273,6 +273,7 @@
                     <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
                     <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
                     <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
+                    ${e.hslUrl ? `<a href="${e.hslUrl}" target="_blank" rel="noreferrer">HSL</a>` : ''}
                   </div>
                 </article>
               `).join('')}
