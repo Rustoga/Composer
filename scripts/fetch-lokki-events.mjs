@@ -11,7 +11,6 @@ import http from 'node:http'
 const UA =
   'LokkiBot/1.0 (+https://rudolfwesterholm.com; rudolf@westerholm.com)'
 const API_BASE = 'https://api.hel.fi/linkedevents/v1/event/'
-
 const FREE_PRICE = /ilmainen|vapaa\s*pääsy|maksuton|\bfree\b|no charge|0\s?€|€\s?0/i
 
 function fetchText(url, redirects = 4) {
@@ -205,15 +204,6 @@ function reittiopasUrl(loc) {
   return `https://www.reittiopas.fi/?from=Lauttasaari%20M&to=${encodeURIComponent(to)}`
 }
 
-function hslUrl(loc, name) {
-  const q = [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
-  if (loc.lat != null && loc.lon != null) {
-    // Option 2 from prompt: event as DESTINATION, most practical for attendees
-    return `https://www.hsl.fi/${encodeURIComponent(name)},${encodeURIComponent(loc.locality)}::${loc.lat},${loc.lon}`
-  }
-  return `https://www.hsl.fi/${encodeURIComponent(q)}`
-}
-
 function isSauna(ev, name, desc) {
   return /sauna|uimala|kylpyl|uimahalli|uima-allas/i.test(
     `${name} ${desc}`
@@ -382,7 +372,8 @@ async function collect() {
         sourceUrl: sourceUrl,
         mapsUrl: mapsUrl(loc),
         reittiopasUrl: reittiopasUrl(loc),
-        hslUrl: hslUrl(loc, name),
+        lat: loc.lat,
+        lon: loc.lon,
         shortDesc: shortDesc(desc, name),
         audienceTag: audienceTag(desc),
         isFree: true,
