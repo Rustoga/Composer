@@ -23,6 +23,21 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 const KEY='potion:v1';
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{albums:[],tracks:[]}}catch{return{albums:[],tracks:[]}}}
 function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.stringify({albums:[
+{id:'nordic',title:'Nordic Folk',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'jazz',title:'Jazz Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'acoustic',title:'Acoustic Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+],tracks:[
+{id:'t1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t3',albumId:'nordic',title:'Rauha',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t4',albumId:'nordic',title:'Finnish folk tale jam v2 (nwc)',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t5',albumId:'nordic',title:'Finnish folk tale jam',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t6',albumId:'nordic',title:'Trailer music base nordic',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t7',albumId:'nordic',title:'Käärmelaulu',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t8',albumId:'nordic',title:'Muumi (etsi)',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'t9',albumId:'nordic',title:'Päätä',position:8,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+]}));}
 let state=load();
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function render(){
