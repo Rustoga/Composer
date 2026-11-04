@@ -340,7 +340,7 @@
     function stationLabel(e) {
       if (e.stationKm == null) return ''
       const km = Number(e.stationKm).toFixed(1)
-      return `<span class="station">🚉 ${km} km from ${e.location} station · ${e.stationWalking} walking · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">PT from station</a></span>`
+      return `<span class="station">🚉 ${km} km from ${e.location} station · ${e.stationWalking} walking</span>`
     }
 
     function render() {
@@ -379,7 +379,6 @@
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Laitos</a>` : ''}
                     <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
-                    <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
                   </div>
                 </article>
               `).join('')}
