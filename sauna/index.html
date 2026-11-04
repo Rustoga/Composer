@@ -323,6 +323,13 @@
 
     function priceLabel(e) {
       if (e.isFree) return '<span class="free">Ilmainen / Free</span>'
+      if (e.priceDetails) {
+        const items = e.priceDetails.items
+          .map((i) => `${i.adult} €${i.reduced != null ? ' / ' + i.reduced + ' €' : ''} (${i.days})`)
+          .join(' · ')
+        const note = e.priceDetails.note ? ` — ${e.priceDetails.note}` : ''
+        return `<span class="paid" title="Päivähinta${note}">Maksullinen / Paid ${items}</span>`
+      }
       if (e.priceAdult != null) return `<span class="paid">Maksullinen / Paid ${e.priceAdult} €</span>`
       return '<span class="paid">Maksullinen / Paid</span>'
     }

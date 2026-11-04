@@ -277,6 +277,14 @@ const SAUNAS = [
     lon: 23.7608,
     free: false,
     priceAdult: 10,
+    priceDetails: {
+      label: 'Päivähinta',
+      items: [
+        { days: 'ma, ke', adult: 8, reduced: 7 },
+        { days: 'pe, la', adult: 12, reduced: 11 },
+      ],
+      note: '(*) alennusryhmät: eläkeläiset, opiskelijat, työttömät, lapset',
+    },
     openingHours: 'Ma–Pe 16:00–22:00, La–Su 12:00–20:00',
     type: 'julkinen sauna, vanhin julkinen sauna',
     sourceUrl: 'https://www.rajaportinsauna.fi',
@@ -506,6 +514,7 @@ async function run() {
       sauna: true,
       stationKm: dist ? dist.km : null,
       stationWalking: dist ? dist.walking : null,
+      priceDetails: s.priceDetails || null,
       rating: null, // Google Maps ratings require a Places API key
     }
   })

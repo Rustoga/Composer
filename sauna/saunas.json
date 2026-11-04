@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T13:47:16.630Z",
+  "generatedAt": "2026-11-04T13:50:59.083Z",
   "total": 30,
   "sources": [
     "Curated Helsinki/Tampere sauna facility data"
@@ -28,6 +28,7 @@
       "sauna": true,
       "stationKm": 0.8645887509203907,
       "stationWalking": "10 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -52,6 +53,7 @@
       "sauna": true,
       "stationKm": 4.611824675191517,
       "stationWalking": "55 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -76,6 +78,7 @@
       "sauna": true,
       "stationKm": 1.7752498974726385,
       "stationWalking": "21 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -100,6 +103,7 @@
       "sauna": true,
       "stationKm": 8.423821473497622,
       "stationWalking": "1 h 41 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -124,6 +128,7 @@
       "sauna": true,
       "stationKm": 0.12174783326595189,
       "stationWalking": "1 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -148,6 +153,7 @@
       "sauna": true,
       "stationKm": 10.375465160314409,
       "stationWalking": "2 h 5 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -172,6 +178,7 @@
       "sauna": true,
       "stationKm": 1.4126086580011428,
       "stationWalking": "17 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -196,6 +203,7 @@
       "sauna": true,
       "stationKm": 2.182060861376624,
       "stationWalking": "26 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -220,6 +228,7 @@
       "sauna": true,
       "stationKm": 0.08185532412030681,
       "stationWalking": "< 1 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -244,6 +253,7 @@
       "sauna": true,
       "stationKm": 0.01078754650923394,
       "stationWalking": "< 1 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -268,6 +278,7 @@
       "sauna": true,
       "stationKm": 2.619437999320172,
       "stationWalking": "31 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -292,6 +303,7 @@
       "sauna": true,
       "stationKm": 2.619437999320172,
       "stationWalking": "31 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -316,6 +328,7 @@
       "sauna": true,
       "stationKm": 2.182060861376624,
       "stationWalking": "26 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -340,6 +353,7 @@
       "sauna": true,
       "stationKm": 0.1487910705830386,
       "stationWalking": "2 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -364,6 +378,7 @@
       "sauna": true,
       "stationKm": 6.255249485616718,
       "stationWalking": "1 h 15 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -388,6 +403,7 @@
       "sauna": true,
       "stationKm": 2.182060861376624,
       "stationWalking": "26 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -412,6 +428,7 @@
       "sauna": true,
       "stationKm": 5.11533996102391,
       "stationWalking": "1 h 1 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -436,6 +453,7 @@
       "sauna": true,
       "stationKm": 0.2999328234886065,
       "stationWalking": "4 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -460,6 +478,7 @@
       "sauna": true,
       "stationKm": 5.533223850484587,
       "stationWalking": "1 h 6 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -484,6 +503,22 @@
       "sauna": true,
       "stationKm": 0.07685462774185814,
       "stationWalking": "< 1 min",
+      "priceDetails": {
+        "label": "Päivähinta",
+        "items": [
+          {
+            "days": "ma, ke",
+            "adult": 8,
+            "reduced": 7
+          },
+          {
+            "days": "pe, la",
+            "adult": 12,
+            "reduced": 11
+          }
+        ],
+        "note": "(*) alennusryhmät: eläkeläiset, opiskelijat, työttömät, lapset"
+      },
       "rating": null
     },
     {
@@ -508,6 +543,7 @@
       "sauna": true,
       "stationKm": 2.502062846050877,
       "stationWalking": "30 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -532,6 +568,7 @@
       "sauna": true,
       "stationKm": 0.928878063324248,
       "stationWalking": "11 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -556,6 +593,7 @@
       "sauna": true,
       "stationKm": 2.1655847202647602,
       "stationWalking": "26 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -580,6 +618,7 @@
       "sauna": true,
       "stationKm": 1.0497336747459558,
       "stationWalking": "13 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -604,6 +643,7 @@
       "sauna": true,
       "stationKm": 0.16073213650425494,
       "stationWalking": "2 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -628,6 +668,7 @@
       "sauna": true,
       "stationKm": 1.7090297789639561,
       "stationWalking": "21 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -652,6 +693,7 @@
       "sauna": true,
       "stationKm": 1.3966888029779685,
       "stationWalking": "17 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -676,6 +718,7 @@
       "sauna": true,
       "stationKm": 2.4020082937365586,
       "stationWalking": "29 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -700,6 +743,7 @@
       "sauna": true,
       "stationKm": 13.4181647899952,
       "stationWalking": "2 h 41 min",
+      "priceDetails": null,
       "rating": null
     },
     {
@@ -724,6 +768,7 @@
       "sauna": true,
       "stationKm": 0.5653826337738252,
       "stationWalking": "7 min",
+      "priceDetails": null,
       "rating": null
     }
   ]
