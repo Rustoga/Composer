@@ -16,7 +16,7 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 </head>
 <body>
 <div class="wrap">
-<h1>Potion2 — Album Workspace</h1><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
+<h1>Potion2 — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff"></div><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
 <div id="workspace"></div>
 </div>
 <script>
@@ -60,6 +60,7 @@ if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.str
 let state=load();
 if(!state.albums.find(a=>a.id==='metal')){state.albums.push({id:'metal',title:'Metal Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});for(let i=1;i<=8;i++)state.tracks.push({id:'m'+i,albumId:'metal',title:'Metal Track '+i,position:i-1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});save(state)}
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function updateNextStep(){const el=document.getElementById("nextStep");if(!el)return;const incomplete=[];state.albums.forEach(a=>{const ts=state.tracks.filter(t=>t.albumId===a.id);const done=ts.filter(t=>t.completed).length;if(ts.length&&done<ts.length)incomplete.push(a.title)});el.textContent=incomplete.length?"Next: finish a track in "+incomplete[0]:"All done — create or open an album";}
 function render(){
   const w=document.getElementById('workspace');
   const q=(document.getElementById('q')||{}).value||'';
@@ -115,6 +116,7 @@ function moveTrack(albumId,tid,dir){
   t1.updatedAt=Date.now();t2.updatedAt=Date.now();save(state);openAlbum(albumId);
 }
 document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
+updateNextStep();
 render();
 </script>
 </body>
