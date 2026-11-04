@@ -5,11 +5,12 @@ import { writeFile } from 'node:fs/promises'
 const UA = 'LokkiBot/1.0 (+https://rudolfwesterholm.com; rudolf@westerholm.com)'
 
 const SAUNAS = [
-  // name, street, locality, free, priceAdult (eur or null), openingHours, saunaType, sourceUrl
   {
     name: 'Sompasauna',
     street: 'Sörnäisten rantatie 14',
     locality: 'Helsinki',
+    lat: 60.1770,
+    lon: 24.9560,
     free: true,
     priceAdult: null,
     openingHours: 'Avoinna ympäri vuorokauden (julkinen, omatoiminen)',
@@ -20,6 +21,8 @@ const SAUNAS = [
     name: 'Yrjönkadun uimahalli (Helsingin Uimala)',
     street: 'Yrjönkatu 23',
     locality: 'Helsinki',
+    lat: 60.1690,
+    lon: 24.9320,
     free: false,
     priceAdult: 8,
     openingHours: 'Ma–Pe 6:30–21, La–Su 8:00–19:00 (uimahalli)',
@@ -30,6 +33,8 @@ const SAUNAS = [
     name: 'Kulttuurisauna',
     street: 'Hernesaarenranta 4',
     locality: 'Helsinki',
+    lat: 60.1546,
+    lon: 24.9196,
     free: false,
     priceAdult: 25,
     openingHours: 'Ma–Su 10:00–22:00 (varaus)',
@@ -40,6 +45,8 @@ const SAUNAS = [
     name: 'Löyly',
     street: 'Hernesaarenranta 4',
     locality: 'Helsinki',
+    lat: 60.1546,
+    lon: 24.9196,
     free: false,
     priceAdult: 25,
     openingHours: 'Ma–Su 10:00–22:00',
@@ -50,6 +57,8 @@ const SAUNAS = [
     name: 'Kotiharjun sauna',
     street: 'Alppikatu 9',
     locality: 'Helsinki',
+    lat: 60.1834,
+    lon: 24.9365,
     free: false,
     priceAdult: 11,
     openingHours: 'Ma–Pe 14:00–20:00, La 12:00–18:00, Su suljettu',
@@ -60,6 +69,8 @@ const SAUNAS = [
     name: 'Arla',
     street: 'Vaasankatu 15',
     locality: 'Helsinki',
+    lat: 60.1786,
+    lon: 24.9441,
     free: false,
     priceAdult: 10,
     openingHours: 'Ma–Pe 16:00–21:00, La–Su 14:00–19:00',
@@ -70,6 +81,8 @@ const SAUNAS = [
     name: 'Sauna Hermanni',
     street: 'Hermannin rantatie 1',
     locality: 'Helsinki',
+    lat: 60.1871,
+    lon: 24.9633,
     free: false,
     priceAdult: 10,
     openingHours: 'Ma–Pe 15:00–21:00, La–Su 12:00–19:00',
@@ -80,6 +93,8 @@ const SAUNAS = [
     name: 'Ullanlinnan sauna',
     street: 'Tehtaankatu 9',
     locality: 'Helsinki',
+    lat: 60.1584,
+    lon: 24.9399,
     free: false,
     priceAdult: 10,
     openingHours: 'Ma–Pe 15:00–21:00, La 12:00–18:00, Su suljettu',
@@ -90,6 +105,8 @@ const SAUNAS = [
     name: 'Kallion kansakoulun sauna',
     street: 'Vuorimiehenkatu 17',
     locality: 'Helsinki',
+    lat: 60.1707,
+    lon: 24.9436,
     free: false,
     priceAdult: 8,
     openingHours: 'Ma–Pe 16:00–21:00, La 14:00–19:00, Su suljettu',
@@ -100,6 +117,8 @@ const SAUNAS = [
     name: 'Merisaha',
     street: 'Hernesaarenranta',
     locality: 'Helsinki',
+    lat: 60.1546,
+    lon: 24.9196,
     free: false,
     priceAdult: null,
     openingHours: 'Tapahtumakohtainen, tarkista verkkosivuilta',
@@ -110,6 +129,8 @@ const SAUNAS = [
     name: 'Sauna Azure',
     street: 'Katajanokanlaituri 6',
     locality: 'Helsinki',
+    lat: 60.1655,
+    lon: 24.9542,
     free: false,
     priceAdult: 25,
     openingHours: 'Ma–Su 10:00–22:00 (hotellivieraille ja varauksesta)',
@@ -120,6 +141,8 @@ const SAUNAS = [
     name: 'Lauttasaaren uimahalli',
     street: 'Lauttasaarentie 20',
     locality: 'Helsinki',
+    lat: 60.1574,
+    lon: 24.9027,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -130,6 +153,8 @@ const SAUNAS = [
     name: 'Urheilupuiston uimahalli',
     street: 'Mannerheimintie 145',
     locality: 'Helsinki',
+    lat: 60.1894,
+    lon: 24.9189,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
@@ -140,6 +165,8 @@ const SAUNAS = [
     name: 'Munkkiniemen uimahalli',
     street: 'Munkkiniemen puistotie 4',
     locality: 'Helsinki',
+    lat: 60.2047,
+    lon: 24.8786,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -150,6 +177,8 @@ const SAUNAS = [
     name: 'Töölön uimahalli',
     street: 'Topeliuksenkatu 9',
     locality: 'Helsinki',
+    lat: 60.1830,
+    lon: 24.9223,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
@@ -160,6 +189,8 @@ const SAUNAS = [
     name: 'Itäkeskuksen uimahalli',
     street: 'Itäkeskuksen kiertotie 4',
     locality: 'Helsinki',
+    lat: 60.2155,
+    lon: 25.0647,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
@@ -170,6 +201,8 @@ const SAUNAS = [
     name: 'Kontulan uimahalli',
     street: 'Kontulantie 35',
     locality: 'Helsinki',
+    lat: 60.2312,
+    lon: 25.0848,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -180,6 +213,8 @@ const SAUNAS = [
     name: 'Vuosaaren uimahalli',
     street: 'Kallvikintie 24',
     locality: 'Helsinki',
+    lat: 60.2180,
+    lon: 25.1650,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -190,6 +225,8 @@ const SAUNAS = [
     name: 'Maunulan uimahalli',
     street: 'Oulunkyläntie 29',
     locality: 'Helsinki',
+    lat: 60.2234,
+    lon: 24.9006,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -200,6 +237,8 @@ const SAUNAS = [
     name: 'Pirkkolan uimahalli',
     street: 'Pirkkolantie 7',
     locality: 'Helsinki',
+    lat: 60.2204,
+    lon: 24.9524,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -210,6 +249,8 @@ const SAUNAS = [
     name: 'Herttoniemen uimahalli',
     street: 'Hiomotie 12',
     locality: 'Helsinki',
+    lat: 60.1914,
+    lon: 25.0140,
     free: false,
     priceAdult: 7,
     openingHours: 'Ma–Pe 6:30–21:00, La–Su 8:00–19:00',
@@ -220,11 +261,37 @@ const SAUNAS = [
     name: 'Lauttasaaren kylpylä',
     street: 'Lauttasaarentie 20',
     locality: 'Helsinki',
+    lat: 60.1574,
+    lon: 24.9027,
     free: false,
     priceAdult: 8,
     openingHours: 'Ma–Pe 7:00–21:00, La–Su 9:00–18:00',
     type: 'julkinen sauna',
     sourceUrl: '',
+  },
+  {
+    name: 'Rajaportin sauna',
+    street: 'Pispalan valtatie 79',
+    locality: 'Tampere',
+    lat: 61.4978,
+    lon: 23.7608,
+    free: false,
+    priceAdult: 10,
+    openingHours: 'Ma–Pe 16:00–22:00, La–Su 12:00–20:00',
+    type: 'savusauna, vanhin julkinen sauna',
+    sourceUrl: 'https://www.rajaportinsauna.fi',
+  },
+  {
+    name: 'Tampereen uimahalli',
+    street: 'Tullinkulman puistokatu 4',
+    locality: 'Tampere',
+    lat: 61.4975,
+    lon: 23.7588,
+    free: false,
+    priceAdult: 7,
+    openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
+    type: 'uimahallin sauna',
+    sourceUrl: 'https://www.tampere.fi',
   },
 ]
 
@@ -251,7 +318,7 @@ function stripHtml(s) {
 
 function regionFromId(locality) {
   if (['Helsinki', 'Espoo', 'Vantaa'].includes(locality)) return locality
-  return null
+  return 'Muu Suomi'
 }
 
 function mapsUrl(street, locality) {
@@ -263,6 +330,41 @@ function mapsUrl(street, locality) {
 function reittiopasUrl(street, locality) {
   const to = [street, locality].filter(Boolean).join(', ') || 'Helsinki'
   return `https://www.reittiopas.fi/?from=Lauttasaari%20M&to=${encodeURIComponent(to)}`
+}
+
+function reittiopasUrlFromStation(street, locality) {
+  const to = [street, locality].filter(Boolean).join(', ') || 'Helsinki'
+  return `https://www.reittiopas.fi/?from=Helsingin%20rautatieasema&to=${encodeURIComponent(to)}`
+}
+
+// Helsinki rautatieasema (central station)
+const HEL_RAUTATIEASEMA = { lat: 60.170937, lon: 24.941451 }
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = (d) => (d * Math.PI) / 180
+  const R = 6371
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+function walkingMin(km) {
+  // ~5 km/h walking speed
+  const min = (km / 5) * 60
+  if (min < 1) return '< 1 min'
+  if (min < 60) return `${Math.round(min)} min`
+  const h = Math.floor(min / 60)
+  const m = Math.round(min % 60)
+  return m === 0 ? `${h} h` : `${h} h ${m} min`
+}
+
+function stationDistance(lat, lon) {
+  if (lat == null || lon == null) return null
+  const km = haversineKm(HEL_RAUTATIEASEMA.lat, HEL_RAUTATIEASEMA.lon, lat, lon)
+  return { km, walking: walkingMin(km) }
 }
 
 function saunaTypeBadge(type) {
@@ -281,6 +383,7 @@ async function run() {
     const free = s.free
     const priceAdult = s.priceAdult
     const region = regionFromId(s.locality)
+    const dist = stationDistance(s.lat, s.lon)
     const id = `${s.locality}:${slug(s.name)}`
     return {
       id: slug(id),
@@ -288,12 +391,13 @@ async function run() {
       date: '', // facilities don't have a single date
       location: s.locality || 'Helsinki',
       street: s.street,
-      region: region || 'Muu Suomi',
+      region: region,
       category: saunaTypeBadge(s.type),
-      source: 'Curated public facility data (Helsinki region saunas)',
+      source: 'Curated public facility data (Helsinki/Tampere saunas)',
       sourceUrl: s.sourceUrl || '',
       mapsUrl: mapsUrl(s.street, s.locality),
       reittiopasUrl: reittiopasUrl(s.street, s.locality),
+      reittiopasUrlFromStation: reittiopasUrlFromStation(s.street, s.locality),
       shortDesc: `${s.type} - ${s.openingHours}`,
       audienceTag: '',
       isFree: free,
@@ -301,6 +405,8 @@ async function run() {
       openingHours: s.openingHours,
       saunaType: s.type,
       sauna: true,
+      stationKm: dist ? dist.km : null,
+      stationWalking: dist ? dist.walking : null,
       rating: null, // Google Maps ratings require a Places API key
     }
   })
@@ -310,7 +416,7 @@ async function run() {
   const payload = {
     generatedAt: new Date().toISOString(),
     total: events.length,
-    sources: ['Curated Helsinki sauna facility data'],
+    sources: ['Curated Helsinki/Tampere sauna facility data'],
     note:
       'Star ratings require a Google Places API key and are not included. Opening hours and prices may change - always check the facility website before visiting.',
     events,

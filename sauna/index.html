@@ -193,6 +193,9 @@
       transition: all 0.15s;
     }
     .links a:hover { border-color: var(--accent-glow); color: var(--accent-glow); }
+    .station-line { font-size: 11px; color: var(--wood-light); margin-top: 2px; }
+    .station-line a { color: var(--accent-glow); border-color: var(--accent-glow); padding: 1px 6px; font-size: 10.5px; }
+    .station { color: var(--accent-glow); font-weight: 700; }
     .empty { padding: 20px; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; background: rgba(26,14,8,0.4); }
     .helper {
       margin-top: 14px;
@@ -241,7 +244,7 @@
   <div class="wrap">
     <header>
       <h1>♨ Saunat Helsingissä</h1>
-      <p class="lede">Julkiset saunat Helsingissä, Espoossa ja Vantaalla. Hinnat, aukioloajat ja kulkuohjeet. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
+      <p class="lede">Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
     </header>
 
     <div class="topbar">
@@ -324,6 +327,12 @@
       return '<span class="paid">Maksullinen / Paid</span>'
     }
 
+    function stationLabel(e) {
+      if (e.stationKm == null) return ''
+      const km = Number(e.stationKm).toFixed(1)
+      return `<span class="station">🚉 ${km} km from Helsinki Central Station · ${e.stationWalking} walking · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">PT from station</a></span>`
+    }
+
     function render() {
       const events = filteredEvents(snapshot.events || [])
       document.getElementById('totalCount').textContent = String(events.length)
@@ -354,6 +363,7 @@
                   </div>
                   <div class="title">${e.title || 'Nimetön sauna'}</div>
                   ${e.shortDesc ? `<div class="meta shortdesc">🕒 ${e.shortDesc}</div>` : ''}
+                  ${e.stationKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
                   <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</div>
                   <div class="meta">🏷️ ${e.category || 'Yleinen'}</div>
                   <div class="links">
