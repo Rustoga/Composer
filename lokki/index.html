@@ -134,16 +134,6 @@
       padding: 6px 9px;
       font-size: 12px;
     }
-    .map-thumb {
-      width: 120px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: #0b1220;
-      display: block;
-      margin-top: 4px;
-    }
     .empty { padding: 16px; color: var(--muted); }
     .helper {
       margin-top: 14px;
@@ -199,19 +189,6 @@
     let countdownTimer = null
     let refreshing = false
     let refreshTimer = null
-
-    // Get a free public access token with styles:tiles scope from mapbox.com and paste it here.
-    // Public tokens are safe to use in front-end code (docs.mapbox.com/api/overview/#access-tokens-and-token-scopes).
-    const MAPBOX_ACCESS_TOKEN = ''
-
-    function mapboxStaticUrl(lat, lon) {
-      if (!MAPBOX_ACCESS_TOKEN || lat == null || lon == null) return ''
-      const width = 300
-      const height = 170
-      const zoom = 15
-      // Mapbox Static Images API uses longitude,latitude order
-      return `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s(${lon},${lat})/${lon},${lat},${zoom}/${width}x${height}@2x?access_token=${encodeURIComponent(MAPBOX_ACCESS_TOKEN)}`
-    }
 
     function fmtDate(iso) {
       if (!iso) return 'Date not specified'
@@ -296,9 +273,6 @@
                     <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
                     <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
                     <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
-                    ${e.lat != null && e.lon != null
-                      ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer"><img class="map-thumb" src="${mapboxStaticUrl(e.lat, e.lon)}" alt="Map of ${e.title}" loading="lazy" /></a>`
-                      : ''}
                   </div>
                 </article>
               `).join('')}

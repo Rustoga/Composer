@@ -205,9 +205,25 @@ function reittiopasUrl(loc) {
 }
 
 function isSauna(ev, name, desc) {
-  return /sauna|uimala|kylpyl|uimahalli|uima-allas/i.test(
-    `${name} ${desc}`
-  )
+  const t = `${stripHtml(desc || '')} ${stripHtml(name || '')}`.toLowerCase()
+
+  // Actual sauna facilities / activities you can use
+  const hasSaunaFacility = /sauna|uimala|kylpylä|kylpy|uimahalli/.test(t)
+
+  // Only about dressing/changing room in a sauna space — not a usable sauna
+  // (e.g. "saunatilan pukuhuone käytössä ja siellä voi vaihtaa vaatteita")
+  const onlyDressingRoom = /pukuhuone|puku.?huone|vaihtaa\s+vaatteita/.test(t)
+
+  if (!hasSaunaFacility) return false
+  // Exclude events that are only about using the dressing room, not actually
+  // taking a sauna (no sauna-use words present).
+  if (
+    onlyDressingRoom &&
+    !/saunonta|saunominen|saunotaan|saunaan|saunassa|saunavuoro|saunailta/.test(t)
+  ) {
+    return false
+  }
+  return true
 }
 
 function inferCategory(text) {
@@ -372,8 +388,6 @@ async function collect() {
         sourceUrl: sourceUrl,
         mapsUrl: mapsUrl(loc),
         reittiopasUrl: reittiopasUrl(loc),
-        lat: loc.lat,
-        lon: loc.lon,
         shortDesc: shortDesc(desc, name),
         audienceTag: audienceTag(desc),
         isFree: true,
