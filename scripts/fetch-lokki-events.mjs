@@ -248,9 +248,9 @@ function extractAdultPrice(desc) {
   return null
 }
 
-function inferCategory(text) {
+function inferCategory(text, sauna) {
   const t = (text || '').toLowerCase()
-  if (/(sauna|uimala|swim|kylpy)/i.test(t)) return 'Sauna & Wellness'
+  if (sauna) return 'Sauna & Wellness'
   if (/(ferry|lautta|risteily|boat)/i.test(t)) return 'Ferries & Boats'
   if (/(music|konsertti|live|dj|band|keikka|festivaali)/i.test(t))
     return 'Music'
@@ -415,7 +415,7 @@ async function collect() {
         location: loc.locality || 'Helsinki',
         street: loc.street,
         region: loc.region,
-        category: inferCategory(`${name} ${desc}`),
+        category: inferCategory(`${name} ${desc}`, sauna),
         source: 'Linked Events (MyHelsinki avoin data)',
         sourceUrl: sourceUrl,
         mapsUrl: mapsUrl(loc),
