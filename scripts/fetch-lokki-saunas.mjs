@@ -278,7 +278,7 @@ const SAUNAS = [
     free: false,
     priceAdult: 10,
     openingHours: 'Ma–Pe 16:00–22:00, La–Su 12:00–20:00',
-    type: 'savusauna, vanhin julkinen sauna',
+    type: 'julkinen sauna, vanhin julkinen sauna',
     sourceUrl: 'https://www.rajaportinsauna.fi',
   },
   {
@@ -292,6 +292,78 @@ const SAUNAS = [
     openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
     type: 'uimahallin sauna',
     sourceUrl: 'https://www.tampere.fi',
+  },
+  {
+    name: 'Rauhaniemen kansankylpylä',
+    street: 'Rauhankatu 32',
+    locality: 'Turku',
+    lat: 60.4392,
+    lon: 22.2192,
+    free: false,
+    priceAdult: 9,
+    openingHours: 'Ma–Pe 10:00–21:00, La–Su 10:00–19:00',
+    type: 'julkinen merenrantasauna',
+    sourceUrl: 'https://www.turku.fi',
+  },
+  {
+    name: 'Impivaaran uimahalli',
+    street: 'Impivaarankatu 4',
+    locality: 'Turku',
+    lat: 60.4430,
+    lon: 22.2300,
+    free: false,
+    priceAdult: 7,
+    openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
+    type: 'uimahallin sauna',
+    sourceUrl: 'https://www.turku.fi',
+  },
+  {
+    name: 'Lutakko',
+    street: 'Lutakontie 9',
+    locality: 'Jyväskylä',
+    lat: 62.2426,
+    lon: 25.7444,
+    free: false,
+    priceAdult: 10,
+    openingHours: 'Ma–Pe 14:00–21:00, La–Su 12:00–19:00',
+    type: 'julkinen yleinen sauna',
+    sourceUrl: 'https://www.jyvaskyla.fi',
+  },
+  {
+    name: 'Oulun uimahalli',
+    street: 'Lohikatu 8',
+    locality: 'Oulu',
+    lat: 65.0121,
+    lon: 25.4681,
+    free: false,
+    priceAdult: 7,
+    openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
+    type: 'uimahallin sauna',
+    sourceUrl: 'https://www.ouka.fi',
+  },
+  {
+    name: 'Kuopion uimahalli',
+    street: 'Puijonkatu 25',
+    locality: 'Kuopio',
+    lat: 62.8924,
+    lon: 27.6780,
+    free: false,
+    priceAdult: 7,
+    openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
+    type: 'uimahallin sauna',
+    sourceUrl: 'https://www.kuopio.fi',
+  },
+  {
+    name: 'Lahden uimahalli',
+    street: 'Rautatienkatu 14',
+    locality: 'Lahti',
+    lat: 60.9827,
+    lon: 25.6613,
+    free: false,
+    priceAdult: 7,
+    openingHours: 'Ma–Pe 6:00–21:00, La–Su 8:00–19:00',
+    type: 'uimahallin sauna',
+    sourceUrl: 'https://www.lahti.fi',
   },
 ]
 
@@ -334,11 +406,37 @@ function reittiopasUrl(street, locality) {
 
 function reittiopasUrlFromStation(street, locality) {
   const to = [street, locality].filter(Boolean).join(', ') || 'Helsinki'
-  return `https://www.reittiopas.fi/?from=Helsingin%20rautatieasema&to=${encodeURIComponent(to)}`
+  const stationNames = {
+    Helsinki: 'Helsingin rautatieasema',
+    Espoo: 'Espoon rautatieasema',
+    Vantaa: 'Vantaan rautatieasema',
+    Tampere: 'Tampereen rautatieasema',
+    Turku: 'Turun rautatieasema',
+    Jyväskylä: 'Jyväskylän rautatieasema',
+    Oulu: 'Oulun rautatieasema',
+    Kuopio: 'Kuopion rautatieasema',
+    Lahti: 'Lahden rautatieasema',
+  }
+  const from = stationNames[locality] || `${locality} rautatieasema`
+  return `https://www.reittiopas.fi/?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
 }
 
-// Helsinki rautatieasema (central station)
-const HEL_RAUTATIEASEMA = { lat: 60.170937, lon: 24.941451 }
+// Train station coordinates per Finnish city
+const STATIONS = {
+  Helsinki: { lat: 60.170937, lon: 24.941451 },
+  Espoo: { lat: 60.2055, lon: 24.6548 },
+  Vantaa: { lat: 60.2885, lon: 25.0496 },
+  Tampere: { lat: 61.4973, lon: 23.7618 },
+  Turku: { lat: 60.4515, lon: 22.2574 },
+  Jyväskylä: { lat: 62.2423, lon: 25.7416 },
+  Oulu: { lat: 65.0095, lon: 25.4698 },
+  Kuopio: { lat: 62.8931, lon: 27.6775 },
+  Lahti: { lat: 60.9827, lon: 25.6611 },
+}
+
+function stationFor(locality) {
+  return STATIONS[locality] || STATIONS.Helsinki
+}
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180
@@ -361,9 +459,10 @@ function walkingMin(km) {
   return m === 0 ? `${h} h` : `${h} h ${m} min`
 }
 
-function stationDistance(lat, lon) {
+function stationDistance(lat, lon, locality) {
   if (lat == null || lon == null) return null
-  const km = haversineKm(HEL_RAUTATIEASEMA.lat, HEL_RAUTATIEASEMA.lon, lat, lon)
+  const s = stationFor(locality)
+  const km = haversineKm(s.lat, s.lon, lat, lon)
   return { km, walking: walkingMin(km) }
 }
 
@@ -383,7 +482,7 @@ async function run() {
     const free = s.free
     const priceAdult = s.priceAdult
     const region = regionFromId(s.locality)
-    const dist = stationDistance(s.lat, s.lon)
+    const dist = stationDistance(s.lat, s.lon, s.locality)
     const id = `${s.locality}:${slug(s.name)}`
     return {
       id: slug(id),
