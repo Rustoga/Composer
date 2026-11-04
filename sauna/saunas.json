@@ -29,7 +29,7 @@
       "stationKm": 0.8645887509203907,
       "stationWalking": "10 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 4.0
     },
     {
       "id": "espoo-espoon-uimahalli",
@@ -204,7 +204,7 @@
       "stationKm": 1.4126086580011428,
       "stationWalking": "17 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 4.3
     },
     {
       "id": "helsinki-kulttuurisauna",
@@ -229,7 +229,7 @@
       "stationKm": 2.182060861376624,
       "stationWalking": "26 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 4.2
     },
     {
       "id": "kuopio-kuopion-uimahalli",
@@ -354,7 +354,7 @@
       "stationKm": 2.182060861376624,
       "stationWalking": "26 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 4.4
     },
     {
       "id": "jyv-skyl-lutakko",
@@ -594,7 +594,7 @@
         ],
         "note": "(*) alennusryhmät: eläkeläiset, opiskelijat, työttömät, lapset"
       },
-      "rating": null
+      "rating": 4.6
     },
     {
       "id": "turku-rauhaniemen-kansankylpyl",
@@ -694,7 +694,7 @@
       "stationKm": 1.0497336747459558,
       "stationWalking": "13 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 4.1
     },
     {
       "id": "tampere-tampereen-uimahalli",
@@ -894,7 +894,7 @@
       "stationKm": 0.5653826337738252,
       "stationWalking": "7 min",
       "priceDetails": null,
-      "rating": null
+      "rating": 3.8
     }
   ]
 }

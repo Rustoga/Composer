@@ -185,6 +185,17 @@
       width: fit-content;
       text-transform: uppercase;
     }
+    .rating {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line);
+      color: #fbbf24;
+      background: rgba(251,191,36,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
     .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
     .links a {
       text-decoration: none;
@@ -337,6 +348,11 @@
       return '<span class="paid">Maksullinen / Paid</span>'
     }
 
+    function ratingLabel(e) {
+      if (e.rating == null) return ''
+      return `<span class="rating" title="${e.rating}/5">${Number(e.rating).toFixed(1)}/5</span>`
+    }
+
     function stationLabel(e) {
       if (e.stationKm == null) return ''
       const km = Number(e.stationKm).toFixed(1)
@@ -368,6 +384,7 @@
                 <article class="card">
                   <div class="badges">
                     ${priceLabel(e)}
+                    ${ratingLabel(e)}
                     ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
                     ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
                   </div>
