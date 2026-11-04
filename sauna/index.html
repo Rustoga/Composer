@@ -243,31 +243,32 @@
   <div class="steam"></div>
   <div class="wrap">
     <header>
-      <h1>♨ Saunat Helsingissä</h1>
-      <p class="lede">Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
+      <h1 data-t="pageTitle">♨ Saunat Helsingissä</h1>
+      <p class="lede" data-t="lede">Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
     </header>
 
     <div class="topbar">
-      <input id="search" placeholder="Etsi nimeä, osoitetta, saunatyyppiä…" />
+      <input id="search" data-t-placeholder="searchPlaceholder" placeholder="Etsi nimeä, osoitetta, saunatyyppiä…" />
       <select id="regionSelect">
-        <option value="ALL">Kaikki alueet</option>
-        <option value="Helsinki">Helsinki</option>
-        <option value="Espoo">Espoo</option>
-        <option value="Vantaa">Vantaa</option>
-        <option value="Muu Suomi">Muu Suomi</option>
+        <option value="ALL" data-t="regionAll">Kaikki alueet</option>
+        <option value="Helsinki" data-t="regionHelsinki">Helsinki</option>
+        <option value="Espoo" data-t="regionEspoo">Espoo</option>
+        <option value="Vantaa" data-t="regionVantaa">Vantaa</option>
+        <option value="Muu Suomi" data-t="regionOther">Muu Suomi</option>
       </select>
-      <button id="refreshNow" class="refresh">Päivitä</button>
-      <button id="uimahalliToggle" class="toggle">Uimahallit</button>
+      <button id="refreshNow" class="refresh" data-t="refresh">Päivitä</button>
+      <button id="uimahalliToggle" class="toggle" data-t="uimahalli">Uimahallit</button>
+      <button id="langToggle" class="toggle" data-t="langEn">EN</button>
     </div>
 
     <div class="stats">
-      <span class="pill">Yhteensä: <strong id="totalCount">0</strong></span>
-      <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
+      <span class="pill" data-t="total">Yhteensä:</span> <strong id="totalCount">0</strong>
+      <span class="pill" data-t="lastUpdate">Päivitetty:</span> <strong id="lastUpdate">-</strong>
     </div>
 
     <div id="sections" class="sections"></div>
 
-    <div class="helper">
+    <div class="helper" data-t="helper">
       <b>Ilmainen sauna:</b> merkitty <span class="free" style="display:inline">Ilmainen / Free</span>. Maksulliset saunat näyttävät aikuisen hinnan (€). Avausajat ovat tilan aukioloja ja voivat muuttua – tarkista aina laitoksen verkkosivuilta. Klikkaa karttalinkkiä reittiohjeisiin.
     </div>
   </div>
@@ -278,7 +279,91 @@
     let searchTerm = ''
     let regionFilter = 'ALL'
     let uimahalliFilter = false
+    let lang = 'fi'
     let refreshing = false
+
+    const TR = {
+      fi: {
+        pageTitle: 'Saunat Helsingissä',
+        lede: 'Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.',
+        searchPlaceholder: 'Etsi nimeä, osoitetta, saunatyyppiä…',
+        regionAll: 'Kaikki alueet',
+        regionHelsinki: 'Helsinki',
+        regionEspoo: 'Espoo',
+        regionVantaa: 'Vantaa',
+        regionOther: 'Muu Suomi',
+        refresh: 'Päivitä',
+        uimahalli: 'Uimahallit',
+        langEn: 'EN',
+        langFi: 'FI',
+        total: 'Yhteensä:',
+        lastUpdate: 'Päivitetty:',
+        empty: 'Ei saunoja valituilla suodattimilla.',
+        free: 'Ilmainen / Free',
+        paid: 'Maksullinen / Paid',
+        sauna: '♨ Sauna',
+        station: '🚉 {km} km from {city} station · {walk} walking · PT from station',
+        kmFrom: 'km asemalta',
+        stationWord: 'asema',
+        walking: 'käveellen',
+        ptFromStation: 'Julkisilla asemalta',
+        loadError: 'Saunojen lataaminen epäonnistui.',
+        helper: '<b>Ilmainen sauna:</b> merkitty <span class="free" style="display:inline">Ilmainen / Free</span>. Maksulliset saunat näyttävät aikuisen hinnan (€). Avausajat ovat tilan aukioloja ja voivat muuttua – tarkista aina laitoksen verkkosivuilta. Klikkaa karttalinkkiä reittiohjeisiin.',
+        regionLabels: {
+          Helsinki: 'Helsinki',
+          Espoo: 'Espoo',
+          Vantaa: 'Vantaa',
+          'Muu Suomi': 'Muu Suomi',
+        },
+        untitled: 'Nimetön sauna',
+        unknownLocation: 'Tuntematon osoite',
+        general: 'Yleinen',
+        facility: 'Laitos',
+      },
+      en: {
+        pageTitle: '♨ Saunas in Finland',
+        lede: 'Public saunas in Helsinki, Espoo, Vantaa and Tampere. Prices, opening hours, directions and distance from Helsinki Central Station. Opening hours are facility hours (not a single event time) – always check the facility website before visiting.',
+        searchPlaceholder: 'Search by name, address, sauna type…',
+        regionAll: 'All regions',
+        regionHelsinki: 'Helsinki',
+        regionEspoo: 'Espoo',
+        regionVantaa: 'Vantaa',
+        regionOther: 'Other Finland',
+        refresh: 'Refresh',
+        uimahalli: 'Swimming halls',
+        langEn: 'EN',
+        langFi: 'FI',
+        total: 'Total:',
+        lastUpdate: 'Last update:',
+        empty: 'No saunas matched the current filters.',
+        free: 'Free / Ilmainen',
+        paid: 'Paid / Maksullinen',
+        sauna: '♨ Sauna',
+        station: '🚉 {km} km from {city} station · {walk} walking · PT from station',
+        kmFrom: 'km from',
+        stationWord: 'station',
+        walking: 'walking',
+        ptFromStation: 'PT from station',
+        loadError: 'Failed to load saunas.',
+        helper: '<b>Free sauna:</b> marked <span class="free" style="display:inline">Free / Ilmainen</span>. Paid saunas show the adult price (€). Opening hours are facility hours and may change – check the facility website before visiting. Click a map link for directions.',
+        regionLabels: {
+          Helsinki: 'Helsinki',
+          Espoo: 'Espoo',
+          Vantaa: 'Vantaa',
+          'Muu Suomi': 'Other Finland',
+        },
+        untitled: 'Untitled sauna',
+        unknownLocation: 'Unknown location',
+        general: 'General',
+        facility: 'Facility',
+      },
+    }
+
+    function tr(key, params = {}) {
+      const t = TR[lang][key]
+      if (!t) return key
+      return t.replace(/\{(\w+)\}/g, (_, k) => params[k] || '')
+    }
 
     function sortRegions(keys) {
       return [...keys].sort((a, b) => {
@@ -337,7 +422,7 @@
     function stationLabel(e) {
       if (e.stationKm == null) return ''
       const km = Number(e.stationKm).toFixed(1)
-      return `<span class="station">🚉 ${km} km from ${e.location} station · ${e.stationWalking} walking · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">PT from station</a></span>`
+      return `<span class="station">🚉 ${km} ${tr('kmFrom')} ${e.location} ${tr('stationWord')} · ${e.stationWalking} ${tr('walking')} · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">${tr('ptFromStation')}</a></span>`
     }
 
     function render() {
@@ -346,7 +431,7 @@
       const root = document.getElementById('sections')
 
       if (!events.length) {
-        root.innerHTML = '<div class="empty">Ei saunoja valituilla suodattimilla.</div>'
+        root.innerHTML = '<div class="empty">' + tr('empty') + '</div>'
         return
       }
 
@@ -354,27 +439,28 @@
       const regions = sortRegions(Array.from(grouped.keys()))
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
+        const regionLabel = tr('regionLabels', { region }) || region
         return `
           <section class="region">
             <div class="region-head">
-              <h2>${region}</h2>
-              <span class="meta">${items.length} saunaa</span>
+              <h2>${regionLabel}</h2>
+              <span class="meta">${items.length} ${tr('sauna')}s</span>
             </div>
             <div class="grid">
               ${items.map((e) => `
                 <article class="card">
                   <div class="badges">
                     ${priceLabel(e)}
-                    ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
+                    ${e.sauna ? '<span class="sauna">' + tr('sauna') + '</span>' : ''}
                     ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
                   </div>
-                  <div class="title">${e.title || 'Nimetön sauna'}</div>
+                  <div class="title">${e.title || tr('untitled')}</div>
                   ${e.shortDesc ? `<div class="meta shortdesc">🕒 ${e.shortDesc}</div>` : ''}
                   ${e.stationKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
-                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</div>
-                  <div class="meta">🏷️ ${e.category || 'Yleinen'}</div>
+                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || tr('unknownLocation')}</div>
+                  <div class="meta">🏷️ ${e.category || tr('general')}</div>
                   <div class="links">
-                    ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Laitos</a>` : ''}
+                    ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">${tr('facility')}</a>` : ''}
                     <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
                     <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
                   </div>
@@ -391,6 +477,28 @@
       document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
     }
 
+    function renderTranslations() {
+      document.querySelectorAll('[data-t]').forEach((el) => {
+        const key = el.getAttribute('data-t')
+        const val = tr(key)
+        if (el.tagName === 'INPUT' && el.getAttribute('data-t-placeholder')) {
+          el.placeholder = tr(el.getAttribute('data-t-placeholder'))
+        } else if (el.tagName === 'OPTION') {
+          el.textContent = tr(key)
+        } else {
+          el.textContent = tr(key)
+        }
+      })
+      // Update button text for lang toggle specifically
+      const langBtn = document.getElementById('langToggle')
+      if (langBtn) langBtn.textContent = lang === 'fi' ? tr('langEn') : tr('langFi')
+      // Update toggle button active text
+      const uimahalliBtn = document.getElementById('uimahalliToggle')
+      if (uimahalliBtn) uimahalliBtn.textContent = tr('uimahalli')
+      const refreshBtn = document.getElementById('refreshNow')
+      if (refreshBtn) refreshBtn.textContent = tr('refresh')
+    }
+
     async function load() {
       if (refreshing) return
       refreshing = true
@@ -404,7 +512,7 @@
         setTimeStats()
         render()
       } catch (err) {
-        document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui.</div>'
+        document.getElementById('sections').innerHTML = '<div class="empty">' + tr('loadError') + '</div>'
       } finally {
         refreshing = false
         if (btn) btn.disabled = false
@@ -431,6 +539,13 @@
       load()
     })
 
+    document.getElementById('langToggle').addEventListener('click', () => {
+      lang = lang === 'fi' ? 'en' : 'fi'
+      renderTranslations()
+      render()
+    })
+
+    renderTranslations()
     load()
   </script>
 </body>
