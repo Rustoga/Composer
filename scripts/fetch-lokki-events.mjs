@@ -227,6 +227,27 @@ function isSauna(ev, name, desc) {
   return false
 }
 
+function extractAdultPrice(desc) {
+  const t = desc || ''
+  const patterns = [
+    /(\d+)\s*€?\s*\/\s*aikuiset/i,
+    /aikuiset\s+(\d+)\s*€?/i,
+    /(\d+)\s*€?\s*aikuisille/i,
+    /aikuisille\s+(\d+)\s*€?/i,
+    /(\d+)\s*€?\s*\/\s*aikuinen/i,
+    /aikuinen\s+(\d+)\s*€?/i,
+    /(\d+)\s*€?\s*aikuisilta/i,
+    /aikuisilta\s+(\d+)\s*€?/i,
+    /hinta:\s*(\d+)\s*€?/i,
+    /(\d+)\s*€?\s*aikuista/i,
+  ]
+  for (const pat of patterns) {
+    const m = t.match(pat)
+    if (m) return Number(m[1])
+  }
+  return null
+}
+
 function inferCategory(text) {
   const t = (text || '').toLowerCase()
   if (/(sauna|uimala|swim|kylpy)/i.test(t)) return 'Sauna & Wellness'
@@ -356,13 +377,24 @@ async function collect() {
     const data = await fetchJson(url)
 
     for (const ev of data.data || []) {
-      if (!isFreeEvent(ev)) continue
-
       const start = parseIso(ev.start_time)
       if (!isFuture(start)) continue
 
       const name = pick(ev.name) || 'Tapahtuma'
       const desc = stripHtml(pick(ev.description))
+
+      const sauna = isSauna(ev, name, desc)
+      const priceAdult = extractAdultPrice(desc)
+
+      // Contradicting info: real price in description wins over API free flag
+      let isFree = isFreeEvent(ev)
+      if (sauna && priceAdult != null) {
+        isFree = false
+      }
+
+      // Non-sauna events: only free. Sauna events: free OR explicit adult price.
+      if (!isFree && !sauna) continue
+      if (sauna && !isFree && priceAdult == null) continue
       const loc = getLocation(ev)
       const humanUrl = eventPathFromId(ev['@id'])
       const infoUrl = pick(ev.info_url) || ''
@@ -376,7 +408,6 @@ async function collect() {
 
       if (!loc.region) continue
 
-      const sauna = isSauna(ev, name, desc)
       events.push({
         id: slug(id),
         title: name,
@@ -391,7 +422,8 @@ async function collect() {
         reittiopasUrl: reittiopasUrl(loc),
         shortDesc: shortDesc(desc, name),
         audienceTag: audienceTag(desc),
-        isFree: true,
+        isFree,
+        priceAdult,
         freeProof: freeProof(ev),
         sauna,
       })

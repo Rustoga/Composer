@@ -260,8 +260,8 @@
               ${items.map((e) => `
                 <article class="card">
                   <div class="badges">
-                    <span class="free">Maksuton / Free</span>
-                    ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
+                    ${e.isFree ? '<span class="free">Maksuton / Free</span>' : ''}
+                    ${e.sauna ? `<span class="sauna">${e.priceAdult != null ? '♨ Sauna ' + e.priceAdult + ' €' : '♨ Sauna'}</span>` : ''}
                     ${e.audienceTag ? `<span class="audience">${e.audienceTag}</span>` : ''}
                   </div>
                   <div class="title">${e.title || 'Untitled event'}</div>
