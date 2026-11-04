@@ -236,6 +236,23 @@
       30% { opacity: 0.9; }
       100% { transform: translateY(-140px) scale(1.1); opacity: 0; }
     }
+    .card:hover::after {
+      content: '';
+      position: absolute;
+      top: -10px; right: -10px;
+      width: 40px; height: 40px;
+      background: radial-gradient(circle, rgba(245,158,11,0.15), transparent 70%);
+      border-radius: 50%;
+      filter: blur(6px);
+      animation: smokePuff 1.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes smokePuff {
+      0% { transform: translate(0, 0) scale(0.3); opacity: 0; }
+      40% { opacity: 0.6; }
+      100% { transform: translate(-20px, -30px) scale(1.6); opacity: 0; }
+    }
     @media (max-width: 780px) {
       .topbar { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
