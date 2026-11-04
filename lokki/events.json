@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T08:51:17.737Z",
+  "generatedAt": "2026-11-04T08:56:02.091Z",
   "nextUpdateAt": "2026-11-04T16:00:00.000Z",
   "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
   "sources": [
@@ -10157,7 +10157,7 @@
       "audienceTag": "",
       "isFree": true,
       "freeProof": "Ilmainen (offer.is_free)",
-      "sauna": true
+      "sauna": false
     },
     {
       "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agqlit7ndy",
@@ -12605,7 +12605,7 @@
       "audienceTag": "",
       "isFree": true,
       "freeProof": "Ilmainen (offer.is_free)",
-      "sauna": true
+      "sauna": false
     },
     {
       "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agq2be77qu",
@@ -15179,7 +15179,7 @@
       "audienceTag": "",
       "isFree": true,
       "freeProof": "Ilmainen (offer.is_free)",
-      "sauna": true
+      "sauna": false
     },
     {
       "id": "https-api-hel-fi-linkedevents-v1-event-helsinki-agqmsilzie",

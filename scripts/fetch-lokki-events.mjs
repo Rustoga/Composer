@@ -205,25 +205,26 @@ function reittiopasUrl(loc) {
 }
 
 function isSauna(ev, name, desc) {
-  const t = `${stripHtml(desc || '')} ${stripHtml(name || '')}`.toLowerCase()
+  const d = stripHtml(desc || '').toLowerCase()
+  const n = stripHtml(name || '').toLowerCase()
+  const t = `${d} ${n}`
 
-  // Actual sauna facilities / activities you can use
-  const hasSaunaFacility = /sauna|uimala|kylpylä|kylpy|uimahalli/.test(t)
+  // Strong: you can actually use/visit the sauna (activity/use words)
+  const saunaUse = /saunonta|saunominen|saunotaan|saunomaan|saunaan|saunassa|saunavuoro|saunailta|saunomassa|pääsee\s+saunaan|sauna\s+on|sauna\s+käytössä|sauna\s+lämmin|sauna\s+lämpim/.test(d)
 
-  // Only about dressing/changing room in a sauna space — not a usable sauna
-  // (e.g. "saunatilan pukuhuone käytössä ja siellä voi vaihtaa vaatteita")
-  const onlyDressingRoom = /pukuhuone|puku.?huone|vaihtaa\s+vaatteita/.test(t)
+  // Weak but real: bare "sauna" mentioned in description (e.g. "sauna on lämmin", "sauna käy")
+  const saunaMention = /\bsauna\b/.test(d)
 
-  if (!hasSaunaFacility) return false
-  // Exclude events that are only about using the dressing room, not actually
-  // taking a sauna (no sauna-use words present).
-  if (
-    onlyDressingRoom &&
-    !/saunonta|saunominen|saunotaan|saunaan|saunassa|saunavuoro|saunailta/.test(t)
-  ) {
-    return false
-  }
-  return true
+  // Sauna-equipped facility mentioned in description
+  const saunaPlace = /uimahalli|uimala|kylpylä/.test(d)
+
+  // Only mentions a dressing/changing room in a sauna space — not usable
+  const onlyDressingRoom = /pukuhuone|puku.?huone|vaihtaa\s+vaatteita/.test(d)
+
+  if (saunaUse) return true
+  if ((saunaMention || saunaPlace) && !onlyDressingRoom) return true
+  // Bare "sauna" only in title (e.g. puppet show "Saunatonttu") is not a usable sauna
+  return false
 }
 
 function inferCategory(text) {
