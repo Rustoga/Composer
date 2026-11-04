@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saunas in Helsinki - Lokki</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --line: #334155;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 500px at 10% 10%, rgba(56,189,248,.08), transparent 60%), var(--bg);
+      color: #e2e8f0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      padding: 20px;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.4rem, 2.5vw, 2rem); }
+    .lede { margin: 0 0 14px; color: var(--muted); line-height: 1.5; }
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin: 14px 0 10px;
+    }
+    input, select, button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0b1220;
+      color: #e2e8f0;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    button { cursor: pointer; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .sections {
+      display: grid;
+      gap: 18px;
+    }
+    .region {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(17,24,39,.85), rgba(17,24,39,.55));
+    }
+    .region-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(15,23,42,.65);
+    }
+    .region-head h2 { margin: 0; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: var(--card);
+      display: grid;
+      gap: 8px;
+      min-height: 240px;
+    }
+    .title { font-weight: 600; line-height: 1.35; }
+    .meta { font-size: 13px; color: var(--muted); }
+    .free {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(34,197,94,.55);
+      color: #dcfce7;
+      background: rgba(34,197,94,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .paid {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(239,68,68,.55);
+      color: #fecaca;
+      background: rgba(239,68,68,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sauna {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(56,189,248,.55);
+      color: #e0f2fe;
+      background: rgba(56,189,248,.12);
+      border-radius: 999px;
+      padding: 4px 8px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .type {
+      font-size: 10px;
+      letter-spacing: .05em;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+    .links a {
+      text-decoration: none;
+      color: #e2e8f0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+    .empty { padding: 16px; color: var(--muted); }
+    .helper {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Saunas in Helsinki</h1>
+    <p class="lede">Public saunas in Helsinki, Espoo and Vantaa. Costs, opening hours and directions. Star ratings require a Google Places API key and are not shown here - always check the facility website before visiting.</p>
+
+    <div class="topbar">
+      <input id="search" placeholder="Search by name, address, sauna type..." />
+      <select id="regionSelect">
+        <option value="ALL">All regions</option>
+        <option value="Helsinki">Helsinki</option>
+        <option value="Espoo">Espoo</option>
+        <option value="Vantaa">Vantaa</option>
+        <option value="Muu Suomi">Muu Suomi</option>
+      </select>
+      <button id="refreshNow">Refresh saunas</button>
+    </div>
+
+    <div class="stats">
+      <span class="pill">Total: <strong id="totalCount">0</strong></span>
+      <span class="pill">Last update: <strong id="lastUpdate">-</strong></span>
+    </div>
+
+    <div id="sections" class="sections"></div>
+
+    <div class="helper">
+      <strong>Free sauna:</strong> marked <span class="free" style="display:inline">Maksuton / Free</span>. Paid saunas show the adult price (€). Opening hours are for the facility (not a single event time) and may change - check the facility website before visiting. Click a map link for directions.
+    </div>
+  </div>
+
+  <script>
+    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
+    let snapshot = { events: [] }
+    let searchTerm = ''
+    let regionFilter = 'ALL'
+    let refreshing = false
+
+    function sortRegions(keys) {
+      return [...keys].sort((a, b) => {
+        const ai = PRIORITY.indexOf(a)
+        const bi = PRIORITY.indexOf(b)
+        if (ai === -1 && bi === -1) return a.localeCompare(b)
+        if (ai === -1) return 1
+        if (bi === -1) return -1
+        return ai - bi
+      })
+    }
+
+    function normalize(str) {
+      return String(str || '').toLowerCase()
+    }
+
+    function filteredEvents(events) {
+      const q = normalize(searchTerm)
+      return events.filter((e) => {
+        if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
+        if (!q) return true
+        return (
+          normalize(e.title).includes(q) ||
+          normalize(e.location).includes(q) ||
+          normalize(e.street || '').includes(q) ||
+          normalize(e.saunaType || '').includes(q) ||
+          normalize(e.category || '').includes(q)
+        )
+      })
+    }
+
+    function groupByRegion(events) {
+      const map = new Map()
+      for (const e of events) {
+        const r = e.region || 'Muu Suomi'
+        if (!map.has(r)) map.set(r, [])
+        map.get(r).push(e)
+      }
+      return map
+    }
+
+    function priceLabel(e) {
+      if (e.isFree) return '<span class="free">Maksuton / Free</span>'
+      if (e.priceAdult != null) return `<span class="paid">Maksullinen / Paid ${e.priceAdult} €</span>`
+      return '<span class="paid">Maksullinen / Paid</span>'
+    }
+
+    function render() {
+      const events = filteredEvents(snapshot.events || [])
+      document.getElementById('totalCount').textContent = String(events.length)
+      const root = document.getElementById('sections')
+
+      if (!events.length) {
+        root.innerHTML = '<div class="empty">No saunas matched the current filters.</div>'
+        return
+      }
+
+      const grouped = groupByRegion(events)
+      const regions = sortRegions(Array.from(grouped.keys()))
+      root.innerHTML = regions.map((region) => {
+        const items = grouped.get(region) || []
+        return `
+          <section class="region">
+            <div class="region-head">
+              <h2>${region}</h2>
+              <span class="meta">${items.length} saunas</span>
+            </div>
+            <div class="grid">
+              ${items.map((e) => `
+                <article class="card">
+                  <div class="badges">
+                    ${priceLabel(e)}
+                    ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
+                    ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
+                  </div>
+                  <div class="title">${e.title || 'Untitled sauna'}</div>
+                  ${e.shortDesc ? `<div class="meta shortdesc">🕒 ${e.shortDesc}</div>` : ''}
+                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Unknown location'}</div>
+                  <div class="meta">🏷️ ${e.category || 'General'}</div>
+                  <div class="links">
+                    <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">${e.sourceUrl ? 'Facility' : '—'}</a>
+                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
+                    <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        `
+      }).join('')
+    }
+
+    function setTimeStats() {
+      const last = snapshot.generatedAt ? new Date(snapshot.generatedAt) : null
+      document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
+    }
+
+    async function load() {
+      if (refreshing) return
+      refreshing = true
+      const btn = document.getElementById('refreshNow')
+      if (btn) btn.disabled = true
+      try {
+        const res = await fetch('./saunas.json', { cache: 'no-store' })
+        const data = await res.json()
+        snapshot = Array.isArray(data) ? { events: data } : data
+        snapshot.events = Array.isArray(snapshot.events) ? snapshot.events : []
+        setTimeStats()
+        render()
+      } catch (err) {
+        document.getElementById('sections').innerHTML = '<div class="empty">Failed to load saunas.</div>'
+      } finally {
+        refreshing = false
+        if (btn) btn.disabled = false
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchTerm = e.target.value || ''
+      render()
+    })
+
+    document.getElementById('regionSelect').addEventListener('change', (e) => {
+      regionFilter = e.target.value
+      render()
+    })
+
+    document.getElementById('refreshNow').addEventListener('click', () => {
+      load()
+    })
+
+    load()
+  </script>
+</body>
+</html>
