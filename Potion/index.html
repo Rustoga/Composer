@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Potion — Album Workspace</title>
 <style>
-body{margin:0;font-family:system-ui;background:#faf9f7;color:#1f2427}
+body{margin:0;font-family:system-ui;background:#faf9f7;color:#1f2427}body.dark{background:#121212;color:#eee}body.dark .card{border-color:#333;background:#1e1e1e}body.dark input,body.dark textarea,body.dark select{background:#2a2a2a;color:#eee;border-color:#444}body.dark button{background:#2a2a2a;color:#eee;border-color:#444}
 .wrap{max-width:960px;margin:0 auto;padding:24px}
 .card{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:center}
 img{object-fit:cover;border-radius:6px}
@@ -16,7 +16,7 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 </head>
 <body>
 <div class="wrap">
-<h1>Potion — Album Workspace</h1>
+<h1>Potion — Album Workspace</h1><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
 <div id="workspace"></div>
 </div>
 <script>
@@ -113,6 +113,7 @@ function moveTrack(albumId,tid,dir){
   const p1=t1.position;t1.position=t2.position;t2.position=p1;
   t1.updatedAt=Date.now();t2.updatedAt=Date.now();save(state);openAlbum(albumId);
 }
+document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
 render();
 </script>
 </body>
