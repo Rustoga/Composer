@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Potion2 — Album Workspace</title>
+<style>
+body{margin:0;font-family:system-ui;background:#faf9f7;color:#1f2427}body.dark{background:#121212;color:#eee}body.dark .card{border-color:#333;background:#1e1e1e}body.dark input,body.dark textarea,body.dark select{background:#2a2a2a;color:#eee;border-color:#444}body.dark button{background:#2a2a2a;color:#eee;border-color:#444}
+.wrap{max-width:960px;margin:0 auto;padding:24px}
+.card{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:center}
+img{object-fit:cover;border-radius:6px}
+input,textarea,select{font:inherit;padding:8px;border:1px solid #ddd;border-radius:6px}
+button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff}
+.primary{background:#1f2427;color:#fff;border:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Potion2 — Album Workspace</h1><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
+<div id="workspace"></div>
+</div>
+<script>
+const KEY='potion:v1';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{albums:[],tracks:[]}}catch{return{albums:[],tracks:[]}}}
+function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.stringify({albums:[
+{id:'nordic',title:'Nordic Folk',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'jazz',title:'Jazz Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'acoustic',title:'Acoustic Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'metal',title:'Metal Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+],tracks:[
+{id:'n1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n3',albumId:'nordic',title:'Rauha',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n4',albumId:'nordic',title:'Finnish folk tale jam v2 (nwc)',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n5',albumId:'nordic',title:'Finnish folk tale jam',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n6',albumId:'nordic',title:'Trailer music base nordic',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n7',albumId:'nordic',title:'Käärmelaulu',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n8',albumId:'nordic',title:'Muumi (etsi)',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'n9',albumId:'nordic',title:'Päätä',position:8,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j1',albumId:'jazz',title:'intro',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j2',albumId:'jazz',title:'Turquoise Tortoise',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j3',albumId:'jazz',title:'Melting April',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j4',albumId:'jazz',title:'Valtteri - don’t you want',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j5',albumId:'jazz',title:'Elia iski - jazz pop',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j6',albumId:'jazz',title:'Juho pakkasvirta - Nujabes',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j7',albumId:'jazz',title:'Aaron - Virtue of Water',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j8',albumId:'jazz',title:'Jami - Poet of Lurius',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j9',albumId:'jazz',title:'Yukata - citypop',position:8,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j10',albumId:'jazz',title:'Marija - tunnelmallista',position:9,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j11',albumId:'jazz',title:'lähde bpm 148',position:10,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'j12',albumId:'jazz',title:'Haxu - LeafFlow',position:11,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a1',albumId:'acoustic',title:'Prologue',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a2',albumId:'acoustic',title:'Kontakt → Mint Pop',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a3',albumId:'acoustic',title:'Roselyn ghosts',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a4',albumId:'acoustic',title:'Syml there’s my love',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a5',albumId:'acoustic',title:'Keera bmth',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a6',albumId:'acoustic',title:'You Heal Me',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'a7',albumId:'acoustic',title:'Epilogue',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'m1',albumId:'metal',title:'Metal Track 1',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m2',albumId:'metal',title:'Metal Track 2',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m3',albumId:'metal',title:'Metal Track 3',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m4',albumId:'metal',title:'Metal Track 4',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m5',albumId:'metal',title:'Metal Track 5',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m6',albumId:'metal',title:'Metal Track 6',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m7',albumId:'metal',title:'Metal Track 7',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m8',albumId:'metal',title:'Metal Track 8',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},]}));}
+let state=load();
+if(!state.albums.find(a=>a.id==='metal')){state.albums.push({id:'metal',title:'Metal Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});for(let i=1;i<=8;i++)state.tracks.push({id:'m'+i,albumId:'metal',title:'Metal Track '+i,position:i-1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});save(state)}
+function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function render(){
+  const w=document.getElementById('workspace');
+  const q=(document.getElementById('q')||{}).value||'';
+  const albums=state.albums.filter(a=>a.title.toLowerCase().includes(q.toLowerCase()));
+  w.innerHTML='<div style="display:flex;gap:8px;margin-bottom:16px"><input id="q" placeholder="Search" value="'+q+'" style="flex:1"><button id="newAlbum" class="primary">New Album</button></div>'
+    +(albums.length?'':'<p>No albums yet.</p>')
+    +albums.map(a=>{
+      const ts=state.tracks.filter(t=>t.albumId===a.id);
+      const pct=ts.length?Math.round(ts.filter(t=>t.completed).length/ts.length*100):0;
+      return '<div class="card"><div style="width:64px;height:64px;background:#eee;border-radius:6px;overflow:hidden">'+(a.image?'<img src="'+a.image+'" style="width:64px;height:64px">':'')+'</div><div style="flex:1"><div style="font-weight:600">'+a.title+'</div><div style="font-size:12px;color:#666">'+a.status+' · '+ts.length+' tracks · '+pct+'%</div></div><button data-open="'+a.id+'">Open</button><button data-del="'+a.id+'">Delete</button></div>';
+    }).join('');
+  document.getElementById('newAlbum').onclick=()=>{state.albums.unshift({id:uid(),title:'Untitled Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});save(state);render()};
+  document.getElementById('q').oninput=render;
+  document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openAlbum(b.dataset.open));
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(!confirm('Delete album and tracks?'))return;const id=b.dataset.del;state.albums=state.albums.filter(a=>a.id!==id);state.tracks=state.tracks.filter(t=>t.albumId!==id);save(state);render()});
+}
+function openAlbum(id){
+  const a=state.albums.find(x=>x.id===id);
+  const tracks=state.tracks.filter(t=>t.albumId===id).sort((x,y)=>x.position-y.position);
+  const pct=tracks.length?Math.round(tracks.filter(t=>t.completed).length/tracks.length*100):0;
+  document.getElementById('workspace').innerHTML='<button id="back">← Back</button>'
+    +'<input id="title" value="'+a.title+'" style="font-size:28px;font-weight:700;border:none;width:100%;margin:8px 0">'
+    +'<div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap"><select id="status"><option>upcoming</option><option>in-progress</option><option>completed</option><option>archived</option></select><input type="date" id="date" value="'+(a.releaseDate||'')+'"><input id="img" placeholder="Image URL" value="'+(a.image||'')+'" style="flex:1"></div>'
+    +(a.image?'<img src="'+a.image+'" style="max-width:240px;border-radius:8px" onerror="this.style.display=\'none\'">':'')
+    +'<textarea id="notes" placeholder="Album notes" style="width:100%;min-height:80px;margin:8px 0">'+a.notes+'</textarea>'
+    +'<h3>Tracks — '+pct+'%</h3><button id="addTrack" class="primary">Add Track</button>'
+    +tracks.map(t=>'<div class="card" style="flex-direction:column;align-items:stretch"><div style="display:flex;gap:8px;align-items:center"><input type="checkbox" '+(t.completed?'checked':'')+' data-tc="'+t.id+'"><input value="'+t.title+'" data-tt="'+t.id+'" style="flex:1;font-weight:600"><button data-up="'+t.id+'">↑</button><button data-down="'+t.id+'">↓</button><button data-tdel="'+t.id+'">✕</button></div><textarea data-tn="'+t.id+'" placeholder="Notes/lyrics" style="width:100%;min-height:60px;margin-top:8px">'+t.notes+'</textarea><div style="margin-top:6px"><button data-link="'+t.id+'">+ Link</button>'+(t.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div></div>').join('')
+    +'<div style="margin-top:12px"><button id="albumLink">+ Album Link</button>'+(a.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div>';
+  document.getElementById('back').onclick=render;
+  document.getElementById('title').onchange=e=>{a.title=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('status').value=a.status;
+  document.getElementById('status').onchange=e=>{a.status=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('date').onchange=e=>{a.releaseDate=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('img').onchange=e=>{a.image=e.target.value;a.updatedAt=Date.now();save(state);openAlbum(id)};
+  document.getElementById('notes').onchange=e=>{a.notes=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('addTrack').onclick=()=>{const t={id:uid(),albumId:id,title:'New Track',position:tracks.length,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()};state.tracks.push(t);save(state);openAlbum(id)};
+  document.querySelectorAll('[data-tc]').forEach(c=>c.onchange=e=>{const t=state.tracks.find(x=>x.id===c.dataset.tc);t.completed=e.target.checked;t.updatedAt=Date.now();save(state);openAlbum(id)});
+  document.querySelectorAll('[data-tt]').forEach(i=>i.onchange=e=>{const t=state.tracks.find(x=>x.id===i.dataset.tt);t.title=e.target.value;t.updatedAt=Date.now();save(state)});
+  document.querySelectorAll('[data-tn]').forEach(ta=>ta.onchange=e=>{const t=state.tracks.find(x=>x.id===ta.dataset.tn);t.notes=e.target.value;t.updatedAt=Date.now();save(state)});
+  document.querySelectorAll('[data-tdel]').forEach(b=>b.onclick=()=>{if(!confirm('Delete track?'))return;state.tracks=state.tracks.filter(t=>t.id!==b.dataset.tdel);save(state);openAlbum(id)});
+  document.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>moveTrack(id,b.dataset.up,-1));
+  document.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>moveTrack(id,b.dataset.down,1));
+  document.querySelectorAll('[data-link]').forEach(b=>b.onclick=()=>{const url=prompt('Link URL');if(!url)return;const t=state.tracks.find(x=>x.id===b.dataset.link);t.links.push({id:uid(),url,label:url});t.updatedAt=Date.now();save(state);openAlbum(id)});
+  document.getElementById('albumLink').onclick=()=>{const url=prompt('Album link URL');if(!url)return;a.links.push({id:uid(),url,label:url});a.updatedAt=Date.now();save(state);openAlbum(id)};
+}
+function moveTrack(albumId,tid,dir){
+  const tracks=state.tracks.filter(t=>t.albumId===albumId).sort((a,b)=>a.position-b.position);
+  const idx=tracks.findIndex(t=>t.id===tid);const ni=idx+dir;
+  if(ni<0||ni>=tracks.length)return;
+  const other=tracks[ni];
+  const t1=state.tracks.find(t=>t.id===tid);const t2=state.tracks.find(t=>t.id===other.id);
+  const p1=t1.position;t1.position=t2.position;t2.position=p1;
+  t1.updatedAt=Date.now();t2.updatedAt=Date.now();save(state);openAlbum(albumId);
+}
+document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
+render();
+</script>
+</body>
+</html>
