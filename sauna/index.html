@@ -434,6 +434,17 @@
       const regions = sortRegions(Array.from(grouped.keys()))
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
+        // Free saunas first, then by distance from Helsinki rautatieasema, then by name
+        items.sort((a, b) => {
+          const aFree = a.isFree === true || a.isFree === 1
+          const bFree = b.isFree === true || b.isFree === 1
+          if (aFree && !bFree) return -1
+          if (!aFree && bFree) return 1
+          const aKm = a.stationKm == null ? 9999 : a.stationKm
+          const bKm = b.stationKm == null ? 9999 : b.stationKm
+          if (aKm !== bKm) return aKm - bKm
+          return (a.title || '').localeCompare(b.title || '')
+        })
         return `
           <section class="region">
             <div class="region-head">
