@@ -330,7 +330,7 @@
     function stationLabel(e) {
       if (e.stationKm == null) return ''
       const km = Number(e.stationKm).toFixed(1)
-      return `<span class="station">🚉 ${km} km from Helsinki Central Station · ${e.stationWalking} walking · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">PT from station</a></span>`
+      return `<span class="station">🚉 ${km} km from ${e.location} station · ${e.stationWalking} walking · <a href="${e.reittiopasUrlFromStation}" target="_blank" rel="noreferrer">PT from station</a></span>`
     }
 
     function render() {
