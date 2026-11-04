@@ -26,9 +26,14 @@
     .lede { margin: 0 0 14px; color: var(--muted); line-height: 1.5; }
     .topbar {
       display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 10px;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
       margin: 14px 0 10px;
+    }
+    .toggle.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
     }
     input, select, button {
       border: 1px solid var(--line);
@@ -174,6 +179,7 @@
         <option value="Muu Suomi">Muu Suomi</option>
       </select>
       <button id="refreshNow">Refresh saunas</button>
+      <button id="uimahalliToggle" class="toggle">Uimahalli</button>
     </div>
 
     <div class="stats">
@@ -193,6 +199,7 @@
     let snapshot = { events: [] }
     let searchTerm = ''
     let regionFilter = 'ALL'
+    let uimahalliFilter = false
     let refreshing = false
 
     function sortRegions(keys) {
@@ -214,6 +221,7 @@
       const q = normalize(searchTerm)
       return events.filter((e) => {
         if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
+        if (uimahalliFilter && !/uimahalli/.test(normalize(e.category || ''))) return false
         if (!q) return true
         return (
           normalize(e.title).includes(q) ||
@@ -318,6 +326,12 @@
 
     document.getElementById('regionSelect').addEventListener('change', (e) => {
       regionFilter = e.target.value
+      render()
+    })
+
+    document.getElementById('uimahalliToggle').addEventListener('click', (e) => {
+      uimahalliFilter = !uimahalliFilter
+      e.currentTarget.classList.toggle('active', uimahalliFilter)
       render()
     })
 
