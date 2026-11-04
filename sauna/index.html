@@ -319,7 +319,7 @@
       const q = normalize(searchTerm)
       return events.filter((e) => {
         if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
-        if (uimahalliFilter && !/uimahalli/.test(normalize(e.category || ''))) return false
+        if (!uimahalliFilter && /uimahalli/.test(normalize(e.category || ''))) return false
         if (!q) return true
         return (
           normalize(e.title).includes(q) ||
