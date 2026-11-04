@@ -13,7 +13,14 @@ input,textarea,select{font:inherit;padding:8px;border:1px solid #ddd;border-radi
 button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff}
 .primary{background:#1f2427;color:#fff;border:none}
 </style>
-</head>
+</head><style>
+.side-ripple{position:fixed;top:0;bottom:0;width:120px;pointer-events:none;opacity:.15;z-index:0}
+.side-ripple.left{left:0;background:radial-gradient(circle at 50% 50%,#88a,#0000 70%)}
+.side-ripple.right{right:0;background:radial-gradient(circle at 50% 50%,#a88,#0000 70%)}
+@keyframes ripple{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.side-ripple{animation:ripple 6s ease-in-out infinite}
+</style>
+<div class="side-ripple left"></div><div class="side-ripple right"></div>
 <body>
 <div class="wrap">
 <h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff"></div><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
