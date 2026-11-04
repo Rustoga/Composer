@@ -184,6 +184,42 @@
       width: fit-content;
       text-transform: uppercase;
     }
+    .rating {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line);
+      color: #fbbf24;
+      background: rgba(251,191,36,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .user-rating {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(56,189,248,0.55);
+      color: #cffafe;
+      background: rgba(56,189,248,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .stars {
+      display: inline-flex;
+      gap: 3px;
+      margin-top: 6px;
+    }
+    .star {
+      font-size: 14px;
+      color: rgba(251,191,36,0.35);
+      cursor: pointer;
+      transition: color 0.15s;
+      user-select: none;
+    }
+    .star.filled { color: #fbbf24; text-shadow: 0 0 6px rgba(251,191,36,0.6); }
+    .star:hover { color: #f59e0b; }
     .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
     .links a {
       text-decoration: none;
@@ -298,6 +334,12 @@
     let regionFilter = 'ALL'
     let uimahalliFilter = false
     let refreshing = false
+    let userRatings = {}
+
+    try {
+      const stored = localStorage.getItem('saunaUserRatings')
+      if (stored) userRatings = JSON.parse(stored)
+    } catch (e) {}
 
     function sortRegions(keys) {
       return [...keys].sort((a, b) => {
@@ -353,6 +395,25 @@
       return '<span class="paid">Maksullinen / Paid</span>'
     }
 
+    function ratingLabel(e) {
+      if (e.rating == null) return ''
+      return `<span class="rating" title="Googlen arvio">${Number(e.rating).toFixed(1)}/5</span>`
+    }
+
+    function userRatingLabel(e) {
+      const r = userRatings[e.id]
+      if (r == null) return ''
+      return `<span class="user-rating" title="Oma arviosi">${Number(r).toFixed(1)}/5</span>`
+    }
+
+    function saveUserRating(id, rating) {
+      userRatings[id] = rating
+      try {
+        localStorage.setItem('saunaUserRatings', JSON.stringify(userRatings))
+      } catch (e) {}
+      render()
+    }
+
     function stationLabel(e) {
       if (e.stationKm == null) return ''
       const km = Number(e.stationKm).toFixed(1)
@@ -384,10 +445,15 @@
                 <article class="card">
                   <div class="badges">
                     ${priceLabel(e)}
+                    ${ratingLabel(e)}
+                    ${userRatingLabel(e)}
                     ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
                     ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
                   </div>
                   <div class="title">${e.title || 'Nimetön sauna'}</div>
+                  <div class="stars" data-id="${e.id}">
+                    ${[1,2,3,4,5].map(n => `<span class="star${userRatings[e.id] >= n ? ' filled' : ''}" data-val="${n}" onclick="saveUserRating('${e.id}', ${n})">★</span>`).join('')}
+                  </div>
                   ${e.shortDesc ? `<div class="meta shortdesc">🕒 ${e.shortDesc}</div>` : ''}
                   ${e.stationKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
                   <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</div>
