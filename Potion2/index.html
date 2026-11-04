@@ -86,6 +86,9 @@ function openAlbum(id){
     +'<div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap"><select id="status"><option>upcoming</option><option>in-progress</option><option>completed</option><option>archived</option></select><input type="date" id="date" value="'+(a.releaseDate||'')+'"><input id="img" placeholder="Image URL" value="'+(a.image||'')+'" style="flex:1"></div>'
     +(a.image?'<img src="'+a.image+'" style="max-width:240px;border-radius:8px" onerror="this.style.display=\'none\'">':'')
     +'<textarea id="notes" placeholder="Album notes" style="width:100%;min-height:80px;margin:8px 0">'+a.notes+'</textarea>'
+    +'<details style="margin:8px 0"><summary>Marketing & checklist</summary><textarea id="marketing" placeholder="Social posts, press, playlist pitching..." style="width:100%;min-height:60px;margin-top:6px">'+(a.marketing||'')+'</textarea></details>'
+    +'<details style="margin:8px 0"><summary>Credits & budget</summary><textarea id="credits" placeholder="Collaborators, budget notes..." style="width:100%;min-height:60px;margin-top:6px">'+(a.credits||'')+'</textarea></details>'
+    +'<details style="margin:8px 0"><summary>Mood board (image URLs, comma separated)</summary><textarea id="mood" placeholder="https://..." style="width:100%;min-height:60px;margin-top:6px">'+(a.mood||'')+'</textarea></details>'
     +'<h3>Tracks — '+pct+'%</h3><button id="addTrack" class="primary">Add Track</button>'
     +tracks.map(t=>'<div class="card" style="flex-direction:column;align-items:stretch"><div style="display:flex;gap:8px;align-items:center"><input type="checkbox" '+(t.completed?'checked':'')+' data-tc="'+t.id+'"><input value="'+t.title+'" data-tt="'+t.id+'" style="flex:1;font-weight:600"><button data-up="'+t.id+'">↑</button><button data-down="'+t.id+'">↓</button><button data-tdel="'+t.id+'">✕</button></div><textarea data-tn="'+t.id+'" placeholder="Notes/lyrics" style="width:100%;min-height:60px;margin-top:8px">'+t.notes+'</textarea><div style="margin-top:6px"><button data-link="'+t.id+'">+ Link</button>'+(t.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div></div>').join('')
     +'<div style="margin-top:12px"><button id="albumLink">+ Album Link</button>'+(a.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div>';
@@ -96,6 +99,9 @@ function openAlbum(id){
   document.getElementById('date').onchange=e=>{a.releaseDate=e.target.value;a.updatedAt=Date.now();save(state)};
   document.getElementById('img').onchange=e=>{a.image=e.target.value;a.updatedAt=Date.now();save(state);openAlbum(id)};
   document.getElementById('notes').onchange=e=>{a.notes=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('marketing').onchange=e=>{a.marketing=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('credits').onchange=e=>{a.credits=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('mood').onchange=e=>{a.mood=e.target.value;a.updatedAt=Date.now();save(state)};
   document.getElementById('addTrack').onclick=()=>{const t={id:uid(),albumId:id,title:'New Track',position:tracks.length,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()};state.tracks.push(t);save(state);openAlbum(id)};
   document.querySelectorAll('[data-tc]').forEach(c=>c.onchange=e=>{const t=state.tracks.find(x=>x.id===c.dataset.tc);t.completed=e.target.checked;t.updatedAt=Date.now();save(state);openAlbum(id)});
   document.querySelectorAll('[data-tt]').forEach(i=>i.onchange=e=>{const t=state.tracks.find(x=>x.id===i.dataset.tt);t.title=e.target.value;t.updatedAt=Date.now();save(state)});
