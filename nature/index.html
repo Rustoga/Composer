@@ -6,7 +6,7 @@
 <title>Nature Spectrum — Rudolf Westerholm</title>
 <meta name="description" content="Interactive soundscape spectrum explorer: nature vs city across four seasons." />
 <style>
-  *,*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+  *,::before,::after{box-sizing:border-box;margin:0;padding:0}
   body{background:#fbfbfa;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;min-height:100vh}
   a{color:inherit;text-decoration:none}
   .font-display{font-family:Georgia,"Times New Roman",Times,serif}
@@ -36,9 +36,9 @@
   .stage{max-width:1200px;margin:0 auto;padding:0 1rem 4rem}
   .spectrum-wrap{position:relative;width:100%;max-width:980px;background:#fff;border:1px solid #e8e5dd;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.06);margin:0 auto}
   .spectrum-canvas{width:100%;height:420px;display:block;background:#fafaf9;cursor:crosshair}
-  .freq-ruler{position:absolute;right:0;top:0;bottom:0;width:44px;display:flex;flex-direction:column;justify-content:space-between;padding:10px 6px;font-size:11px;color:#666560;font-variant-numeric:tabular-nums;text-align:right;line-height:1.2;pointer-events:none}
+  .freq-ruler{position:absolute;top:0;right:0;bottom:0;width:44px;display:flex;flex-direction:column;justify-content:space-between;padding:10px 6px;font-size:11px;color:#666560;font-variant-numeric:tabular-nums;text-align:right;line-height:1.2;pointer-events:none}
   .freq-ruler .tick{margin-bottom:2px}
-  .audio-hint{position:absolute;inset:0;background:rgba(251,251,250,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;cursor:pointer}
+  .audio-hint{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(251,251,250,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:30;cursor:pointer}
   .audio-hint .hint-ring{width:64px;height:64px;border:2px dashed #0b7f5c;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative;font-size:20px}
   .audio-hint p{color:#666560;font-size:14px;max-width:260px;text-align:center}
   .hover-card{position:absolute;left:50%;top:12px;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity 0.2s ease;z-index:10}
@@ -276,7 +276,6 @@
     }catch(e){ console.log('updateAudio failed',e); }
   }
 
-  var raf;
   function resize(){
     try{
       var wrap=document.querySelector('.spectrum-wrap');
@@ -339,7 +338,6 @@
       drawRuler(H);
       drawHover(W,H,energy,bins);
     }catch(e){ console.log('draw frame failed',e); }
-    raf=requestAnimationFrame(draw);
   }
 
   function drawRX(W,H,energy,bins){
@@ -450,12 +448,23 @@
     if(liveText){ liveText.textContent=g.label+' &middot; '+g.desc.split('.')[0]; }
   }
 
+  function redraw(){
+    try{
+      var wrap=document.querySelector('.spectrum-wrap');
+      var dpr=Math.max(1,window.devicePixelRatio||1);
+      var W=wrap?wrap.clientWidth:980;
+      var H=420;
+      draw();
+    }catch(e){}
+  }
+
   envBtns.forEach(function(b){
     b.addEventListener('click',function(){
       envBtns.forEach(function(x){x.classList.remove('active');});
       b.classList.add('active');
       state.env=b.dataset.env;
       updateAudio();
+      redraw();
     });
   });
   seasonBtns.forEach(function(b){
@@ -464,9 +473,10 @@
       b.classList.add('active');
       state.season=b.dataset.season;
       updateAudio();
+      redraw();
     });
   });
-  if(chartStyle){ chartStyle.addEventListener('change',function(){ state.style=chartStyle.value; }); }
+  if(chartStyle){ chartStyle.addEventListener('change',function(){ state.style=chartStyle.value; redraw(); }); }
 
   var dragging=false;
   function startDrag(){dragging=true;}
@@ -491,6 +501,7 @@
     var m=Math.round((t*24-h)*60);
     if(timeLabel){ timeLabel.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
     updateAudio();
+    redraw();
   }
   setInterval(function(){
     if(!dragging){
@@ -507,7 +518,7 @@
     if(timeLabelEnd){ timeLabelEnd.textContent=(eh<10?'0':'')+eh+':'+(em<10?'0':'')+em; }
   },1000);
 
-  canvas.addEventListener('mousemove',function(e){ state.hover={x:e.clientX,y:e.clientY}; });
+  canvas.addEventListener('mousemove',function(e){ state.hover={x:e.clientX,y:e.clientY}; drawHover(canvas.width/Math.max(1,window.devicePixelRatio||1),canvas.height/Math.max(1,window.devicePixelRatio||1),new Float32Array(0),0); });
   canvas.addEventListener('touchmove',function(e){
     state.hover={x:e.touches[0].clientX,y:e.touches[0].clientY};
   },{passive:false});
