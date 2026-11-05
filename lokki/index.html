@@ -299,10 +299,9 @@
       const sorted = [...group].sort((a, b) => (a.date || '').localeCompare(b.date || ''))
       if (sorted.length === 1) return `<div class="meta">📅 ${fmtDate(sorted[0].date)}</div>`
 
-      // weekday initials from ISO date strings
-      const weekdays = sorted.map((ev) => new Date(ev.date).toLocaleDateString('fi-FI', { weekday: 'narrow' }))
+      const weekdays = sorted.map((ev) => new Date(ev.date).toLocaleDateString('en-US', { weekday: 'long' }))
       const uniqueDays = [...new Set(weekdays)]
-      const dayLabel = uniqueDays.length === 1 ? `× ${uniqueDays[0]}` : uniqueDays.join(', ')
+      const dayLabel = uniqueDays.length === 1 ? `Every ${uniqueDays[0]}` : uniqueDays.join(', ')
       const first = fmtDate(sorted[0].date)
       const last = fmtDate(sorted[sorted.length - 1].date)
       return `
