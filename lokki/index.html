@@ -169,6 +169,18 @@
     .station-line .from { color: var(--accent-glow); font-weight: 700; }
     .dates { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
     .date { font-size: 12px; color: #cbd5e1; background: rgba(17,24,39,.45); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+    .badge.ongoing {
+      font-size: 11px;
+      letter-spacing: .08em;
+      border: 1px solid rgba(56,189,248,.55);
+      color: #e0f2fe;
+      background: rgba(56,189,248,.12);
+      border-radius: 999px;
+      padding: 3px 8px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .ongoing-info { font-size: 12px; color: #94a3b8; margin-top: 1px; }
     .empty { padding: 16px; color: var(--muted); }
     .helper {
       margin-top: 14px;
@@ -285,12 +297,20 @@
 
     function datesLabel(group) {
       const sorted = [...group].sort((a, b) => (a.date || '').localeCompare(b.date || ''))
-      const show = 6
-      const visible = sorted.slice(0, show)
-      const rest = sorted.length - show
-      const html = visible.map(ev => `<span class="date">${fmtDate(ev.date)}</span>`).join('')
-      const extra = rest > 0 ? `<span class="date">+ ${rest} more</span>` : ''
-      return `<div class="dates">${html}${extra}</div>`
+      if (sorted.length === 1) return `<div class="meta">📅 ${fmtDate(sorted[0].date)}</div>`
+
+      // weekday initials from ISO date strings
+      const weekdays = sorted.map((ev) => new Date(ev.date).toLocaleDateString('fi-FI', { weekday: 'narrow' }))
+      const uniqueDays = [...new Set(weekdays)]
+      const dayLabel = uniqueDays.length === 1 ? `× ${uniqueDays[0]}` : uniqueDays.join(', ')
+      const first = fmtDate(sorted[0].date)
+      const last = fmtDate(sorted[sorted.length - 1].date)
+      return `
+        <div class="dates">
+          <span class="badge ongoing">🔄 Ongoing event</span>
+          <span class="meta ongoing-info">${sorted.length} × ${dayLabel} · ${first} → ${last}</span>
+        </div>
+      `
     }
 
     function stationLabel(e) {
