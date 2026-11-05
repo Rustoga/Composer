@@ -199,9 +199,39 @@ function mapsUrl(loc) {
   return `https://www.google.com/maps/search/?api=1&query=Helsinki`
 }
 
-function reittiopasUrl(loc) {
-  const to = [loc.street, loc.locality].filter(Boolean).join(', ') || 'Helsinki'
-  return `https://www.reittiopas.fi/?from=Lauttasaari%20M&to=${encodeURIComponent(to)}`
+// Station coordinates for distance display (WGS84 lat/lon)
+const STATIONS = {
+  Helsinki: { lat: 60.170937, lon: 24.941451, label: 'Helsinki station' },
+  Lauttasaari: { lat: 60.1584, lon: 24.9027, label: 'Lauttasaari metro' },
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = (d) => (d * Math.PI) / 180
+  const R = 6371
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+function walkingMin(km) {
+  // ~5 km/h walking speed
+  const min = (km / 5) * 60
+  if (min < 1) return '< 1 min'
+  if (min < 60) return `${Math.round(min)} min`
+  const h = Math.floor(min / 60)
+  const m = Math.round(min % 60)
+  return m === 0 ? `${h} h` : `${h} h ${m} min`
+}
+
+function stationDistance(lat, lon, stationKey) {
+  if (lat == null || lon == null) return null
+  const s = STATIONS[stationKey]
+  if (!s) return null
+  const km = haversineKm(s.lat, s.lon, lat, lon)
+  return { km, walking: walkingMin(km), label: s.label }
 }
 
 function isSauna(ev, name, desc) {
@@ -322,7 +352,7 @@ function parseIso(s) {
 
 function isFuture(d) {
   if (!d) return false
-  return d.getTime() >= Date.now() - 24 * 3600 * 1000
+  return d.getTime() >= Date.now()
 }
 
 function helsinkiParts() {
@@ -408,6 +438,9 @@ async function collect() {
 
       if (!loc.region) continue
 
+      const distHelsinki = stationDistance(loc.lat, loc.lon, 'Helsinki')
+      const distLauttasaari = stationDistance(loc.lat, loc.lon, 'Lauttasaari')
+
       events.push({
         id: slug(id),
         title: name,
@@ -415,17 +448,22 @@ async function collect() {
         location: loc.locality || 'Helsinki',
         street: loc.street,
         region: loc.region,
+        lat: loc.lat,
+        lon: loc.lon,
         category: inferCategory(`${name} ${desc}`, sauna),
         source: 'Linked Events (MyHelsinki avoin data)',
         sourceUrl: sourceUrl,
         mapsUrl: mapsUrl(loc),
-        reittiopasUrl: reittiopasUrl(loc),
         shortDesc: shortDesc(desc, name),
         audienceTag: audienceTag(desc),
         isFree,
         priceAdult,
         freeProof: freeProof(ev),
         sauna,
+        stationKm: distHelsinki ? distHelsinki.km : null,
+        stationWalking: distHelsinki ? distHelsinki.walking : null,
+        lauttasaariKm: distLauttasaari ? distLauttasaari.km : null,
+        lauttasaariWalking: distLauttasaari ? distLauttasaari.walking : null,
       })
     }
 

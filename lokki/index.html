@@ -11,6 +11,7 @@
       --muted: #94a3b8;
       --line: #334155;
       --accent: #38bdf8;
+      --accent-glow: #7dd3fc;
       --ok: #22c55e;
     }
     * { box-sizing: border-box; }
@@ -39,6 +40,12 @@
       font-size: 14px;
     }
     button { cursor: pointer; }
+    button.toggle.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 16px rgba(56,189,248,0.5);
+    }
     .stats {
       display: flex;
       flex-wrap: wrap;
@@ -134,6 +141,8 @@
       padding: 6px 9px;
       font-size: 12px;
     }
+    .station-line { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .station-line .from { color: var(--accent-glow); font-weight: 700; }
     .empty { padding: 16px; color: var(--muted); }
     .helper {
       margin-top: 14px;
@@ -164,6 +173,7 @@
         <option value="Muu Suomi">Muu Suomi</option>
       </select>
       <button id="refreshNow">Refresh events</button>
+      <button id="stationToggle" class="toggle">From Helsinki st.</button>
     </div>
 
     <div class="stats">
@@ -189,6 +199,7 @@
     let countdownTimer = null
     let refreshing = false
     let refreshTimer = null
+    let stationOrigin = 'helsinki' // 'helsinki' | 'lauttasaari'
 
     function fmtDate(iso) {
       if (!iso) return 'Date not specified'
@@ -236,6 +247,15 @@
       return map
     }
 
+    function stationLabel(e) {
+      const useLauttasaari = stationOrigin === 'lauttasaari'
+      const km = useLauttasaari ? e.lauttasaariKm : e.stationKm
+      const walking = useLauttasaari ? e.lauttasaariWalking : e.stationWalking
+      const from = useLauttasaari ? 'Lauttasaari metro' : 'Helsinki station'
+      if (km == null) return ''
+      return `<span class="station">🚉 ${Number(km).toFixed(1)} km from ${from} · ${walking} walking</span>`
+    }
+
     function render() {
       const events = filteredEvents(snapshot.events || [])
       document.getElementById('totalCount').textContent = String(events.length)
@@ -250,6 +270,12 @@
       const regions = sortRegions(Array.from(grouped.keys()))
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
+        items.sort((a, b) => {
+          const aKm = stationOrigin === 'lauttasaari' ? (a.lauttasaariKm == null ? 9999 : a.lauttasaariKm) : (a.stationKm == null ? 9999 : a.stationKm)
+          const bKm = stationOrigin === 'lauttasaari' ? (b.lauttasaariKm == null ? 9999 : b.lauttasaariKm) : (b.stationKm == null ? 9999 : b.stationKm)
+          if (aKm !== bKm) return aKm - bKm
+          return (a.title || '').localeCompare(b.title || '')
+        })
         return `
           <section class="region">
             <div class="region-head">
@@ -267,12 +293,12 @@
                   <div class="title">${e.title || 'Untitled event'}</div>
                   ${e.shortDesc ? `<div class="meta shortdesc">💬 ${e.shortDesc}</div>` : ''}
                   <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Unknown location'}</div>
+                  ${e.stationKm != null || e.lauttasaariKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
                   <div class="meta">📅 ${fmtDate(e.date)}</div>
                   <div class="meta">🏷️ ${e.category || 'General'}</div>
                   <div class="links">
                     <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
                     <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
-                    <a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">Reittiopas (HSL)</a>
                   </div>
                 </article>
               `).join('')}
@@ -332,6 +358,14 @@
 
     document.getElementById('regionSelect').addEventListener('change', (e) => {
       regionFilter = e.target.value
+      render()
+    })
+
+    document.getElementById('stationToggle').addEventListener('click', (e) => {
+      stationOrigin = stationOrigin === 'helsinki' ? 'lauttasaari' : 'helsinki'
+      const btn = e.currentTarget
+      btn.classList.toggle('active', stationOrigin === 'lauttasaari')
+      btn.textContent = stationOrigin === 'lauttasaari' ? 'From Lauttasaari M.' : 'From Helsinki st.'
       render()
     })
 
