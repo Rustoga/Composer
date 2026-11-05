@@ -167,6 +167,8 @@
     }
     .station-line { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .station-line .from { color: var(--accent-glow); font-weight: 700; }
+    .dates { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+    .date { font-size: 12px; color: #cbd5e1; background: rgba(17,24,39,.45); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
     .empty { padding: 16px; color: var(--muted); }
     .helper {
       margin-top: 14px;
@@ -271,6 +273,26 @@
       return map
     }
 
+    function groupByRecurrence(events) {
+      const map = new Map()
+      for (const e of events) {
+        const key = `${(e.title || '').trim()}|${(e.location || '').trim()}|${(e.street || '').trim()}`
+        if (!map.has(key)) map.set(key, [])
+        map.get(key).push(e)
+      }
+      return map
+    }
+
+    function datesLabel(group) {
+      const sorted = [...group].sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+      const show = 6
+      const visible = sorted.slice(0, show)
+      const rest = sorted.length - show
+      const html = visible.map(ev => `<span class="date">${fmtDate(ev.date)}</span>`).join('')
+      const extra = rest > 0 ? `<span class="date">+ ${rest} more</span>` : ''
+      return `<div class="dates">${html}${extra}</div>`
+    }
+
     function stationLabel(e) {
       const useLauttasaari = stationOrigin === 'lauttasaari'
       const km = useLauttasaari ? e.lauttasaariKm : e.stationKm
@@ -282,7 +304,6 @@
 
     function render() {
       const events = filteredEvents(snapshot.events || [])
-      document.getElementById('totalCount').textContent = String(events.length)
       const root = document.getElementById('sections')
 
       if (!events.length) {
@@ -292,40 +313,60 @@
 
       const grouped = groupByRegion(events)
       const regions = sortRegions(Array.from(grouped.keys()))
-      root.innerHTML = regions.map((region) => {
+
+      // Collapse recurring events (same title + location) into one card each
+      const regionGroups = {}
+      let totalUnique = 0
+      for (const region of regions) {
         const items = grouped.get(region) || []
-        items.sort((a, b) => {
-          const aKm = stationOrigin === 'lauttasaari' ? (a.lauttasaariKm == null ? 9999 : a.lauttasaariKm) : (a.stationKm == null ? 9999 : a.stationKm)
-          const bKm = stationOrigin === 'lauttasaari' ? (b.lauttasaariKm == null ? 9999 : b.lauttasaariKm) : (b.stationKm == null ? 9999 : b.stationKm)
-          if (aKm !== bKm) return aKm - bKm
-          return (a.title || '').localeCompare(b.title || '')
+        const byEvent = groupByRecurrence(items)
+        const groups = Array.from(byEvent.values()).map((group) => {
+          group.sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+          return group
         })
+        groups.sort((a, b) => {
+          const aKm = stationOrigin === 'lauttasaari' ? (a[0].lauttasaariKm == null ? 9999 : a[0].lauttasaariKm) : (a[0].stationKm == null ? 9999 : a[0].stationKm)
+          const bKm = stationOrigin === 'lauttasaari' ? (b[0].lauttasaariKm == null ? 9999 : b[0].lauttasaariKm) : (b[0].stationKm == null ? 9999 : b[0].stationKm)
+          if (aKm !== bKm) return aKm - bKm
+          return (a[0].title || '').localeCompare(b[0].title || '')
+        })
+        regionGroups[region] = groups
+        totalUnique += groups.length
+      }
+
+      document.getElementById('totalCount').textContent = String(totalUnique)
+
+      root.innerHTML = regions.map((region) => {
+        const groups = regionGroups[region] || []
         return `
           <section class="region">
             <div class="region-head">
               <h2>${region}</h2>
-              <span class="meta">${items.length} events</span>
+              <span class="meta">${groups.length} events</span>
             </div>
             <div class="grid">
-              ${items.map((e) => `
-                <article class="card">
-                  <div class="badges">
-                    ${e.isFree ? '<span class="free">Maksuton / Free</span>' : ''}
-                    ${e.sauna ? `<span class="sauna">${e.priceAdult != null ? '♨ Sauna ' + e.priceAdult + ' €' : '♨ Sauna'}</span>` : ''}
-                    ${e.audienceTag ? `<span class="audience">${e.audienceTag}</span>` : ''}
-                  </div>
-                  <div class="title">${e.title || 'Untitled event'}</div>
-                  ${e.shortDesc ? `<div class="meta shortdesc">💬 ${e.shortDesc}</div>` : ''}
-                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Unknown location'}</div>
-                  ${e.stationKm != null || e.lauttasaariKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
-                  <div class="meta">📅 ${fmtDate(e.date)}</div>
-                  <div class="meta">🏷️ ${e.category || 'General'}</div>
-                  <div class="links">
-                    <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
-                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
-                  </div>
-                </article>
-              `).join('')}
+              ${groups.map((group) => {
+                const e = group[0]
+                return `
+                  <article class="card">
+                    <div class="badges">
+                      ${e.isFree ? '<span class="free">Maksuton / Free</span>' : ''}
+                      ${e.sauna ? `<span class="sauna">${e.priceAdult != null ? '♨ Sauna ' + e.priceAdult + ' €' : '♨ Sauna'}</span>` : ''}
+                      ${e.audienceTag ? `<span class="audience">${e.audienceTag}</span>` : ''}
+                    </div>
+                    <div class="title">${e.title || 'Untitled event'}</div>
+                    ${e.shortDesc ? `<div class="meta shortdesc">💬 ${e.shortDesc}</div>` : ''}
+                    <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Unknown location'}</div>
+                    ${e.stationKm != null || e.lauttasaariKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
+                    ${datesLabel(group)}
+                    <div class="meta">🏷️ ${e.category || 'General'}</div>
+                    <div class="links">
+                      <a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Event</a>
+                      <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
+                    </div>
+                  </article>
+                `
+              }).join('')}
             </div>
           </section>
         `
