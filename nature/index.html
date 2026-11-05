@@ -378,18 +378,18 @@
         addBand(0, 120, 0.5);
       }
 
-      if(state.style === 'rx'){ drawRX(W, H, energy, bins); }
-      else if(state.style === 'bars'){ drawBars(W, H, energy, bins); }
-      else{ drawRadial(W, H, energy, bins); }
+      if(state.style === 'rx'){ drawRX(W, H, energy, bins, isNature); }
+      else if(state.style === 'bars'){ drawBars(W, H, energy, bins, isNature); }
+      else{ drawRadial(W, H, energy, bins, isNature); }
 
-      drawHover(W, H, energy, bins);
+      drawHover(W, H, energy, bins, isNature);
     }catch(e){
       console.log('draw frame failed', e);
     }
     raf = requestAnimationFrame(draw);
   }
 
-  function drawRX(W, H, energy, bins){
+  function drawRX(W, H, energy, bins, isNature){
     var grad = ctx.createLinearGradient(0, H, 0, 0);
     grad.addColorStop(0, '#0b1410');
     grad.addColorStop(0.5, '#0f1c16');
@@ -432,7 +432,7 @@
     ctx.fill();
   }
 
-  function drawBars(W, H, energy, bins){
+  function drawBars(W, H, energy, bins, isNature){
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, W, H);
     var binW = W / bins;
@@ -457,7 +457,7 @@
     ctx.stroke();
   }
 
-  function drawRadial(W, H, energy, bins){
+  function drawRadial(W, H, energy, bins, isNature){
     ctx.fillStyle = '#fafafa';
     ctx.fillRect(0, 0, W, H);
     var cx = W * 0.5;
@@ -492,7 +492,7 @@
     ctx.stroke();
   }
 
-  function drawHover(W, H, energy, bins){
+  function drawHover(W, H, energy, bins, isNature){
     if(!hoverCard){ return; }
     var rect = canvas.getBoundingClientRect();
     var dpr = Math.max(1, window.devicePixelRatio || 1);
