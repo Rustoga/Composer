@@ -23,13 +23,41 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 <div class="side-ripple left"></div><div class="side-ripple right"></div>
 <body>
 <div class="wrap">
-<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button id="darkToggle">Toggle Dark Mode</button><button id="exportBtn">Export backup</button><button id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json,.json" style="display:none"></div><div style="font-size:12px;color:#666;margin-bottom:12px">Data is stored in this browser. Export a backup to access on other devices (iCloud/Files/Dropbox) and import it there.</div>
+<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button id="darkToggle">Toggle Dark Mode</button><button id="exportBtn">Export backup</button><button id="importBtn">Import backup</button><button id="syncToggle">Cloud sync</button><input type="file" id="importFile" accept="application/json,.json" style="display:none"></div>
+<div id="syncPanel" style="display:none;margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px">
+  <div style="font-weight:600;margin-bottom:6px">Sync everywhere (Supabase magic link)</div>
+  <div id="syncStatus" style="margin-bottom:8px;color:#666">Not connected. Local data stays safe in this browser.</div>
+  <div id="syncSignedOut">
+    <div style="display:grid;gap:6px;margin-bottom:8px">
+      <input id="sbUrl" placeholder="Supabase Project URL (https://xxxx.supabase.co)">
+      <input id="sbKey" placeholder="Supabase anon/publishable key">
+      <input id="sbEmail" placeholder="Your email for sign-in link">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <button id="sbSave" class="primary">Save &amp; send magic link</button>
+      <button id="sbHelpBtn">Setup help</button>
+    </div>
+    <details id="sbHelp" style="font-size:12px;color:#555"><summary>One-time setup (minimal)</summary>
+      <ol style="margin:6px 0 0 18px;padding:0">
+        <li>Create a free project at supabase.com.</li>
+        <li>In SQL Editor run:<br><code>create table if not exists potion_data (user_id uuid primary key references auth.users on delete cascade, data jsonb, updated_at timestamptz default now()); alter table potion_data enable row level security; create policy "own" on potion_data for all using (auth.uid()=user_id) with check (auth.uid()=user_id);</code></li>
+        <li>Auth → URL Configuration: add <code>https://rudolfwesterholm.com/Potion/</code> as Site/Redirect URL.</li>
+        <li>Copy Project URL and anon key (Project Settings → API) and paste above.</li>
+      </ol>
+    </details>
+  </div>
+  <div id="syncSignedIn" style="display:none">
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="sbSyncNow">Sync now</button><button id="sbSignOut">Sign out</button></div>
+  </div>
+</div>
+<div style="font-size:12px;color:#666;margin-bottom:12px">Saved locally in this browser. Use Export/Import for manual backup, or Cloud sync to access/edit on all your devices.</div>
 <div id="workspace"></div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const KEY='potion:v1';
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{albums:[],tracks:[]}}catch{return{albums:[],tracks:[]}}}
-function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+function save(st){localStorage.setItem(KEY,JSON.stringify(st));scheduleCloudPush()}
 if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.stringify({albums:[
 {id:'nordic',title:'Nordic Folk',status:'upcoming',color:'#6fa8a0',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'jazz',title:'Jazz Album',status:'upcoming',color:'#b08a5a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
@@ -129,6 +157,74 @@ function albumColor(a){return a&&a.color?a.color:'#8aa0a8'}
 function randomAlbumColor(){const p=['#7aa2b8','#b87a7a','#8ab88a','#b89a7a','#9a7ab8','#7ab8b0','#b87aa0','#a8b87a','#7a8fb8','#b8a27a'];return p[Math.floor(Math.random()*p.length)]}
 const sm1=state.tracks.find(t=>t.id==='sm1');if(sm1&&!sm1.notes){sm1.notes='1. Uusi Riffi x 4 \n2. Kertsi x 2 Kiertoa\n3. Alkuriffi x 4 \n4. Bridge 1:06 x 2\n5. Kertsi x 2\n6. Soolo x 2\n7. Kertsi x 2';save(state)}
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+
+const SB_CFG_KEY='potion:sb:config';
+let sb=null, sbUser=null, sbPushTimer=null, sbPushing=false, sbReady=false;
+function loadSbConfig(){try{return JSON.parse(localStorage.getItem(SB_CFG_KEY)||'null')}catch{return null}}
+function saveSbConfig(c){localStorage.setItem(SB_CFG_KEY,JSON.stringify(c))}
+function setSyncStatus(msg){const el=document.getElementById('syncStatus'); if(el) el.textContent=msg}
+function updateSyncUI(){
+  const so=document.getElementById('syncSignedOut'), si=document.getElementById('syncSignedIn');
+  if(so) so.style.display=sbUser?'none':'block';
+  if(si) si.style.display=sbUser?'block':'none';
+}
+function mergeById(localArr, remoteArr){
+  const m={};
+  (localArr||[]).forEach(x=>{if(x&&x.id)m[x.id]=x});
+  (remoteArr||[]).forEach(x=>{if(!x||!x.id)return; const cur=m[x.id]; if(!cur){m[x.id]=x;return} const lu=+cur.updatedAt||0, ru=+x.updatedAt||0; m[x.id]=(ru>=lu)?Object.assign({},cur,x):Object.assign({},x,cur)});
+  return Object.values(m);
+}
+function mergeStores(local, remote){
+  if(!remote||!Array.isArray(remote.albums)||!Array.isArray(remote.tracks)) return local;
+  return {albums:mergeById(local.albums, remote.albums), tracks:mergeById(local.tracks, remote.tracks)};
+}
+function initSb(){
+  const cfg=loadSbConfig();
+  const u=document.getElementById('sbUrl'), k=document.getElementById('sbKey'), e=document.getElementById('sbEmail');
+  if(cfg){ if(u) u.value=cfg.url||''; if(k) k.value=cfg.key||''; if(e) e.value=cfg.email||''; }
+  if(!cfg||!cfg.url||!cfg.key||!window.supabase){ updateSyncUI(); return; }
+  sb=window.supabase.createClient(cfg.url,cfg.key);
+  sb.auth.getSession().then(({data})=>{ sbUser=data&&data.session?data.session.user:null; updateSyncUI(); if(sbUser){ setSyncStatus('Signed in as '+sbUser.email+'. Syncing…'); pullFromCloud(true); } else { setSyncStatus('Configured. Send a magic link to sign in.'); } });
+  sb.auth.onAuthStateChange((_ev,session)=>{ sbUser=session?session.user:null; updateSyncUI(); if(sbUser){ setSyncStatus('Signed in as '+sbUser.email+'.'); pullFromCloud(true); } else setSyncStatus('Signed out.'); });
+}
+async function sendMagicLink(){
+  const url=(document.getElementById('sbUrl')||{}).value.trim();
+  const key=(document.getElementById('sbKey')||{}).value.trim();
+  const email=(document.getElementById('sbEmail')||{}).value.trim();
+  if(!url||!key||!email){ alert('Please enter Project URL, anon key, and email.'); return; }
+  if(!window.supabase){ alert('Sync library not loaded. Reload page.'); return; }
+  saveSbConfig({url,key,email});
+  sb=window.supabase.createClient(url,key);
+  setSyncStatus('Sending magic link…');
+  const {error}=await sb.auth.signInWithOtp({email, options:{emailRedirectTo:location.origin+location.pathname}});
+  if(error){ setSyncStatus('Error: '+error.message); alert(error.message); }
+  else { setSyncStatus('Magic link sent. Check your email and open the link on this device.'); alert('Magic link sent. Check your email.'); }
+}
+async function pullFromCloud(initial){
+  if(!sb||!sbUser) return;
+  setSyncStatus('Syncing…');
+  const {data,error}=await sb.from('potion_data').select('data').eq('user_id',sbUser.id).maybeSingle();
+  if(error){ setSyncStatus('Sync error: '+error.message); return; }
+  if(data&&data.data){
+    state=mergeStores(state,data.data);
+    save(state);
+  } else if(initial){
+    await pushToCloud();
+  }
+  setSyncStatus('Synced. Signed in as '+(sbUser.email||'you')+'.');
+  try{ updateNextStep(); render(); }catch(e){}
+}
+async function pushToCloud(){
+  if(!sb||!sbUser||sbPushing) return;
+  sbPushing=true;
+  try{
+    const payload={user_id:sbUser.id, data:state, updated_at:new Date().toISOString()};
+    const {error}=await sb.from('potion_data').upsert(payload,{onConflict:'user_id'});
+    if(error) setSyncStatus('Cloud save error: '+error.message);
+    else setSyncStatus('Synced. Signed in as '+(sbUser.email||'you')+'.');
+  } finally { sbPushing=false; }
+}
+function scheduleCloudPush(){ if(!sb||!sbUser) return; clearTimeout(sbPushTimer); sbPushTimer=setTimeout(pushToCloud,1500); }
 
 function exportBackup(){
   const data=JSON.stringify(state,null,2);
@@ -244,6 +340,12 @@ function moveTrack(albumId,tid,dir){
   const p1=t1.position;t1.position=t2.position;t2.position=p1;
   t1.updatedAt=Date.now();t2.updatedAt=Date.now();save(state);openAlbum(albumId);
 }
+const st=document.getElementById('syncToggle'), sp=document.getElementById('syncPanel'); if(st&&sp) st.onclick=()=>{sp.style.display=sp.style.display==='none'?'block':'none'};
+const shb=document.getElementById('sbHelpBtn'), sh=document.getElementById('sbHelp'); if(shb&&sh) shb.onclick=()=>{sh.open=!sh.open};
+const sbs=document.getElementById('sbSave'); if(sbs) sbs.onclick=sendMagicLink;
+const sbn=document.getElementById('sbSyncNow'); if(sbn) sbn.onclick=()=>pullFromCloud(false);
+const sbo=document.getElementById('sbSignOut'); if(sbo) sbo.onclick=async()=>{if(sb){await sb.auth.signOut()} sbUser=null; updateSyncUI(); setSyncStatus('Signed out.');};
+initSb();
 document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};const eb=document.getElementById('exportBtn'); if(eb) eb.onclick=exportBackup;const ib=document.getElementById('importBtn'), fi=document.getElementById('importFile');if(ib&&fi){ib.onclick=()=>fi.click(); fi.onchange=e=>{const f=e.target.files&&e.target.files[0]; if(f) importBackupFile(f); fi.value='';};}if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
 updateNextStep();
 render();
