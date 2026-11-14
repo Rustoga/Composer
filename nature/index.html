@@ -199,7 +199,8 @@
       var energy = new Float32Array(bins);
 
       function addBand(lo, hi, val){
-        var iLo = Math.floor((Math.log(lo / 20) / Math.log(20000 / 20)) * bins);
+        var loSafe = Math.max(lo, 1);
+        var iLo = Math.floor((Math.log(loSafe / 20) / Math.log(20000 / 20)) * bins);
         var iHi = Math.ceil((Math.log(hi / 20) / Math.log(20000 / 20)) * bins);
         for(var i = iLo; i < iHi && i < bins; i++){
           if(val > energy[i]){ energy[i] = val; }
