@@ -23,7 +23,7 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 <div class="side-ripple left"></div><div class="side-ripple right"></div>
 <body>
 <div class="wrap">
-<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button id="darkToggle">Toggle Dark Mode</button><button id="exportBtn">Export backup</button><button id="importBtn">Import backup</button><button id="syncToggle">Cloud sync</button><input type="file" id="importFile" accept="application/json,.json" style="display:none"></div>
+<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px"></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button id="darkToggle">Toggle Dark Mode</button><button id="exportBtn">Export backup</button><button id="importBtn">Import backup</button><button id="sheetsBtn">Export for Google Sheets</button><button id="syncToggle">Cloud sync</button><input type="file" id="importFile" accept="application/json,.json" style="display:none"></div>
 <div id="syncPanel" style="display:none;margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px">
   <div style="font-weight:600;margin-bottom:6px">Sync everywhere (Supabase magic link)</div>
   <div id="syncStatus" style="margin-bottom:8px;color:#666">Not connected. Local data stays safe in this browser.</div>
@@ -230,6 +230,42 @@ async function pushToCloud(){
 }
 function scheduleCloudPush(){ if(!sb||!sbUser) return; clearTimeout(sbPushTimer); sbPushTimer=setTimeout(pushToCloud,1500); }
 
+function csvCell(v){
+  const t=(v==null?'':String(v));
+  return '"'+t.replace(/"/g,'""')+'"';
+}
+function exportSheets(){
+  const header=['Album','Color','Status','Release Date','Album Progress','Track #','Track','Completed','Track Notes','Track Links','Album Notes','Marketing & checklist','Credits & budget','Mood board','Release Graphics','Release Description','Release Marketing','Spotify','Bandcamp','Apple Music/iTunes','iCloud/Other','YouTube','Other Link'];
+  const rows=[header];
+  const albums=[...state.albums].sort((a,b)=>{
+    const ac=a.status==='completed'?1:0, bc=b.status==='completed'?1:0;
+    if(ac!==bc) return ac-bc; return (a.title||'').localeCompare(b.title||'');
+  });
+  albums.forEach(a=>{
+    const tracks=state.tracks.filter(t=>t.albumId===a.id).sort((x,y)=>(x.position??0)-(y.position??0));
+    const done=tracks.filter(t=>t.completed).length;
+    const progress=tracks.length?Math.round(done/tracks.length*100)+'% ('+done+'/'+tracks.length+')':'0%';
+    const rl=a.releaseLinks||{};
+    const base=[a.title||'', a.color||'', a.status||'', a.releaseDate||'', progress];
+    const albumFields=[a.notes||'', a.marketing||'', a.credits||'', a.mood||'', a.releaseGraphics||'', a.releaseDescription||'', a.releaseMarketing||'', rl.spotify||'', rl.bandcamp||'', rl.apple||'', rl.icloud||'', rl.youtube||'', rl.other||''];
+    if(!tracks.length){
+      rows.push(base.concat(['','','','', '']).concat(albumFields));
+    } else {
+      tracks.forEach((t,i)=>{
+        const links=(t.links||[]).map(l=>l.url||l.label||'').filter(Boolean).join(' | ');
+        rows.push(base.concat([t.position!=null?t.position+1:i+1, t.title||'', t.completed?'Yes':'No', t.notes||'', links]).concat(albumFields));
+      });
+    }
+  });
+  const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date(); const pad=n=>String(n).padStart(2,'0');
+  a.href=url; a.download='potion-google-sheets-'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'.csv';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
 function exportBackup(){
   const data=JSON.stringify(state,null,2);
   const blob=new Blob([data],{type:'application/json'});
@@ -350,7 +386,7 @@ const sbs=document.getElementById('sbSave'); if(sbs) sbs.onclick=sendMagicLink;
 const sbn=document.getElementById('sbSyncNow'); if(sbn) sbn.onclick=()=>pullFromCloud(false);
 const sbo=document.getElementById('sbSignOut'); if(sbo) sbo.onclick=async()=>{if(sb){await sb.auth.signOut()} sbUser=null; updateSyncUI(); setSyncStatus('Signed out.');};
 initSb();
-document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};const eb=document.getElementById('exportBtn'); if(eb) eb.onclick=exportBackup;const ib=document.getElementById('importBtn'), fi=document.getElementById('importFile');if(ib&&fi){ib.onclick=()=>fi.click(); fi.onchange=e=>{const f=e.target.files&&e.target.files[0]; if(f) importBackupFile(f); fi.value='';};}if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
+document.getElementById("darkToggle").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("potion:dark",document.body.classList.contains("dark"))};const eb=document.getElementById('exportBtn'); if(eb) eb.onclick=exportBackup;const sbt=document.getElementById('sheetsBtn'); if(sbt) sbt.onclick=exportSheets;const ib=document.getElementById('importBtn'), fi=document.getElementById('importFile');if(ib&&fi){ib.onclick=()=>fi.click(); fi.onchange=e=>{const f=e.target.files&&e.target.files[0]; if(f) importBackupFile(f); fi.value='';};}if(localStorage.getItem("potion:dark")==="true")document.body.classList.add("dark");
 updateNextStep();
 render();
 </script>
