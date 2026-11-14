@@ -275,5 +275,217 @@
     state.hover.x = -1;
   });
 
+  var dragging = false;
+  function startDrag(){ dragging = true; }
+  function endDrag(){ dragging = false; }
+
+  var envBtns = document.querySelectorAll('#envGroup button');
+  var seasonBtns = document.querySelectorAll('#seasonGroup button');
+  var chartStyle = document.getElementById('chartStyle');
+  var timeScrub = document.getElementById('timeScrub');
+  var timeFill = document.getElementById('timeFill');
+  var timeLabel = document.getElementById('timeLabel');
+  var timeLabelEnd = document.getElementById('timeLabelEnd');
+  var liveText = document.getElementById('liveText');
+  var audioHint = document.getElementById('audioHint');
+
+  envBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      envBtns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      state.env = b.dataset.env;
+      draw();
+    });
+  });
+
+  seasonBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      seasonBtns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      state.season = b.dataset.season;
+      draw();
+    });
+  });
+
+  if(chartStyle){
+    chartStyle.addEventListener('change', function(){
+      state.style = chartStyle.value;
+      draw();
+    });
+  }
+
+  timeScrub.addEventListener('mousedown', startDrag);
+  timeScrub.addEventListener('touchstart', function(e){ dragging = true; e.preventDefault(); }, { passive: false });
+  window.addEventListener('mouseup', endDrag);
+  window.addEventListener('touchend', endDrag);
+
+  function scrubFrom(e){
+    if(!dragging){ return; }
+    var r = timeScrub.getBoundingClientRect();
+    var cx = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    var t = Math.max(0, Math.min(1, (cx - r.left) / r.width));
+    setTime(t);
+  }
+
+  timeScrub.addEventListener('mousemove', scrubFrom);
+  timeScrub.addEventListener('touchmove', function(e){ scrubFrom(e); e.preventDefault(); }, { passive: false });
+
+  function setTime(t){
+    state.time = t;
+    if(timeFill){ timeFill.style.width = (t * 100) + '%'; }
+    var h = Math.floor(t * 24);
+    var m = Math.round((t * 24 - h) * 60);
+    if(timeLabel){ timeLabel.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; }
+    draw();
+  }
+
+  setInterval(function(){
+    if(!dragging){
+      state.time = (state.time + 0.0012) % 1;
+      var t = state.time;
+      if(timeFill){ timeFill.style.width = (t * 100) + '%'; }
+      var h = Math.floor(t * 24);
+      var m = Math.round((t * 24 - h) * 60);
+      if(timeLabel){ timeLabel.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; }
+      draw();
+    }
+    var eh = Math.floor(((state.time + 0.5) % 1) * 24);
+    var em = Math.round((((state.time + 0.5) % 1) * 24 - eh) * 60);
+    if(timeLabelEnd){ timeLabelEnd.textContent = (eh < 10 ? '0' : '') + eh + ':' + (em < 10 ? '0' : '') + em; }
+  }, 1000);
+
+  var audioCtx, masterGain, analyser, oscillators=[], noiseBuffer;
+
+  function initAudio(){
+    try{
+      var ACtx = window.AudioContext || window.webkitAudioContext;
+      if(!ACtx){ return; }
+      audioCtx = new ACtx();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.14;
+      masterGain.connect(audioCtx.destination);
+
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.6;
+      analyser.minDecibels = -90;
+      analyser.maxDecibels = -10;
+      analyser.connect(masterGain);
+
+      buildNoiseBuffer();
+      state.playing = false;
+      updateAudio();
+
+      if(audioHint){ audioHint.style.display = 'none'; }
+      if(liveText){ liveText.textContent = 'Spectrum active &mdash; move mouse to explore'; }
+    }catch(e){ console.log('audio init failed', e); }
+  }
+
+  function buildNoiseBuffer(){
+    try{
+      var len = audioCtx.sampleRate * 2;
+      noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      var data = noiseBuffer.getChannelData(0);
+      for(var i=0; i<len; i++){ data[i] = Math.random()*2 - 1; }
+    }catch(e){}
+  }
+
+  function osc(freq, type, gain){
+    var o = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.value = gain;
+    o.connect(g);
+    g.connect(analyser);
+    o.start();
+    return { o:o, g:g };
+  }
+
+  function noise(bandLo, bandHi, baseGain){
+    var src = audioCtx.createBufferSource();
+    src.buffer = noiseBuffer;
+    src.loop = true;
+    var bp = audioCtx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = (bandLo + bandHi) / 2;
+    bp.Q = 1;
+    var g = audioCtx.createGain();
+    g.gain.value = baseGain;
+    src.connect(bp);
+    bp.connect(g);
+    g.connect(analyser);
+    src.start();
+    return { src:src, bp:bp, g:g };
+  }
+
+  function clearAudio(){
+    try{
+      oscillators.forEach(function(x){
+        try{ x.o.stop(); }catch(e){}
+        try{ x.g.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05); }catch(e){}
+      });
+      oscillators = [];
+    }catch(e){}
+  }
+
+  function updateAudio(){
+    if(!audioCtx){ return; }
+    try{
+      if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+      clearAudio();
+
+      var sf = seasonFactor(state.season);
+      var tf = timeFactor(state.time);
+      var cityBase = state.env === 'city' ? 0.6 : 0.15;
+
+      if(state.env === 'nature'){
+        if(tf.dawn > 0.15 || tf.dusk > 0.15){
+          var amp = Math.max(tf.dawn, tf.dusk) * sf.birds * 0.35;
+          [1600, 2400, 3200, 4100].forEach(function(f){
+            oscillators.push(osc(f, 'sine', amp * 0.25));
+            oscillators.push(osc(f * 1.5, 'sine', amp * 0.1));
+          });
+        }
+        if(tf.dusk > 0.1 || tf.night){
+          var amp = Math.max(tf.dusk, tf.night ? 0.6 : 0) * sf.frogs * 0.25;
+          oscillators.push(osc(3750, 'sine', amp));
+          oscillators.push(osc(2900, 'sine', amp * 0.6));
+          oscillators.push(osc(4600, 'sine', amp * 0.5));
+        }
+        var insectAmp = (tf.day ? 0.5 : 0) + (tf.night ? 0.55 : 0);
+        if(insectAmp > 0){
+          oscillators.push(osc(6200, 'sawtooth', insectAmp * sf.insects * 0.18));
+          oscillators.push(osc(7800, 'square', insectAmp * sf.insects * 0.12));
+        }
+        oscillators.push(noise(150, 500, sf.wind * 0.12));
+        oscillators.push(noise(600, 1200, sf.water * 0.1));
+        oscillators.push(noise(8500, 16000, sf.high * 0.08));
+      }
+
+      if(state.env === 'city'){
+        oscillators.push(noise(100, 400, cityBase * 0.5));
+        oscillators.push(noise(500, 1100, cityBase * 0.35));
+        oscillators.push(noise(60, 140, cityBase * 0.25));
+        oscillators.push(osc(2600, 'sine', sf.birds * 0.12));
+        oscillators.push(noise(4500, 7500, sf.insects * 0.08));
+      }
+
+      masterGain.gain.setTargetAtTime(state.env === 'nature' ? 0.16 : 0.13, audioCtx.currentTime, 0.1);
+      state.playing = true;
+    }catch(e){ console.log('updateAudio failed', e); }
+  }
+
+  function enableAudioOnce(){
+    if(audioCtx){ return; }
+    initAudio();
+  }
+
+  window.addEventListener('click', enableAudioOnce, { once: true });
+  canvas.addEventListener('click', enableAudioOnce);
+  if(audioHint){ audioHint.addEventListener('click', enableAudioOnce); }
+
+  window.addEventListener('error', function(e){ console.log('window error', e.message); });
+
   draw();
 })();
