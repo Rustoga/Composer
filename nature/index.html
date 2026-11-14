@@ -17,6 +17,12 @@
   .stage{max-width:1200px;margin:0 auto;padding:0 1rem 4rem}
   .spectrum-wrap{position:relative;width:100%;max-width:980px;background:#fff;border:1px solid #e8e5dd;border-radius:8px;overflow:hidden;margin:0 auto}
   .spectrum-canvas{width:100%;height:420px;display:block;background:#fafafa;cursor:crosshair}
+  .hover-card{position:absolute;left:50%;top:12px;transform:translateX(-50%);pointer-events:none;opacity:0;z-index:10}
+  .hover-card.show{opacity:1}
+  .hover-card .card{background:#fff;border:1px solid #e8e5dd;border-radius:8px;padding:10px 14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);min-width:200px;text-align:center}
+  .hover-card .group{font-family:Georgia,"Times New Roman",Times,serif;font-size:17px;font-weight:600;margin-bottom:4px}
+  .hover-card .freq{font-size:12px;color:#666560;margin-bottom:6px}
+  .hover-card .desc{font-size:12.5px;color:#111;line-height:1.4}
 </style>
 </head>
 <body>
@@ -38,6 +44,13 @@
 <div class="stage">
   <div class="spectrum-wrap">
     <canvas id="spectrum" class="spectrum-canvas" width="980" height="420"></canvas>
+    <div class="hover-card" id="hoverCard">
+      <div class="card">
+        <div class="group" id="hGroup">--</div>
+        <div class="freq" id="hFreq">-- Hz</div>
+        <div class="desc" id="hDesc">--</div>
+      </div>
+    </div>
   </div>
 </div>
 
