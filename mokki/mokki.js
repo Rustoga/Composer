@@ -112,8 +112,8 @@ async function loadSplats(url) {
   try {
     const res = await fetch(url);
     if (res.ok) {
-      const text = await res.text();
-      data = parsePly(text);
+      const buf = await res.arrayBuffer();
+      data = parsePly(buf);
     }
   } catch (e) {
     console.warn('PLY load failed:', e);
@@ -127,8 +127,24 @@ async function loadSplats(url) {
   return data;
 }
 
-function parsePly(text) {
-  const lines = text.split(/\r?\n/);
+function parsePly(input) {
+  let bytes;
+  let headerText;
+  let dataStart = 0;
+  if (typeof input === 'string') {
+    headerText = input;
+  } else {
+    bytes = new Uint8Array(input);
+    const headText = new TextDecoder().decode(bytes.subarray(0, 8192));
+    const endIdx = headText.indexOf('end_header');
+    if (endIdx === -1) return null;
+    dataStart = endIdx + 'end_header'.length;
+    if (headText[dataStart] === '\n') dataStart++;
+    else if (headText[dataStart] === '\r') dataStart += 2;
+    headerText = headText.slice(0, endIdx);
+  }
+
+  const lines = headerText.split(/\r?\n/);
   let i = 0;
   const next = () => lines[i++].trim();
   const magic = next();
@@ -150,46 +166,127 @@ function parsePly(text) {
       else cur.props.push({ list: false, type: p[1], name: p[2] });
     }
   }
-  if (format !== 'ascii') return null;
+
+  const typeSize = { char: 1, uchar: 1, int8: 1, uint8: 1, short: 2, ushort: 2, int16: 2, uint16: 2, int: 4, uint: 4, int32: 4, uint32: 4, float: 4, double: 8 };
+  const typeReader = {
+    float: (dv, o) => dv.getFloat32(o, true),
+    double: (dv, o) => dv.getFloat64(o, true),
+    int: (dv, o) => dv.getInt32(o, true),
+    uint: (dv, o) => dv.getUint32(o, true),
+    short: (dv, o) => dv.getInt16(o, true),
+    ushort: (dv, o) => dv.getUint16(o, true),
+    char: (dv, o) => dv.getInt8(o),
+    uchar: (dv, o) => dv.getUint8(o),
+  };
+
   const vertex = elements.find((e) => e.name === 'vertex');
   if (!vertex) return null;
-  const idx = {};
-  let off = 0;
-  for (const pr of vertex.props) idx[pr.name] = off++;
   const count = vertex.count;
+
+  const idx = {};
+  let stride = 0;
+  for (const pr of vertex.props) {
+    if (pr.list) continue;
+    idx[pr.name] = stride;
+    stride += typeSize[pr.type] || 1;
+  }
+
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const opacities = new Float32Array(count);
+
   const hasR = idx['red'] !== undefined;
+  const hasG = idx['green'] !== undefined;
+  const hasB = idx['blue'] !== undefined;
   const hasFdc = idx['f_dc_0'] !== undefined;
   const hasOpacity = idx['opacity'] !== undefined;
   const hasScale = idx['scale_0'] !== undefined;
-  const get = (vals, name) => { const o = idx[name]; return o === undefined ? NaN : parseFloat(vals[o]); };
+
+  const hasColor = hasR && hasG && hasB;
+
+  if (format === 'ascii') {
+    const get = (vals, name) => { const o = idx[name]; return o === undefined ? NaN : parseFloat(vals[o]); };
+    let written = 0;
+    let li = 0;
+    while (li < lines.length && written < count) {
+      const line = lines[li++];
+      if (!line.trim()) continue;
+      const vals = line.trim().split(/\s+/);
+      const x = get(vals, 'x'), y = get(vals, 'y'), z = get(vals, 'z');
+      if (!isFinite(x) || !isFinite(y) || !isFinite(z)) continue;
+      const pi = written * 3;
+      positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
+      if (hasColor) {
+        colors[pi] = (get(vals, 'red') || 0) / 255;
+        colors[pi + 1] = (get(vals, 'green') || 0) / 255;
+        colors[pi + 2] = (get(vals, 'blue') || 0) / 255;
+      } else if (hasFdc) {
+        colors[pi] = 0.5 + get(vals, 'f_dc_0');
+        colors[pi + 1] = 0.5 + get(vals, 'f_dc_1');
+        colors[pi + 2] = 0.5 + get(vals, 'f_dc_2');
+      } else {
+        colors[pi] = 0.7; colors[pi + 1] = 0.8; colors[pi + 2] = 1.0;
+      }
+      sizes[written] = hasScale ? (get(vals, 'scale_0') + get(vals, 'scale_1') + get(vals, 'scale_2')) / 3 : 0.1;
+      opacities[written] = hasOpacity ? get(vals, 'opacity') : 0.9;
+      written++;
+    }
+    return finalize(written, positions, colors, sizes, opacities);
+  }
+
+  if (format !== 'binary_little_endian' && format !== 'binary_big_endian') return null;
+  if (!bytes) return null;
+
+  const dv = new DataView(bytes.buffer, bytes.byteOffset + dataStart);
+  const little = format === 'binary_little_endian';
+  const readerMap = {
+    float: (o) => dv.getFloat32(o, little),
+    double: (o) => dv.getFloat64(o, little),
+    int: (o) => dv.getInt32(o, little),
+    uint: (o) => dv.getUint32(o, little),
+    short: (o) => dv.getInt16(o, little),
+    ushort: (o) => dv.getUint16(o, little),
+    char: (o) => dv.getInt8(o),
+    uchar: (o) => dv.getUint8(o),
+  };
+
   let written = 0;
-  while (i < lines.length && written < count) {
-    const line = lines[i++];
-    if (!line.trim()) continue;
-    const vals = line.trim().split(/\s+/);
-    const x = get(vals, 'x'), y = get(vals, 'y'), z = get(vals, 'z');
-    if (!isFinite(x) || !isFinite(y) || !isFinite(z)) continue;
+  let byteOff = 0;
+  const totalBytes = dv.byteLength;
+  while (written < count && byteOff + stride <= totalBytes) {
+    const base = byteOff;
+    const readProp = (name) => { const o = idx[name]; return o === undefined ? NaN : readerMap[vertex.props.find((p) => p.name === name).type](base + o); };
+    const x = readProp('x'), y = readProp('y'), z = readProp('z');
+    if (!isFinite(x) || !isFinite(y) || !isFinite(z)) { byteOff += stride; continue; }
     const pi = written * 3;
     positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
-    let r, g, b;
-    if (hasR) { r = get(vals, 'red') / 255; g = get(vals, 'green') / 255; b = get(vals, 'blue') / 255; }
-    else if (hasFdc) { r = 0.5 + get(vals, 'f_dc_0'); g = 0.5 + get(vals, 'f_dc_1'); b = 0.5 + get(vals, 'f_dc_2'); }
-    else { r = 0.7; g = 0.8; b = 1.0; }
-    colors[pi] = r; colors[pi + 1] = g; colors[pi + 2] = b;
-    sizes[written] = hasScale ? (get(vals, 'scale_0') + get(vals, 'scale_1') + get(vals, 'scale_2')) / 3 : 0.1;
-    opacities[written] = hasOpacity ? get(vals, 'opacity') : 0.9;
+    if (hasColor) {
+      colors[pi] = readProp('red') / 255;
+      colors[pi + 1] = readProp('green') / 255;
+      colors[pi + 2] = readProp('blue') / 255;
+    } else if (hasFdc) {
+      colors[pi] = 0.5 + readProp('f_dc_0');
+      colors[pi + 1] = 0.5 + readProp('f_dc_1');
+      colors[pi + 2] = 0.5 + readProp('f_dc_2');
+    } else {
+      colors[pi] = 0.7; colors[pi + 1] = 0.8; colors[pi + 2] = 1.0;
+    }
+    sizes[written] = hasScale ? (readProp('scale_0') + readProp('scale_1') + readProp('scale_2')) / 3 : 0.1;
+    opacities[written] = hasOpacity ? readProp('opacity') : 0.9;
+    byteOff += stride;
     written++;
   }
+  return finalize(written, positions, colors, sizes, opacities);
+}
+
+function finalize(count, positions, colors, sizes, opacities) {
   return {
-    count: written,
-    positions: positions.slice(0, written * 3),
-    colors: colors.slice(0, written * 3),
-    sizes: sizes.slice(0, written),
-    opacities: opacities.slice(0, written),
+    count,
+    positions: positions.slice(0, count * 3),
+    colors: colors.slice(0, count * 3),
+    sizes: sizes.slice(0, count),
+    opacities: opacities.slice(0, count),
   };
 }
 
