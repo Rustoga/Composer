@@ -23,11 +23,10 @@
   .nav-link-sh.active { color:#111; }
   .nav-link-sh.active::after { content:""; position:absolute; bottom:0; left:0; right:0; border-bottom:1px solid #111; }
   .site-card { display:block; text-align:left; width:100%; text-decoration:none; color:inherit; }
-  .site-card .sc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; position:relative; background:#f5f3ed; display:flex; flex-direction:column; justify-content:space-between; padding:14px; }
-  .site-card .sc-thumb img { transition:transform 500ms ease; width:100%; height:100%; object-fit:cover; }
-  .site-card:hover .sc-thumb img { transform:scale(1.03); }
-  .site-card .sc-icon { font-size:44px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.08)); }
-  .site-card .sc-label { font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:#111; }
+  .site-card .sc-thumb { overflow:hidden; border-radius:8px; aspect-ratio:4/3; position:relative; background:#f5f3ed; display:flex; flex-direction:column; justify-content:space-between; padding:0; }
+  .sc-visual { width:100%; height:100%; object-fit:cover; display:block; }
+  .site-card:hover .sc-visual { transform:scale(1.03); transition:transform 500ms ease; }
+  .site-card .sc-label-overlay { position:absolute; left:14px; bottom:14px; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; color:#111; filter:drop-shadow(0 1px 2px rgba(255,255,255,0.6)); }
   .site-card .sc-meta { margin-top:16px; display:flex; flex-direction:column; gap:4px; }
   .site-card .sc-kicker { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#666560; font-weight:600; }
   .site-card .sc-title { font-family:"Cormorant Garamond",serif; font-size:22px; line-height:1.2; }
@@ -60,10 +59,11 @@
 <main class="flex flex-col items-start w-full px-5 md:px-[80px] pb-[120px]">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px] w-full">
 
+    <!-- Main site -->
     <a class="site-card" href="/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#f5f3ed,#e8e5dd)">
-        <span class="sc-icon">🎵</span>
-        <span class="sc-label">rudolfwesterholm.com</span>
+      <div class="sc-thumb" style="background:#fbfbfa">
+        <img class="sc-visual" src="/assets/Rustoga_2023_Promo_small_2.jpg" alt="Rudolf Westerholm — Composer homepage" loading="lazy" />
+        <span class="sc-label-overlay">rudolfwesterholm.com</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">Main site</span>
@@ -73,10 +73,29 @@
       </div>
     </a>
 
+    <!-- Nature Spectrum -->
     <a class="site-card" href="/nature/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
-        <span class="sc-icon">🌿</span>
-        <span class="sc-label">nature spectrum</span>
+      <div class="sc-thumb" style="background:#0b7f5c">
+        <svg class="sc-visual" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ng1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#dcfce7" />
+              <stop offset="100%" stop-color="#86efac" />
+            </linearGradient>
+          </defs>
+          <rect width="100" height="75" fill="#0b7f5c" />
+          <g stroke="url(#ng1)" stroke-width="3" fill="none" stroke-linecap="round">
+            <line x1="10" y1="60" x2="10" y2="30" />
+            <line x1="25" y1="60" x2="25" y2="45" />
+            <line x1="40" y1="60" x2="40" y2="20" />
+            <line x1="55" y1="60" x2="55" y2="50" />
+            <line x1="70" y1="60" x2="70" y2="35" />
+            <line x1="85" y1="60" x2="85" y2="55" />
+          </g>
+          <circle cx="50" cy="38" r="14" fill="none" stroke="#bbf7d0" stroke-width="2" />
+          <circle cx="50" cy="38" r="4" fill="#bbf7d0" />
+        </svg>
+        <span class="sc-label-overlay">nature spectrum</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">Soundscape · Frequency explorer</span>
@@ -86,10 +105,26 @@
       </div>
     </a>
 
+    <!-- Potion -->
     <a class="site-card" href="/Potion/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#f5f3ff,#e9d5ff)">
-        <span class="sc-icon">⚗️</span>
-        <span class="sc-label">potion</span>
+      <div class="sc-thumb" style="background:#1f2427">
+        <svg class="sc-visual" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ng2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f5f3ff" />
+              <stop offset="100%" stop-color="#e9d5ff" />
+            </linearGradient>
+          </defs>
+          <rect width="100" height="75" fill="#1f2427" />
+          <rect x="12" y="12" width="30" height="22" rx="3" fill="#333" />
+          <rect x="50" y="12" width="38" height="22" rx="3" fill="url(#ng2)" opacity="0.9" />
+          <rect x="12" y="42" width="30" height="20" rx="3" fill="#333" />
+          <rect x="50" y="42" width="38" height="20" rx="3" fill="url(#ng2)" opacity="0.9" />
+          <rect x="12" y="62" width="30" height="10" rx="3" fill="#333" />
+          <rect x="50" y="62" width="14" height="10" rx="3" fill="#e9d5ff" opacity="0.9" />
+          <circle cx="66" cy="67" r="3" fill="#e9d5ff" />
+        </svg>
+        <span class="sc-label-overlay">potion</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">Album workspace</span>
@@ -99,10 +134,27 @@
       </div>
     </a>
 
+    <!-- Sauna -->
     <a class="site-card" href="/sauna/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#fdf4e3,#fed7aa)">
-        <span class="sc-icon">♨</span>
-        <span class="sc-label">saunat helsingissä</span>
+      <div class="sc-thumb" style="background:#1a0f0a">
+        <svg class="sc-visual" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="rg3" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#d97706" />
+              <stop offset="100%" stop-color="#b45309" />
+            </radialGradient>
+          </defs>
+          <rect width="100" height="75" fill="#1a0f0a" />
+          <path d="M20,60 Q50,10 80,60" stroke="#d97706" stroke-width="6" fill="none" opacity="0.85" />
+          <path d="M25,60 Q50,20 75,60" stroke="#ef4444" stroke-width="4" fill="none" opacity="0.7" />
+          <rect x="30" y="50" width="40" height="15" rx="4" fill="#241810" />
+          <rect x="33" y="53" width="6" height="8" rx="2" fill="#d97706" />
+          <rect x="44" y="53" width="6" height="8" rx="2" fill="#d97706" />
+          <rect x="55" y="53" width="6" height="8" rx="2" fill="#d97706" />
+          <rect x="30" y="62" width="8" height="8" rx="2" fill="#8b5a2b" />
+          <rect x="62" y="62" width="8" height="8" rx="2" fill="#8b5a2b" />
+        </svg>
+        <span class="sc-label-overlay">saunat helsingissä</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">Public saunas</span>
@@ -112,10 +164,27 @@
       </div>
     </a>
 
+    <!-- Lokki -->
     <a class="site-card" href="/lokki/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#eff6ff,#dbeafe)">
-        <span class="sc-icon">📅</span>
-        <span class="sc-label">lokki</span>
+      <div class="sc-thumb" style="background:#0f172a">
+        <svg class="sc-visual" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ng4" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#7dd3fc" />
+            </linearGradient>
+          </defs>
+          <rect width="100" height="75" fill="#0f172a" />
+          <rect x="12" y="14" width="76" height="50" rx="4" fill="#111827" />
+          <rect x="18" y="22" width="28" height="10" rx="2" fill="#334155" />
+          <rect x="18" y="36" width="42" height="8" rx="2" fill="#334155" />
+          <rect x="52" y="22" width="30" height="10" rx="2" fill="url(#ng4)" opacity="0.95" />
+          <rect x="52" y="36" width="20" height="8" rx="2" fill="#334155" />
+          <rect x="18" y="52" width="64" height="6" rx="3" fill="#334155" />
+          <circle cx="20" cy="60" r="2.5" fill="#38bdf8" />
+          <circle cx="30" cy="60" r="2.5" fill="#38bdf8" />
+        </svg>
+        <span class="sc-label-overlay">lokki</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">Free events by region</span>
@@ -125,10 +194,25 @@
       </div>
     </a>
 
+    <!-- Mokki -->
     <a class="site-card" href="/mokki/">
-      <div class="sc-thumb" style="background:linear-gradient(135deg,#e2e8f0,#cbd5e1)">
-        <span class="sc-icon">🏕️</span>
-        <span class="sc-label">mokki</span>
+      <div class="sc-thumb" style="background:#1a1a1f">
+        <svg class="sc-visual" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ng5" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#1a1a1f" />
+              <stop offset="100%" stop-color="#12121a" />
+            </linearGradient>
+          </defs>
+          <rect width="100" height="75" fill="url(#ng5)" />
+          <path d="M25,55 L50,25 L75,55 Z" fill="#241810" stroke="#3d3d48" stroke-width="2" />
+          <rect x="38" y="42" width="24" height="13" rx="2" fill="#1f2937" />
+          <rect x="44" y="46" width="12" height="8" rx="1" fill="#fbbf24" opacity="0.9" />
+          <rect x="20" y="50" width="10" height="10" rx="1" fill="#3d3d48" />
+          <rect x="70" y="50" width="10" height="10" rx="1" fill="#3d3d48" />
+          <circle cx="50" cy="40" r="2" fill="#fbbf24" />
+        </svg>
+        <span class="sc-label-overlay">mokki</span>
       </div>
       <div class="sc-meta">
         <span class="sc-kicker">3D cabin explorer</span>
