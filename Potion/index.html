@@ -33,7 +33,8 @@ function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
 if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.stringify({albums:[
 {id:'nordic',title:'Nordic Folk',status:'upcoming',color:'#6fa8a0',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'jazz',title:'Jazz Album',status:'upcoming',color:'#b08a5a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'acoustic',title:'Acoustic Album',status:'upcoming',color:'#8a9a6a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+{id:'acoustic',title:'Acoustic Album',status:'upcoming',color:'#8a9a6a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sam-metal',title:'Sam Metal',status:'upcoming',color:'#5f6f86',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
 ],tracks:[
 {id:'n1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'n2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
@@ -63,14 +64,15 @@ if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.str
 {id:'a5',albumId:'acoustic',title:'Keera bmth',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'a6',albumId:'acoustic',title:'You Heal Me',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'a7',albumId:'acoustic',title:'Epilogue',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'m1',albumId:'metal',title:'Metal Track 1',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m2',albumId:'metal',title:'Metal Track 2',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m3',albumId:'metal',title:'Metal Track 3',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m4',albumId:'metal',title:'Metal Track 4',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m5',albumId:'metal',title:'Metal Track 5',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m6',albumId:'metal',title:'Metal Track 6',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m7',albumId:'metal',title:'Metal Track 7',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m8',albumId:'metal',title:'Metal Track 8',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},]}));}
+{id:'m1',albumId:'metal',title:'Metal Track 1',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m2',albumId:'metal',title:'Metal Track 2',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m3',albumId:'metal',title:'Metal Track 3',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m4',albumId:'metal',title:'Metal Track 4',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m5',albumId:'metal',title:'Metal Track 5',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m6',albumId:'metal',title:'Metal Track 6',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m7',albumId:'metal',title:'Metal Track 7',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'m8',albumId:'metal',title:'Metal Track 8',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm1',albumId:'sam-metal',title:'Amon Epic',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm2',albumId:'sam-metal',title:'Be a Moth',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm3',albumId:'sam-metal',title:'Abysmal',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm4',albumId:'sam-metal',title:'Real Death',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm5',albumId:'sam-metal',title:'Asd asd asd',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm6',albumId:'sam-metal',title:'NoMattack',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'sm7',albumId:'sam-metal',title:'Slippery When Death',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}]}));}
 let state=load();
 (function(){
 const seed={albums:[
 {id:'nordic',title:'Nordic Folk',status:'upcoming',color:'#6fa8a0',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'jazz',title:'Jazz Album',status:'upcoming',color:'#b08a5a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'acoustic',title:'Acoustic Album',status:'upcoming',color:'#8a9a6a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sam-metal',title:'Sam Metal',status:'upcoming',color:'#5f6f86',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
 ],tracks:[
 {id:'n1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'n2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
@@ -107,7 +109,14 @@ const seed={albums:[
 {id:'m5',albumId:'metal',title:'Metal Track 5',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'m6',albumId:'metal',title:'Metal Track 6',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'m7',albumId:'metal',title:'Metal Track 7',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'m8',albumId:'metal',title:'Metal Track 8',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+{id:'m8',albumId:'metal',title:'Metal Track 8',position:7,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm1',albumId:'sam-metal',title:'Amon Epic',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm2',albumId:'sam-metal',title:'Be a Moth',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm3',albumId:'sam-metal',title:'Abysmal',position:2,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm4',albumId:'sam-metal',title:'Real Death',position:3,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm5',albumId:'sam-metal',title:'Asd asd asd',position:4,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm6',albumId:'sam-metal',title:'NoMattack',position:5,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'sm7',albumId:'sam-metal',title:'Slippery When Death',position:6,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
 ]};
 let changed=false;
 seed.albums.forEach(a=>{if(!state.albums.find(x=>x.id===a.id)){state.albums.push(a);changed=true}});
