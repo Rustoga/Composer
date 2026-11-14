@@ -23,7 +23,7 @@ button{cursor:pointer;padding:8px 12px;border:1px solid #ddd;border-radius:6px;b
 <div class="side-ripple left"></div><div class="side-ripple right"></div>
 <body>
 <div class="wrap">
-<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff"></div><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
+<h1>Potion — Album Workspace</h1><div id="nextStep" style="margin-bottom:12px;padding:10px;border:1px solid #ddd;border-radius:8px"></div><button id="darkToggle" style="margin-bottom:12px">Toggle Dark Mode</button>
 <div id="workspace"></div>
 </div>
 <script>
@@ -31,9 +31,9 @@ const KEY='potion:v1';
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{albums:[],tracks:[]}}catch{return{albums:[],tracks:[]}}}
 function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
 if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.stringify({albums:[
-{id:'nordic',title:'Nordic Folk',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'jazz',title:'Jazz Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'acoustic',title:'Acoustic Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'metal',title:'Metal Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+{id:'nordic',title:'Nordic Folk',status:'upcoming',color:'#6fa8a0',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'jazz',title:'Jazz Album',status:'upcoming',color:'#b08a5a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'acoustic',title:'Acoustic Album',status:'upcoming',color:'#8a9a6a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
 ],tracks:[
 {id:'n1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'n2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
@@ -67,10 +67,10 @@ if(!localStorage.getItem('potion:v1')){localStorage.setItem('potion:v1',JSON.str
 let state=load();
 (function(){
 const seed={albums:[
-{id:'nordic',title:'Nordic Folk',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'jazz',title:'Jazz Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'acoustic',title:'Acoustic Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
-{id:'metal',title:'Metal Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
+{id:'nordic',title:'Nordic Folk',status:'upcoming',color:'#6fa8a0',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'jazz',title:'Jazz Album',status:'upcoming',color:'#b08a5a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'acoustic',title:'Acoustic Album',status:'upcoming',color:'#8a9a6a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
+{id:'metal',title:'Metal Album',status:'upcoming',color:'#7a6a8a',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()}
 ],tracks:[
 {id:'n1',albumId:'nordic',title:'Etsi',position:0,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
 {id:'n2',albumId:'nordic',title:'Pohjanmaa (nwc)',position:1,completed:false,notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()},
@@ -112,45 +112,69 @@ const seed={albums:[
 let changed=false;
 seed.albums.forEach(a=>{if(!state.albums.find(x=>x.id===a.id)){state.albums.push(a);changed=true}});
 seed.tracks.forEach(t=>{if(!state.tracks.find(x=>x.id===t.id)){state.tracks.push(t);changed=true}});
+state.albums.forEach(a=>{if(!a.color){a.color=randomAlbumColor();changed=true}});
 if(changed)save(state);
 })();
+
+function albumColor(a){return a&&a.color?a.color:'#8aa0a8'}
+function randomAlbumColor(){const p=['#7aa2b8','#b87a7a','#8ab88a','#b89a7a','#9a7ab8','#7ab8b0','#b87aa0','#a8b87a','#7a8fb8','#b8a27a'];return p[Math.floor(Math.random()*p.length)]}
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function updateNextStep(){const el=document.getElementById("nextStep");if(!el)return;const incomplete=[];state.albums.forEach(a=>{const ts=state.tracks.filter(t=>t.albumId===a.id);const done=ts.filter(t=>t.completed).length;if(ts.length&&done<ts.length)incomplete.push(a.title)});el.textContent=incomplete.length?"Next: finish a track in "+incomplete[0]:"All done — create or open an album";}
 function render(){
+  updateNextStep();
   const w=document.getElementById('workspace');
   const q=(document.getElementById('q')||{}).value||'';
-  const albums=state.albums.filter(a=>a.title.toLowerCase().includes(q.toLowerCase()));
+  const all=state.albums.filter(a=>a.title.toLowerCase().includes(q.toLowerCase()));
+  const active=all.filter(a=>a.status!=='completed');
+  const done=all.filter(a=>a.status==='completed');
+  const card=a=>{const ts=state.tracks.filter(t=>t.albumId===a.id);const pct=ts.length?Math.round(ts.filter(t=>t.completed).length/ts.length*100):0;const c=albumColor(a);return '<div class="card" style="border-left:6px solid '+c+';background:linear-gradient(90deg,'+c+'22,transparent 30%)"><div style="width:64px;height:64px;background:#eee;border-radius:6px;overflow:hidden">'+(a.image?'<img src="'+a.image+'" style="width:64px;height:64px">':'')+'</div><div style="flex:1"><div style="font-weight:600">'+a.title+'</div><div style="font-size:12px;color:#666">'+a.status+' · '+ts.length+' tracks · '+pct+'%</div></div><button data-open="'+a.id+'">Open</button><button data-del="'+a.id+'">Delete</button></div>';};
   w.innerHTML='<div style="display:flex;gap:8px;margin-bottom:16px"><input id="q" placeholder="Search" value="'+q+'" style="flex:1"><button id="newAlbum" class="primary">New Album</button></div>'
-    +(albums.length?'':'<p>No albums yet.</p>')
-    +albums.map(a=>{
-      const ts=state.tracks.filter(t=>t.albumId===a.id);
-      const pct=ts.length?Math.round(ts.filter(t=>t.completed).length/ts.length*100):0;
-      return '<div class="card"><div style="width:64px;height:64px;background:#eee;border-radius:6px;overflow:hidden">'+(a.image?'<img src="'+a.image+'" style="width:64px;height:64px">':'')+'</div><div style="flex:1"><div style="font-weight:600">'+a.title+'</div><div style="font-size:12px;color:#666">'+a.status+' · '+ts.length+' tracks · '+pct+'%</div></div><button data-open="'+a.id+'">Open</button><button data-del="'+a.id+'">Delete</button></div>';
-    }).join('');
-  document.getElementById('newAlbum').onclick=()=>{state.albums.unshift({id:uid(),title:'Untitled Album',status:'upcoming',notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});save(state);render()};
+    +(all.length?'':'<p>No albums yet.</p>')
+    +active.map(card).join('')
+    +(done.length?'<h3 style="margin-top:20px">Completed</h3>'+done.map(card).join(''):'');
+  document.getElementById('newAlbum').onclick=()=>{state.albums.unshift({id:uid(),title:'Untitled Album',status:'upcoming',color:randomAlbumColor(),notes:'',links:[],createdAt:Date.now(),updatedAt:Date.now()});save(state);render()};
   document.getElementById('q').oninput=render;
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openAlbum(b.dataset.open));
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(!confirm('Delete album and tracks?'))return;const id=b.dataset.del;state.albums=state.albums.filter(a=>a.id!==id);state.tracks=state.tracks.filter(t=>t.albumId!==id);save(state);render()});
 }
 function openAlbum(id){
   const a=state.albums.find(x=>x.id===id);
+  if(!a.color){a.color=randomAlbumColor();save(state)}
+  const c=albumColor(a);
   const tracks=state.tracks.filter(t=>t.albumId===id).sort((x,y)=>x.position-y.position);
   const pct=tracks.length?Math.round(tracks.filter(t=>t.completed).length/tracks.length*100):0;
+  const rl=a.releaseLinks||{};
   document.getElementById('workspace').innerHTML='<button id="back">← Back</button>'
-    +'<input id="title" value="'+a.title+'" style="font-size:28px;font-weight:700;border:none;width:100%;margin:8px 0">'
+    +'<div style="height:8px;border-radius:8px;background:'+c+';margin:8px 0"></div>'
+    +'<input id="title" value="'+a.title+'" style="font-size:28px;font-weight:700;border:none;width:100%;margin:8px 0;background:transparent;color:inherit">'
     +'<div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap"><select id="status"><option>upcoming</option><option>in-progress</option><option>completed</option><option>archived</option></select><input type="date" id="date" value="'+(a.releaseDate||'')+'"><input id="img" placeholder="Image URL" value="'+(a.image||'')+'" style="flex:1"></div>'
     +(a.image?'<img src="'+a.image+'" style="max-width:240px;border-radius:8px" onerror="this.style.display=\'none\'">':'')
-    +'<textarea id="notes" placeholder="Album notes" style="width:100%;min-height:80px;margin:8px 0">'+a.notes+'</textarea>'
+    +'<textarea id="notes" placeholder="Album notes" style="width:100%;min-height:80px;margin:8px 0">'+(a.notes||'')+'</textarea>'
     +'<details style="margin:8px 0"><summary>Marketing & checklist</summary><textarea id="marketing" placeholder="Social posts, press, playlist pitching..." style="width:100%;min-height:60px;margin-top:6px">'+(a.marketing||'')+'</textarea></details>'
     +'<details style="margin:8px 0"><summary>Credits & budget</summary><textarea id="credits" placeholder="Collaborators, budget notes..." style="width:100%;min-height:60px;margin-top:6px">'+(a.credits||'')+'</textarea></details>'
     +'<details style="margin:8px 0"><summary>Mood board (image URLs, comma separated)</summary><textarea id="mood" placeholder="https://..." style="width:100%;min-height:60px;margin-top:6px">'+(a.mood||'')+'</textarea></details>'
     +'<h3>Tracks — '+pct+'%</h3><button id="addTrack" class="primary">Add Track</button>'
-    +tracks.map(t=>'<div class="card" style="flex-direction:column;align-items:stretch"><div style="display:flex;gap:8px;align-items:center"><input type="checkbox" '+(t.completed?'checked':'')+' data-tc="'+t.id+'"><input value="'+t.title+'" data-tt="'+t.id+'" style="flex:1;font-weight:600"><button data-up="'+t.id+'">↑</button><button data-down="'+t.id+'">↓</button><button data-tdel="'+t.id+'">✕</button></div><textarea data-tn="'+t.id+'" placeholder="Notes/lyrics" style="width:100%;min-height:60px;margin-top:8px">'+t.notes+'</textarea><div style="margin-top:6px"><button data-link="'+t.id+'">+ Link</button>'+(t.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div></div>').join('')
-    +'<div style="margin-top:12px"><button id="albumLink">+ Album Link</button>'+(a.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div>';
+    +tracks.map(t=>'<div class="card" style="flex-direction:column;align-items:stretch;border-left:4px solid '+c+'"><div style="display:flex;gap:8px;align-items:center"><input type="checkbox" '+(t.completed?'checked':'')+' data-tc="'+t.id+'"><input value="'+t.title+'" data-tt="'+t.id+'" style="flex:1;font-weight:600"><button data-up="'+t.id+'">↑</button><button data-down="'+t.id+'">↓</button><button data-tdel="'+t.id+'">✕</button></div><textarea data-tn="'+t.id+'" placeholder="Notes/lyrics" style="width:100%;min-height:60px;margin-top:8px">'+(t.notes||'')+'</textarea><div style="margin-top:6px"><button data-link="'+t.id+'">+ Link</button>'+(t.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div></div>').join('')
+    +'<div style="margin-top:12px"><button id="albumLink">+ Album Link</button>'+(a.links||[]).map(l=>'<a href="'+l.url+'" target="_blank" style="margin-left:8px">'+l.url+'</a>').join('')+'</div>'
+    +'<div style="margin-top:20px;padding:12px;border:1px solid #ddd;border-radius:8px"><div style="font-weight:600;margin-bottom:8px">Release / marketing kit</div>'
+    +(a.status==='completed'?'<button id="kitBtn" class="primary">Open marketing kit</button>':'<div style="font-size:13px;color:#666">Mark album as completed to prepare release materials.</div>')
+    +'<div id="kit" style="display:none;margin-top:10px">'
+    +'<label>Graphics / artwork links (Dropbox, drive, etc.)<textarea id="kitGraphics" style="width:100%;min-height:50px;margin:4px 0 8px">'+(a.releaseGraphics||'')+'</textarea></label>'
+    +'<label>Release description<textarea id="kitDesc" style="width:100%;min-height:50px;margin:4px 0 8px">'+(a.releaseDescription||'')+'</textarea></label>'
+    +'<label>Marketing materials<textarea id="kitMkt" style="width:100%;min-height:50px;margin:4px 0 8px">'+(a.releaseMarketing||'')+'</textarea></label>'
+    +'<div style="display:grid;grid-template-columns:1fr;gap:6px">'
+    +'<input id="rl_spotify" placeholder="Spotify link" value="'+(rl.spotify||'')+'">'
+    +'<input id="rl_bandcamp" placeholder="Bandcamp link" value="'+(rl.bandcamp||'')+'">'
+    +'<input id="rl_apple" placeholder="Apple Music / iTunes link" value="'+(rl.apple||'')+'">'
+    +'<input id="rl_icloud" placeholder="iCloud / other link" value="'+(rl.icloud||'')+'">'
+    +'<input id="rl_youtube" placeholder="YouTube link" value="'+(rl.youtube||'')+'">'
+    +'<input id="rl_other" placeholder="Other link (website, Linktree, etc.)" value="'+(rl.other||'')+'"></div>'
+    +'<div style="margin-top:8px;font-size:13px;color:#666">Links: '+[['spotify',rl.spotify],['bandcamp',rl.bandcamp],['apple',rl.apple],['icloud',rl.icloud],['youtube',rl.youtube],['other',rl.other]].filter(x=>x[1]).map(x=>'<a href="'+x[1]+'" target="_blank" style="margin-right:8px">'+x[0]+'</a>').join('')+'</div>'
+    +'</div></div>';
   document.getElementById('back').onclick=render;
   document.getElementById('title').onchange=e=>{a.title=e.target.value;a.updatedAt=Date.now();save(state)};
   document.getElementById('status').value=a.status;
-  document.getElementById('status').onchange=e=>{a.status=e.target.value;a.updatedAt=Date.now();save(state)};
+  document.getElementById('status').onchange=e=>{a.status=e.target.value;a.updatedAt=Date.now();save(state);openAlbum(id)};
   document.getElementById('date').onchange=e=>{a.releaseDate=e.target.value;a.updatedAt=Date.now();save(state)};
   document.getElementById('img').onchange=e=>{a.image=e.target.value;a.updatedAt=Date.now();save(state);openAlbum(id)};
   document.getElementById('notes').onchange=e=>{a.notes=e.target.value;a.updatedAt=Date.now();save(state)};
@@ -166,6 +190,9 @@ function openAlbum(id){
   document.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>moveTrack(id,b.dataset.down,1));
   document.querySelectorAll('[data-link]').forEach(b=>b.onclick=()=>{const url=prompt('Link URL');if(!url)return;const t=state.tracks.find(x=>x.id===b.dataset.link);t.links.push({id:uid(),url,label:url});t.updatedAt=Date.now();save(state);openAlbum(id)});
   document.getElementById('albumLink').onclick=()=>{const url=prompt('Album link URL');if(!url)return;a.links.push({id:uid(),url,label:url});a.updatedAt=Date.now();save(state);openAlbum(id)};
+  const kb=document.getElementById('kitBtn'); if(kb) kb.onclick=()=>{const k=document.getElementById('kit');k.style.display=k.style.display==='none'?'block':'none'};
+  ['kitGraphics','kitDesc','kitMkt'].forEach(fid=>{const el=document.getElementById(fid);if(!el)return;el.onchange=e=>{if(fid==='kitGraphics')a.releaseGraphics=e.target.value; if(fid==='kitDesc')a.releaseDescription=e.target.value; if(fid==='kitMkt')a.releaseMarketing=e.target.value; a.updatedAt=Date.now();save(state)}});
+  [['rl_spotify','spotify'],['rl_bandcamp','bandcamp'],['rl_apple','apple'],['rl_icloud','icloud'],['rl_youtube','youtube'],['rl_other','other']].forEach(([fid,key])=>{const el=document.getElementById(fid);if(!el)return;el.onchange=e=>{a.releaseLinks=a.releaseLinks||{};a.releaseLinks[key]=e.target.value;a.updatedAt=Date.now();save(state);openAlbum(id)}});
 }
 function moveTrack(albumId,tid,dir){
   const tracks=state.tracks.filter(t=>t.albumId===albumId).sort((a,b)=>a.position-b.position);
