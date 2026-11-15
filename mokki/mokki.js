@@ -1,20 +1,30 @@
 import * as THREE from 'https://esm.sh/three@0.164.1';
-import { PointerLockControls } from 'https://esm.sh/three@0.164.1/addons/controls/PointerLockControls.js?dep=three@0.164.1';
+import { OrbitControls } from 'https://esm.sh/three@0.164.1/addons/controls/OrbitControls.js?dep=three@0.164.1';
 
 const container = document.getElementById('canvas-container');
 const loading = document.getElementById('loading');
 const splatCountEl = document.getElementById('splat-count');
-const fileBtn = document.getElementById('file-btn');
+const controlHintEl = document.getElementById('control-hint');
+const btnAutoFly = document.getElementById('btn-autofly');
+const btnReset = document.getElementById('btn-reset');
+const btnFile = document.getElementById('btn-file');
 const fileInput = document.getElementById('file-input');
 
 const DEFAULT_URL = '/mokki/splats.ply';
-const FOV = 75;
+const FOV = 60;
 const NEAR = 0.01;
-const FAR = 800;
-const MOVE_SPEED = 5.5;
+const FAR = 2000;
+const FLY_SPEED = 6;
+const AUTO_SPEED = 0.5;
 
 let scene, camera, renderer, controls, splats, clock;
+let center = new THREE.Vector3();
+let radius = 10;
+let autoFly = false;
+let autoAngle = 0;
+let autoHeight = 0;
 const keys = {};
+let lastTime = 0;
 
 const vertexShader = `
 attribute vec3 position;
@@ -28,7 +38,7 @@ varying float vOpacity;
 void main() {
   vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mvPosition;
-  gl_PointSize = size * (150.0 / -mvPosition.z);
+  gl_PointSize = max(size * (220.0 / -mvPosition.z), 1.2);
   vColor = color;
   vOpacity = opacity;
 }
@@ -40,41 +50,43 @@ varying float vOpacity;
 void main() {
   float dist = length(gl_PointCoord - vec2(0.5));
   if (dist > 0.5) discard;
-  float gauss = exp(-(dist * dist) / (2.0 * 0.17 * 0.17));
+  float gauss = exp(-(dist * dist) / (2.0 * 0.22 * 0.22));
   float alpha = vOpacity * gauss;
-  if (alpha < 0.02) discard;
+  if (alpha < 0.03) discard;
   gl_FragColor = vec4(vColor, alpha);
 }
 `;
 
 function init() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0b0b0f);
-  scene.fog = new THREE.FogExp2(0x0b0b0f, 0.012);
+  scene.background = new THREE.Color(0x060609);
+  scene.fog = new THREE.FogExp2(0x060609, 0.006);
 
   camera = new THREE.PerspectiveCamera(FOV, container.clientWidth / container.clientHeight, NEAR, FAR);
-  camera.position.set(0, 1.6, 3);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 
-  controls = new PointerLockControls(camera, document.body);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 0.5;
+  controls.maxDistance = 4000;
+  controls.autoRotate = false;
 
-  container.addEventListener('click', () => controls.lock());
-  controls.addEventListener('lock', () => {
-    document.querySelector('.sub').style.opacity = '0';
-  });
-  controls.addEventListener('unlock', () => {
-    document.querySelector('.sub').style.opacity = '0.7';
-  });
-
-  window.addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Escape') controls.unlock(); });
+  window.addEventListener('keydown', (e) => { keys[e.code] = true; });
   window.addEventListener('keyup', (e) => { keys[e.code] = false; });
   window.addEventListener('resize', onResize);
 
-  fileBtn.addEventListener('click', () => fileInput.click());
+  btnAutoFly.addEventListener('click', () => {
+    autoFly = !autoFly;
+    btnAutoFly.classList.toggle('active', autoFly);
+    controls.enabled = !autoFly;
+  });
+  btnReset.addEventListener('click', resetView);
+  btnFile.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -87,9 +99,7 @@ function init() {
         splatCountEl.textContent = 'Error loading file';
       });
     };
-    reader.onerror = () => {
-      splatCountEl.textContent = 'Error reading file';
-    };
+    reader.onerror = () => { splatCountEl.textContent = 'Error reading file'; };
     reader.readAsArrayBuffer(file);
   });
 
@@ -97,10 +107,12 @@ function init() {
 
   loadSplats(DEFAULT_URL).then(() => {
     loading.classList.add('hidden');
+    lastTime = performance.now();
     animate();
   }).catch((err) => {
     console.warn('Auto load failed, using fallback:', err);
     loading.classList.add('hidden');
+    lastTime = performance.now();
     animate();
   });
 }
@@ -111,19 +123,59 @@ function onResize() {
   renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
-function updateControls(dt) {
-  if (!controls.isLocked) return;
-  const speed = MOVE_SPEED * dt;
-  if (keys['KeyW'] || keys['ArrowUp']) controls.moveForward(speed);
-  if (keys['KeyS'] || keys['ArrowDown']) controls.moveForward(-speed);
-  if (keys['KeyD'] || keys['ArrowRight']) controls.moveRight(speed);
-  if (keys['KeyA'] || keys['ArrowLeft']) controls.moveRight(-speed);
+function resetView() {
+  if (!splats) return;
+  const box = new THREE.Box3().setFromObject(splats);
+  box.getCenter(center);
+  const size = box.getSize(new THREE.Vector3());
+  radius = Math.max(size.x, size.y, size.z) * 0.6;
+  if (radius < 2) radius = 2;
+  autoHeight = center.y + radius * 0.35;
+  controls.target.copy(center);
+  camera.position.set(center.x, center.y + radius * 0.9, center.z + radius * 1.3);
+  camera.lookAt(center);
+  controls.update();
+}
+
+function updateFly(dt) {
+  if (!controls.enabled || autoFly) return;
+  const move = new THREE.Vector3();
+  camera.getWorldDirection(move);
+  move.y = 0;
+  move.normalize();
+  const right = new THREE.Vector3().crossVectors(camera.up, move).normalize();
+  const speed = FLY_SPEED * dt;
+  if (keys['KeyW'] || keys['ArrowUp']) camera.position.addScaledVector(move, speed);
+  if (keys['KeyS'] || keys['ArrowDown']) camera.position.addScaledVector(move, -speed);
+  if (keys['KeyD'] || keys['ArrowRight']) camera.position.addScaledVector(right, speed);
+  if (keys['KeyA'] || keys['ArrowLeft']) camera.position.addScaledVector(right, -speed);
   if (keys['Space']) camera.position.y += speed;
   if (keys['ShiftLeft'] || keys['ShiftRight']) camera.position.y -= speed;
+  controls.target.add(move.clone().multiplyScalar(0));
+  controls.update();
+}
+
+function updateAutoFly(dt) {
+  if (!autoFly || !splats) return;
+  autoAngle += AUTO_SPEED * dt;
+  const x = center.x + Math.cos(autoAngle) * radius;
+  const z = center.z + Math.sin(autoAngle) * radius;
+  camera.position.set(x, autoHeight, z);
+  camera.lookAt(center);
+  controls.update();
+}
+
+function animate(now = 0) {
+  requestAnimationFrame(animate);
+  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
+  updateFly(dt);
+  updateAutoFly(dt);
+  if (!autoFly) controls.update();
+  renderer.render(scene, camera);
 }
 
 async function loadSplats(input) {
-  let data = null;
   let buf;
   try {
     if (input instanceof ArrayBuffer) {
@@ -133,17 +185,22 @@ async function loadSplats(input) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       buf = new Uint8Array(await res.arrayBuffer());
     }
-    data = parsePly(buf);
+    const data = parsePly(buf);
+    if (!data || data.count === 0) throw new Error('empty splat data');
+    buildPoints(data);
+    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
+    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    resetView();
+    return data;
   } catch (e) {
     console.warn('PLY load failed:', e);
+    const data = generateFallback();
+    buildPoints(data);
+    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
+    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    resetView();
+    return data;
   }
-  if (!data || data.count === 0) {
-    console.log('Using fallback splat cloud');
-    data = generateFallback();
-  }
-  buildPoints(data);
-  splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
-  return data;
 }
 
 function parsePly(input) {
@@ -187,13 +244,13 @@ function parsePly(input) {
   }
 
   const typeSize = { char: 1, uchar: 1, int8: 1, uint8: 1, short: 2, ushort: 2, int16: 2, uint16: 2, int: 4, uint: 4, int32: 4, uint32: 4, float: 4, double: 8 };
-  const typeReader = {
-    float: (dv, o) => dv.getFloat32(o, true),
-    double: (dv, o) => dv.getFloat64(o, true),
-    int: (dv, o) => dv.getInt32(o, true),
-    uint: (dv, o) => dv.getUint32(o, true),
-    short: (dv, o) => dv.getInt16(o, true),
-    ushort: (dv, o) => dv.getUint16(o, true),
+  const readerMap = {
+    float: (dv, o, l) => dv.getFloat32(o, l),
+    double: (dv, o, l) => dv.getFloat64(o, l),
+    int: (dv, o, l) => dv.getInt32(o, l),
+    uint: (dv, o, l) => dv.getUint32(o, l),
+    short: (dv, o, l) => dv.getInt16(o, l),
+    ushort: (dv, o, l) => dv.getUint16(o, l),
     char: (dv, o) => dv.getInt8(o),
     uchar: (dv, o) => dv.getUint8(o),
   };
@@ -221,7 +278,6 @@ function parsePly(input) {
   const hasFdc = idx['f_dc_0'] !== undefined;
   const hasOpacity = idx['opacity'] !== undefined;
   const hasScale = idx['scale_0'] !== undefined;
-
   const hasColor = hasR && hasG && hasB;
 
   if (format === 'ascii') {
@@ -237,9 +293,9 @@ function parsePly(input) {
       const pi = written * 3;
       positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
       if (hasColor) {
-        colors[pi] = (get(vals, 'red') || 0) / 255;
-        colors[pi + 1] = (get(vals, 'green') || 0) / 255;
-        colors[pi + 2] = (get(vals, 'blue') || 0) / 255;
+        colors[pi] = Math.max(0, Math.min(1, (get(vals, 'red') || 0) / 255));
+        colors[pi + 1] = Math.max(0, Math.min(1, (get(vals, 'green') || 0) / 255));
+        colors[pi + 2] = Math.max(0, Math.min(1, (get(vals, 'blue') || 0) / 255));
       } else if (hasFdc) {
         colors[pi] = 0.5 + get(vals, 'f_dc_0');
         colors[pi + 1] = 0.5 + get(vals, 'f_dc_1');
@@ -247,7 +303,7 @@ function parsePly(input) {
       } else {
         colors[pi] = 0.7; colors[pi + 1] = 0.8; colors[pi + 2] = 1.0;
       }
-      sizes[written] = hasScale ? (get(vals, 'scale_0') + get(vals, 'scale_1') + get(vals, 'scale_2')) / 3 : 0.1;
+      sizes[written] = hasScale ? Math.max(0.02, (get(vals, 'scale_0') + get(vals, 'scale_1') + get(vals, 'scale_2')) / 3) : 0.1;
       opacities[written] = hasOpacity ? get(vals, 'opacity') : 0.9;
       written++;
     }
@@ -259,31 +315,21 @@ function parsePly(input) {
 
   const dv = new DataView(bytes.buffer, bytes.byteOffset + dataStart);
   const little = format === 'binary_little_endian';
-  const readerMap = {
-    float: (o) => dv.getFloat32(o, little),
-    double: (o) => dv.getFloat64(o, little),
-    int: (o) => dv.getInt32(o, little),
-    uint: (o) => dv.getUint32(o, little),
-    short: (o) => dv.getInt16(o, little),
-    ushort: (o) => dv.getUint16(o, little),
-    char: (o) => dv.getInt8(o),
-    uchar: (o) => dv.getUint8(o),
-  };
+  const totalBytes = dv.byteLength;
 
   let written = 0;
   let byteOff = 0;
-  const totalBytes = dv.byteLength;
   while (written < count && byteOff + stride <= totalBytes) {
     const base = byteOff;
-    const readProp = (name) => { const o = idx[name]; return o === undefined ? NaN : readerMap[vertex.props.find((p) => p.name === name).type](base + o); };
+    const readProp = (name) => { const o = idx[name]; if (o === undefined) return NaN; const pr = vertex.props.find((p) => p.name === name); return readerMap[pr.type](dv, base + o, little); };
     const x = readProp('x'), y = readProp('y'), z = readProp('z');
     if (!isFinite(x) || !isFinite(y) || !isFinite(z)) { byteOff += stride; continue; }
     const pi = written * 3;
     positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
     if (hasColor) {
-      colors[pi] = readProp('red') / 255;
-      colors[pi + 1] = readProp('green') / 255;
-      colors[pi + 2] = readProp('blue') / 255;
+      colors[pi] = Math.max(0, Math.min(1, readProp('red') / 255));
+      colors[pi + 1] = Math.max(0, Math.min(1, readProp('green') / 255));
+      colors[pi + 2] = Math.max(0, Math.min(1, readProp('blue') / 255));
     } else if (hasFdc) {
       colors[pi] = 0.5 + readProp('f_dc_0');
       colors[pi + 1] = 0.5 + readProp('f_dc_1');
@@ -291,7 +337,7 @@ function parsePly(input) {
     } else {
       colors[pi] = 0.7; colors[pi + 1] = 0.8; colors[pi + 2] = 1.0;
     }
-    sizes[written] = hasScale ? (readProp('scale_0') + readProp('scale_1') + readProp('scale_2')) / 3 : 0.1;
+    sizes[written] = hasScale ? Math.max(0.02, (readProp('scale_0') + readProp('scale_1') + readProp('scale_2')) / 3) : 0.1;
     opacities[written] = hasOpacity ? readProp('opacity') : 0.9;
     byteOff += stride;
     written++;
@@ -307,39 +353,6 @@ function finalize(count, positions, colors, sizes, opacities) {
     sizes: sizes.slice(0, count),
     opacities: opacities.slice(0, count),
   };
-}
-
-function generateFallback() {
-  const count = 16000;
-  const positions = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const sizes = new Float32Array(count);
-  const opacities = new Float32Array(count);
-  const rnd = () => Math.random();
-  for (let i = 0; i < count; i++) {
-    const pi = i * 3;
-    if (i < count * 0.65) {
-      positions[pi] = (rnd() - 0.5) * 24;
-      positions[pi + 1] = 0.05;
-      positions[pi + 2] = (rnd() - 0.5) * 24;
-      colors[pi] = 0.34 + rnd() * 0.14;
-      colors[pi + 1] = 0.52 + rnd() * 0.18;
-      colors[pi + 2] = 0.34 + rnd() * 0.14;
-      sizes[i] = 0.12 + rnd() * 0.22;
-    } else {
-      const t = rnd() * Math.PI * 2;
-      const radius = 1 + rnd() * 7;
-      positions[pi] = Math.cos(t) * radius + (rnd() - 0.5) * 2;
-      positions[pi + 1] = 0.5 + rnd() * 4.5;
-      positions[pi + 2] = Math.sin(t) * radius + (rnd() - 0.5) * 2;
-      colors[pi] = 0.6 + rnd() * 0.4;
-      colors[pi + 1] = 0.5 + rnd() * 0.4;
-      colors[pi + 2] = 0.85 + rnd() * 0.15;
-      sizes[i] = 0.07 + rnd() * 0.16;
-    }
-    opacities[i] = 0.7 + rnd() * 0.3;
-  }
-  return { count, positions, colors, sizes, opacities };
 }
 
 function buildPoints(data) {
@@ -364,16 +377,43 @@ function buildPoints(data) {
     blending: THREE.AdditiveBlending,
     vertexColors: true,
   });
+
   splats = new THREE.Points(geometry, material);
   splats.frustumCulled = false;
   scene.add(splats);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.1);
-  updateControls(dt);
-  renderer.render(scene, camera);
+function generateFallback() {
+  const count = 24000;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const opacities = new Float32Array(count);
+  const rnd = () => Math.random();
+  for (let i = 0; i < count; i++) {
+    const pi = i * 3;
+    if (i < count * 0.6) {
+      positions[pi] = (rnd() - 0.5) * 30;
+      positions[pi + 1] = 0.1;
+      positions[pi + 2] = (rnd() - 0.5) * 30;
+      colors[pi] = 0.34 + rnd() * 0.14;
+      colors[pi + 1] = 0.52 + rnd() * 0.18;
+      colors[pi + 2] = 0.34 + rnd() * 0.14;
+      sizes[i] = 0.12 + rnd() * 0.22;
+    } else {
+      const t = rnd() * Math.PI * 2;
+      const radius = 2 + rnd() * 10;
+      positions[pi] = Math.cos(t) * radius + (rnd() - 0.5) * 3;
+      positions[pi + 1] = 0.5 + rnd() * 5;
+      positions[pi + 2] = Math.sin(t) * radius + (rnd() - 0.5) * 3;
+      colors[pi] = 0.6 + rnd() * 0.4;
+      colors[pi + 1] = 0.5 + rnd() * 0.4;
+      colors[pi + 2] = 0.85 + rnd() * 0.15;
+      sizes[i] = 0.08 + rnd() * 0.16;
+    }
+    opacities[i] = 0.7 + rnd() * 0.3;
+  }
+  return { count, positions, colors, sizes, opacities };
 }
 
 init();
