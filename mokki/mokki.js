@@ -125,14 +125,14 @@ function onResize() {
 
 function resetView() {
   if (!splats) return;
-  const box = new THREE.Box3().setFromObject(splats);
-  box.getCenter(center);
-  const size = box.getSize(new THREE.Vector3());
-  radius = Math.max(size.x, size.y, size.z) * 0.6;
-  if (radius < 2) radius = 2;
-  autoHeight = center.y + radius * 0.35;
+  const geom = splats.geometry;
+  if (!geom.boundingSphere) geom.computeBoundingSphere();
+  const s = geom.boundingSphere;
+  center.copy(s.center);
+  radius = Math.max(s.radius, 3);
+  autoHeight = center.y + radius * 0.55;
   controls.target.copy(center);
-  camera.position.set(center.x, center.y + radius * 0.9, center.z + radius * 1.3);
+  camera.position.set(center.x, center.y + radius, center.z + radius * 1.6);
   camera.lookAt(center);
   controls.update();
 }
@@ -167,7 +167,8 @@ function updateAutoFly(dt) {
 
 function animate(now = 0) {
   requestAnimationFrame(animate);
-  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  if (lastTime === 0) { lastTime = now; return; }
+  const dt = Math.min(Math.max((now - lastTime) / 1000, 0), 0.1);
   lastTime = now;
   updateFly(dt);
   updateAutoFly(dt);
