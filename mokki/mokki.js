@@ -78,13 +78,28 @@ function init() {
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    loadSplats(url).then(() => URL.revokeObjectURL(url));
+    const reader = new FileReader();
+    reader.onload = () => {
+      const buf = reader.result;
+      if (!(buf instanceof ArrayBuffer)) return;
+      loadSplats(buf).catch((err) => {
+        console.error('PLY load failed:', err);
+        splatCountEl.textContent = 'Error loading file';
+      });
+    };
+    reader.onerror = () => {
+      splatCountEl.textContent = 'Error reading file';
+    };
+    reader.readAsArrayBuffer(file);
   });
 
   clock = new THREE.Clock();
 
   loadSplats(DEFAULT_URL).then(() => {
+    loading.classList.add('hidden');
+    animate();
+  }).catch((err) => {
+    console.warn('Auto load failed, using fallback:', err);
     loading.classList.add('hidden');
     animate();
   });
@@ -107,14 +122,18 @@ function updateControls(dt) {
   if (keys['ShiftLeft'] || keys['ShiftRight']) camera.position.y -= speed;
 }
 
-async function loadSplats(url) {
+async function loadSplats(input) {
   let data = null;
+  let buf;
   try {
-    const res = await fetch(url);
-    if (res.ok) {
-      const buf = await res.arrayBuffer();
-      data = parsePly(buf);
+    if (input instanceof ArrayBuffer) {
+      buf = new Uint8Array(input);
+    } else {
+      const res = await fetch(input);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      buf = new Uint8Array(await res.arrayBuffer());
     }
+    data = parsePly(buf);
   } catch (e) {
     console.warn('PLY load failed:', e);
   }
