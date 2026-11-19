@@ -123,7 +123,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
 
 def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
     t0 = time.monotonic()
-    url = "https://hel.fi"
+    url = "https://hel.fi/linkedevents/v1/event/"
     items: List[Dict[str, Any]] = []
     try:
         resp = requests.get(url, params={"start": now_hel.strftime("%Y-%m-%d"), "end": (now_hel + timedelta(days=14)).strftime("%Y-%m-%d"), "include": "location", "page_size": 100, "sort": "start_time"}, headers=HEADERS, timeout=15, verify=certifi.where())
