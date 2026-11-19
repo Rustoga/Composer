@@ -18,6 +18,14 @@ let OrbitControls = null;
 
 let loadError = '';
 
+let currentAbortController = null;
+function abortCurrentLoad() {
+  if (currentAbortController) {
+    try { currentAbortController.abort(); } catch (e) {}
+    currentAbortController = null;
+  }
+}
+
 function timeoutPromise(promise, ms, msg) {
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -60,6 +68,7 @@ async function loadEngine() {
 }
 
 const DEFAULT_URL = '/mokki/splats.ply';
+const SPLAT_URL = '/mokki/splats.splat';
 const FOV = 60;
 const NEAR = 0.01;
 const FAR = 2000;
@@ -90,6 +99,35 @@ const btnFile = document.getElementById('btn-file');
 const fileInput = document.getElementById('file-input');
 const timeoutBanner = document.getElementById('timeout-banner');
 const btnTimeoutRetry = document.getElementById('btn-timeout-retry');
+
+const uiStates = {
+  LOADING: 'LOADING',
+  ERROR: 'ERROR',
+  FALLBACK: 'FALLBACK',
+  READY: 'READY',
+};
+
+function setState(state) {
+  loading.classList.remove('visible');
+  errorEl.classList.remove('visible');
+  timeoutBanner.classList.remove('visible');
+  controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+  switch (state) {
+    case uiStates.LOADING:
+      loading.classList.add('visible');
+      break;
+    case uiStates.ERROR:
+      errorEl.classList.add('visible');
+      break;
+    case uiStates.FALLBACK:
+      timeoutBanner.classList.add('visible');
+      controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+      break;
+    case uiStates.READY:
+    default:
+      break;
+  }
+}
 
 const vertexShader = `
 attribute vec3 position;
@@ -125,8 +163,7 @@ void main() {
 function showError(msg) {
   loadError = msg;
   errorMsg.textContent = msg;
-  loading.classList.add('hidden');
-  errorEl.classList.add('visible');
+  setState(uiStates.ERROR);
 }
 
 function hideError() {
@@ -135,7 +172,8 @@ function hideError() {
 
 function start() {
   hideError();
-  loading.classList.remove('hidden');
+  abortCurrentLoad();
+  setState(uiStates.LOADING);
   loadingText.textContent = 'Loading engine&hellip;';
   loadEngine().then((ok) => {
     if (!ok) {
@@ -149,7 +187,6 @@ function start() {
 }
 
 function initScene() {
-  loading.classList.add('hidden');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x060609);
   scene.fog = new THREE.FogExp2(0x060609, 0.006);
@@ -188,8 +225,8 @@ function initScene() {
     reader.onload = () => {
       const buf = reader.result;
       if (!(buf instanceof ArrayBuffer)) return;
-      loadSplats(buf).catch((err) => {
-        console.error('PLY load failed:', err);
+      loadSplats(buf, null, detectFormat(buf)).catch((err) => {
+        console.error('Load failed:', err);
         splatCountEl.textContent = 'Error loading file';
       });
     };
@@ -201,15 +238,22 @@ function initScene() {
     start();
   });
 
-  const t0 = performance.now();
-  const p = loadSplats(DEFAULT_URL);
+  const p = loadSplatsUrlWithFallback(
+    (loaded, total) => {
+      const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
+      const totalMB = total ? (total / (1024 * 1024)).toFixed(2) : '?';
+      loadingText.textContent = `Loading splats… ${loadedMB} / ${totalMB} MB`;
+    }
+  );
   const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
-  watchdog.then(() => {
+  watchdog.then((data) => {
+    currentAbortController = null;
     lastTime = performance.now();
     animate();
   }).catch((err) => {
     console.warn('Splat load fell back:', err.message);
-    timeoutBanner.classList.add('visible');
+    abortCurrentLoad();
+    setState(uiStates.FALLBACK);
     const data = generateFallback();
     buildPoints(data);
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
@@ -280,25 +324,116 @@ function animate(now = 0) {
   renderer.render(scene, camera);
 }
 
-async function loadSplats(input) {
-  let buf;
+function detectFormat(bytes) {
+  // PLY files start with ASCII "ply"; .splat is raw binary with no magic header
+  const header = new TextDecoder().decode(bytes.subarray(0, Math.min(bytes.length, 4)));
+  return header.startsWith('ply') ? 'ply' : 'splat';
+}
+
+function parseSplat(arrayBuffer) {
+  // Zero-copy O(n) parse over 32-byte-per-splat .splat format:
+  //   0-11:  float32[3] position
+  //   12-23: float32[3] scale
+  //   24-27: uint8[4]   RGBA color
+  //   28-31: uint8[4]   rotation quaternion (uint8 mapped [-1,1]->[0,255])
+  const bytes = new Uint8Array(arrayBuffer);
+  const count = Math.floor(bytes.length / 32);
+  if (count === 0 || bytes.length % 32 !== 0) return null;
+
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const opacities = new Float32Array(count);
+
+  const f32 = new Float32Array(arrayBuffer);
+  const u8 = new Uint8Array(arrayBuffer);
+
+  for (let i = 0; i < count; i++) {
+    const base = i * 8;      // 32 bytes / 4 = 8 floats per splat
+    const cbase = i * 32 + 24; // color starts at byte 24 of each splat
+    const pi = i * 3;
+
+    positions[pi] = f32[base];       // x
+    positions[pi + 1] = f32[base + 1]; // y
+    positions[pi + 2] = f32[base + 2]; // z
+
+    const sx = f32[base + 3];
+    const sy = f32[base + 4];
+    const sz = f32[base + 5];
+    sizes[i] = (sx + sy + sz) / 3;
+
+    colors[pi] = u8[cbase] / 255;
+    colors[pi + 1] = u8[cbase + 1] / 255;
+    colors[pi + 2] = u8[cbase + 2] / 255;
+
+    opacities[i] = u8[cbase + 3] / 255; // alpha -> opacity
+  }
+
+  return { count, positions, colors, sizes, opacities };
+}
+
+async function loadSplatsUrlWithFallback(onProgress) {
+  // Try .splat first; fall back to .ply on 404
   try {
+    return await loadSplats(SPLAT_URL, onProgress, 'splat');
+  } catch (e) {
+    if (e.message && e.message.includes('HTTP 404')) {
+      console.log('.splat not found, falling back to .ply');
+      return await loadSplats(DEFAULT_URL, onProgress, 'ply');
+    }
+    throw e;
+  }
+}
+
+async function loadSplats(input, onProgress, formatHint) {
+  abortCurrentLoad();
+  const controller = new AbortController();
+  currentAbortController = controller;
+  const signal = controller.signal;
+  try {
+    let buf;
+    let fmt = formatHint;
     if (input instanceof ArrayBuffer) {
       buf = new Uint8Array(input);
+      if (!fmt) fmt = detectFormat(buf);
+      if (onProgress) onProgress(100, 100);
     } else {
-      const res = await timeoutPromise(fetch(input), FETCH_TIMEOUT_MS, `Fetch timeout: ${input}`);
+      const res = await timeoutPromise(fetch(input, { signal }), FETCH_TIMEOUT_MS, `Fetch timeout: ${input}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      buf = new Uint8Array(await res.arrayBuffer());
+      const total = Number(res.headers.get('content-length') || 0);
+      const reader = res.body.getReader();
+      const chunks = [];
+      let loaded = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.byteLength;
+        if (onProgress) onProgress(loaded, total);
+      }
+      buf = new Uint8Array(loaded);
+      let off = 0;
+      for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
+      if (!fmt) fmt = detectFormat(buf);
     }
-    const data = parsePly(buf);
+    currentAbortController = null;
+
+    let data;
+    if (fmt === 'splat') {
+      data = parseSplat(buf);
+    } else {
+      data = parsePly(buf);
+    }
     if (!data || data.count === 0) throw new Error('empty splat data');
     buildPoints(data);
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
     controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
     resetView();
+    setState(uiStates.READY);
     return data;
   } catch (e) {
-    console.warn('PLY load failed:', e);
+    currentAbortController = null;
+    console.warn('Load failed:', e);
     throw e;
   }
 }

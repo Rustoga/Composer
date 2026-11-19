@@ -19,16 +19,16 @@
       .btn { pointer-events: auto; padding: 0.45rem 0.95rem; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); color: #eef2ff; font-family: inherit; font-size: 0.75rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1rem; margin: 0.25rem 0.35rem; }
       .btn:hover { border-color: #fff; background: rgba(255,255,255,0.14); }
       .btn.active { background: rgba(255,255,255,0.2); border-color: #fff; }
-      #loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0b0b0f; z-index: 20; transition: opacity 0.4s ease; }
-      #loading.hidden { opacity: 0; pointer-events: none; }
+      #loading { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: #0b0b0f; z-index: 20; transition: opacity 0.4s ease; }
+      #loading.visible { display: flex; }
       #error { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(11,11,15,0.92); z-index: 30; text-align: center; padding: 1rem; }
       #error.visible { display: flex; }
+      #timeout-banner { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: #ff6b6b; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; display: none; pointer-events: auto; }
+      #timeout-banner.visible { display: block; }
       .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.18); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
       @keyframes spin { to { transform: rotate(360deg); } }
       #splat-count { font-size: 0.8rem; opacity: 0.6; margin-top: 0.25rem; }
       .err-msg { color: #ff6b6b; margin: 0.5rem 0; font-size: 0.85rem; }
-      .timeout-banner { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: #ff6b6b; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; display: none; pointer-events: auto; }
-      .timeout-banner.visible { display: block; }
     </style>
 </head>
 <body>
@@ -43,7 +43,7 @@
             <button class="btn" id="btn-reset">Reset view</button>
             <button class="btn" id="btn-reload" style="border-color:#ff6b6b;color:#ff6b6b;">Reload</button>
             <button class="btn" id="btn-file">Open .ply</button>
-            <input type="file" id="file-input" accept=".ply" style="display: none;">
+            <input type="file" id="file-input" accept=".ply,.splat" style="display: none;">
         </div>
     </div>
     <div id="loading"><div class="spinner"></div><div id="loading-text">Loading engine&hellip;</div></div>
