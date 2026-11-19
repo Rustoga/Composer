@@ -248,25 +248,38 @@ function fetchGlb(url, onProgress) {
         const reader = res.body.getReader();
         const chunks = [];
         let loaded = 0;
-        return new Promise((resolveRead, rejectRead) => {
-          function pump() {
-            reader.read().then(({ done, value }) => {
-              if (done) {
-                const buf = new Uint8Array(loaded);
-                let off = 0;
-                for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
+    return new Promise((resolveRead, rejectRead) => {
+      function pump() {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            const buf = new Uint8Array(loaded);
+            let off = 0;
+            for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
+            // Detect Git LFS pointer file (GitHub Pages may serve pointer instead of binary)
+            const header = new TextDecoder().decode(buf.subarray(0, Math.min(buf.length, 64)));
+            if (header.startsWith('version https://git-lfs')) {
+              const mediaUrl = 'https://media.githubusercontent.com/media/Rustoga/Composer/main/mokki/cabin.glb';
+              fetch(mediaUrl).then((res2) => {
+                if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+                return res2.arrayBuffer();
+              }).then((buf2) => {
                 currentAbortController = null;
-                resolveRead(buf);
-              } else {
-                chunks.push(value);
-                loaded += value.byteLength;
-                if (onProgress) onProgress(loaded, total);
-                pump();
-              }
-            }).catch(rejectRead);
+                resolveRead(new Uint8Array(buf2));
+              }).catch(rejectRead);
+            } else {
+              currentAbortController = null;
+              resolveRead(buf);
+            }
+          } else {
+            chunks.push(value);
+            loaded += value.byteLength;
+            if (onProgress) onProgress(loaded, total);
+            pump();
           }
-          pump();
-        });
+        }).catch(rejectRead);
+      }
+      pump();
+    });
       })
       .then((buf) => {
         // Parse GLB with GLTFLoader (uncompressed glTF 2.0 — no extensions)
