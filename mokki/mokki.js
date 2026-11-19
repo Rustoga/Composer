@@ -30,7 +30,7 @@ window.onunhandledrejection = (event) => {
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-const GLB_URL = '/mokki/Scaniverse%202026-05-31%20145549.glb';
+const GLB_URL = '/mokki/cabin.glb';
 const DEFAULT_URL = '/mokki/splats.ply';
 const SPLAT_URL = '/mokki/splats.splat';
 const FOV = 60;
@@ -283,7 +283,7 @@ function fetchGlb(url, onProgress) {
 // ---------------------------------------------------------------------------
 function initScene() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x060609);
+  scene.background = new THREE.Color(0x1a222d);
   scene.fog = new THREE.FogExp2(0x060609, 0.006);
 
   camera = new THREE.PerspectiveCamera(FOV, container.clientWidth / container.clientHeight, NEAR, FAR);
@@ -426,23 +426,47 @@ function buildGltf(gltf) {
   gltfScene = gltf.scene;
   scene.add(gltfScene);
 
-  // Center the cabin: compute bounding box, ground at y=0, center horizontally
-  const box = new THREE.Box3().setFromObject(gltfScene);
-  box.getCenter(center);
+  // Normalize materials: double-sided so interior/exterior walls never vanish
+  let meshCount = 0;
+  gltfScene.traverse((child) => {
+    if (child.isMesh) {
+      meshCount++;
+      child.frustumCulled = false;
+      if (child.material) {
+        child.material.side = THREE.DoubleSide;
+        child.material.needsUpdate = true;
+      }
+    }
+  });
+
+  // Update world matrices and compute exact bounding box
+  gltf.scene.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(gltf.scene);
   const size = box.getSize(new THREE.Vector3());
-  radius = Math.max(size.x, size.y, size.z) * 0.6;
-  if (radius < 2) radius = 2;
+  const center3 = box.getCenter(new THREE.Vector3());
 
-  // Move cabin so ground sits at y=0 and horizontally centered at origin
-  gltfScene.position.set(-center.x, -box.min.y, -center.z);
-  gltfScene.updateMatrixWorld();
+  // Re-center so geometric center sits at (0, 0, 0)
+  gltf.scene.position.sub(center3);
+  gltf.scene.updateMatrixWorld(true);
 
-  // Recompute center after repositioning
-  const box2 = new THREE.Box3().setFromObject(gltfScene);
-  box2.getCenter(center);
+  // Normalize scale so maxDim === 20 units
+  const box2 = new THREE.Box3().setFromObject(gltf.scene);
   const s2 = box2.getSize(new THREE.Vector3());
-  radius = Math.max(s2.x, s2.y, s2.z) * 0.6;
+  const maxDim = Math.max(s2.x, s2.y, s2.z);
+  const scale = maxDim > 0 ? 20 / maxDim : 1;
+  gltf.scene.scale.setScalar(scale);
+  gltf.scene.updateMatrixWorld(true);
+
+  // Recompute final box for camera framing
+  const box3 = new THREE.Box3().setFromObject(gltf.scene);
+  box3.getCenter(center);
+  const size3 = box3.getSize(new THREE.Vector3());
+  radius = Math.max(size3.x, size3.y, size3.z) * 0.6;
   if (radius < 2) radius = 2;
+
+  // Status: confirm mesh loaded with count and dimensions
+  splatCountEl.textContent = `Splats: ${meshCount} meshes · size=${size3.toArray().map((n) => n.toFixed(2))}`;
+  controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
 
   resetView();
 }
@@ -465,17 +489,13 @@ function onResize() {
 // ---------------------------------------------------------------------------
 function resetView() {
   if (renderMode === 'gltf' && gltfScene) {
-    const box = new THREE.Box3().setFromObject(gltfScene);
-    box.getCenter(center);
-    const size = box.getSize(new THREE.Vector3());
-    radius = Math.max(size.x, size.y, size.z) * 0.6;
-    if (radius < 2) radius = 2;
-    // Eye-level camera: ~1.6m above ground, looking at cabin center
-    const eyeLevel = box.min.y + 1.6;
-    const camDist = radius * 1.5;
-    controls.target.copy(center);
-    camera.position.set(center.x, eyeLevel, center.z + camDist);
-    camera.lookAt(center);
+    // Guaranteed framing: target exact center, elevated 3/4 establishing angle
+    controls.target.set(0, 0, 0);
+    camera.position.set(12, 6, 12);
+    camera.near = 0.05;
+    camera.far = 500;
+    camera.updateProjectionMatrix();
+    camera.lookAt(0, 0, 0);
     controls.update();
     return;
   }
