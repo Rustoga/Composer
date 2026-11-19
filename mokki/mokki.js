@@ -2,42 +2,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+// Boot marker so the inline watchdog knows mokki.js executed
 window.__MOKKI_BOOTED__ = true;
-document.body.style.background = '#1a222d';
-const _bootHint = document.getElementById('control-hint');
-if (_bootHint) _bootHint.textContent = 'JS booted…';
-
-// ---------------------------------------------------------------------------
-// Top-level error trapping: any startup, shader, or unhandled rejection failure
-// immediately transitions to the ERROR state with the exact message on screen.
-// ---------------------------------------------------------------------------
-function setErrorFromEvent(msg) {
-  try {
-    showError(msg);
-  } catch (e) {
-    // showError may not be defined yet if this fires before module init
-    console.error('FATAL:', msg);
-  }
-}
-
-window.onerror = (message, source, lineno, colno, error) => {
-  const msg = error ? error.message || String(error) : String(message);
-  setErrorFromEvent('Uncaught error: ' + msg);
-  return true;
-};
-
-window.onunhandledrejection = (event) => {
-  const reason = event.reason || {};
-  const msg = reason.message || reason.error || String(reason);
-  setErrorFromEvent('Unhandled rejection: ' + msg);
-};
+document.body.style.background = '#d8e2e8';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 const GLB_URL = '/mokki/cabin.glb';
-const DEFAULT_URL = '/mokki/splats.ply';
-const SPLAT_URL = '/mokki/splats.splat';
+const SPLAT_URL = '/mokki/cabin.splat';
+const SPZ_URL = '/mokki/cabin.spz';
+const PLY_URL = '/mokki/cabin.ply';
 const FOV = 60;
 const NEAR = 0.01;
 const FAR = 2000;
@@ -46,12 +21,18 @@ const AUTO_SPEED = 0.5;
 
 const LOAD_TIMEOUT_MS = 60000;
 const FETCH_TIMEOUT_MS = 60000;
-const ESTIMATED_TOTAL_MB = 30;
+
+// On-demand render settings
+const RENDER_IDLE_MS = 450;
+
+// Camera ease duration (seconds)
+const CAM_EASE_DURATION = 1.4;
 
 // ---------------------------------------------------------------------------
 // Globals
 // ---------------------------------------------------------------------------
 let scene, camera, renderer, controls, splats, gltfScene;
+let sparkMesh = null;
 let center = new THREE.Vector3();
 let radius = 10;
 let autoFly = false;
@@ -59,6 +40,13 @@ let autoAngle = 0;
 let autoHeight = 0;
 const keys = {};
 let lastTime = 0;
+
+// On-demand render state
+let needsRender = true;
+let lastInteraction = 0;
+
+// Camera ease state
+let camEase = null; // { startPos, endPos, startTarget, endTarget, t, duration }
 
 // Progressive LOD + depth sort state (splats only)
 let activeCount = 60000;
@@ -69,9 +57,6 @@ let lastCameraPos = null;
 let lastCameraLook = null;
 let frameCount = 0;
 let loadError = '';
-
-// Render mode: 'splat' | 'gltf' | null
-let renderMode = null;
 
 let currentAbortController = null;
 function abortCurrentLoad() {
@@ -102,13 +87,17 @@ const splatCountEl = document.getElementById('splat-count');
 const controlHintEl = document.getElementById('control-hint');
 const btnAutoFly = document.getElementById('btn-autofly');
 const btnFlipAxis = document.getElementById('btn-flip-axis');
-const btnReset = document.getElementById('btn-reset');
+const btnSavePhoto = document.getElementById('btn-save-photo');
 const btnReload = document.getElementById('btn-reload');
 const btnErrorRetry = document.getElementById('btn-error-retry');
 const btnFile = document.getElementById('btn-file');
 const fileInput = document.getElementById('file-input');
 const timeoutBanner = document.getElementById('timeout-banner');
 const btnTimeoutRetry = document.getElementById('btn-timeout-retry');
+const pillYard = document.getElementById('pill-yard');
+const pillFront = document.getElementById('pill-front');
+const pillSide = document.getElementById('pill-side');
+const pillBird = document.getElementById('pill-bird');
 
 const uiStates = {
   LOADING: 'LOADING',
@@ -154,8 +143,14 @@ function hideError() {
   if (errorEl) errorEl.classList.remove('visible');
 }
 
+// Mark that user interaction happened — keeps rendering alive for RENDER_IDLE_MS
+function markInteraction() {
+  lastInteraction = performance.now();
+  needsRender = true;
+}
+
 // ---------------------------------------------------------------------------
-// Shaders (splat renderer)
+// Shaders (fallback splat renderer)
 // ---------------------------------------------------------------------------
 const vertexShader = `
 attribute float size;
@@ -167,7 +162,6 @@ varying float vOpacity;
 void main() {
   vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mvPosition;
-  // Perspective-correct point size in screen pixels
   float screenSize = size * uPointScale * (uPixelRatio * 220.0 / -mvPosition.z);
   gl_PointSize = clamp(screenSize, 2.0, 24.0);
   vColor = color;
@@ -182,12 +176,45 @@ varying float vOpacity;
 void main() {
   float r2 = dot(gl_PointCoord - vec2(0.5), gl_PointCoord - vec2(0.5));
   if (r2 > 1.0) discard;
-  // Soft circular Gaussian falloff: smooth blend between adjacent splats
   float alpha = exp(-3.0 * r2) * vOpacity * uOpacity;
   if (alpha < 0.03) discard;
   gl_FragColor = vec4(vColor, alpha);
 }
 `;
+
+// ---------------------------------------------------------------------------
+// Spark (2026 Gaussian Splatting) loader
+// ---------------------------------------------------------------------------
+let SparkMesh = null;
+let sparkTried = false;
+
+async function loadSpark() {
+  if (sparkTried) return SparkMesh;
+  sparkTried = true;
+  try {
+    const mod = await import('@sparkjsdev/spark');
+    SparkMesh = mod.SplatMesh || mod.SparkMeshLoader || mod.Spark || mod.default || null;
+  } catch (e) {
+    console.warn('@sparkjsdev/spark not available:', e.message);
+  }
+  return SparkMesh;
+}
+
+async function loadSparkSplat(url) {
+  const Cls = await loadSpark();
+  if (!Cls) throw new Error('@sparkjsdev/spark module not available');
+  const inst = new Cls();
+  // Try common method names
+  if (typeof inst.load === 'function') await inst.load(url);
+  else if (typeof inst.loadSplat === 'function') await inst.loadSplat(url);
+  else if (typeof inst.loadSplatFile === 'function') await inst.loadSplatFile(url);
+  else throw new Error('Spark mesh has no load method');
+  // Attach to scene
+  if (inst.scene) scene.add(inst.scene);
+  else if (inst.mesh) scene.add(inst.mesh);
+  else if (inst.add) inst.add(scene);
+  return inst;
+}
 
 // ---------------------------------------------------------------------------
 // Start
@@ -204,8 +231,7 @@ function start() {
     return;
   }
   setProgress(15, '15% — Engine ready, connecting to assets…');
-  // Try .glb first, then .splat, then .ply
-  loadGlbWithFallback(
+  loadAssetUrlWithFallback(
     (loaded, total) => {
       const pct = total > 0 ? Math.min(15 + Math.floor((loaded / total) * 75), 89) : 15;
       const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
@@ -215,32 +241,67 @@ function start() {
   );
 }
 
-function loadGlbWithFallback(onProgress) {
-  // Try .glb first
-  fetchGlb(GLB_URL, onProgress).then((gltf) => {
-    currentAbortController = null;
-    renderMode = 'gltf';
-    gltfScene = gltf.scene;
-    buildGltf(gltf);
-    setProgress(100, '100% — Ready');
-    setState(uiStates.READY);
+function loadAssetUrlWithFallback(onProgress) {
+  // Priority: .spz → .splat → .glb → .ply
+  loadSPZ(SPZ_URL, onProgress)
+    .then((inst) => { sparkMesh = inst; renderMode = 'spark'; finishLoad(); })
+    .catch((e1) => {
+      console.warn('SPZ load failed:', e1.message);
+      loadSplat(SPLAT_URL, onProgress)
+        .then((data) => { renderMode = 'splat'; finishSplat(data); })
+        .catch((e2) => {
+          console.warn('SPLAT load failed:', e2.message);
+          loadGlb(GLB_URL, onProgress)
+            .then((gltf) => { renderMode = 'gltf'; buildGltf(gltf); finishLoad(); })
+            .catch((e3) => {
+              console.warn('GLB load failed:', e3.message);
+              loadPly(PLY_URL, onProgress)
+                .then((data) => { renderMode = 'ply'; finishSplat(data); })
+                .catch((e4) => {
+                  console.warn('PLY load failed:', e4.message);
+                  setState(uiStates.ERROR);
+                  showError('All asset loads failed: ' + (e4.message || String(e4)));
+                });
+            });
+        });
+    });
+}
+
+function finishLoad() {
+  currentAbortController = null;
+  setProgress(92, '92% — Parsing & uploading assets to GPU…');
+  // Yield one animation frame so the UI paints before heavy GPU upload
+  requestAnimationFrame(() => {
     lastTime = performance.now();
     animate();
-  }).catch((err) => {
-    // DO NOT silently fall back — show the exact error
-    abortCurrentLoad();
-    setState(uiStates.ERROR);
-    showError('GLB load failed: ' + (err.message || String(err)));
   });
 }
 
-function fetchGlb(url, onProgress) {
+function finishSplat(data) {
+  currentAbortController = null;
+  buildPoints(data);
+  splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
+  controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+  resetView();
+  activeCount = Math.min(60000, data.count);
+  frameCount = 0;
+  lastCameraPos = null;
+  lastCameraLook = null;
+  setProgress(100, '100% — Ready');
+  setState(uiStates.READY);
+  lastTime = performance.now();
+  animate();
+}
+
+// ---------------------------------------------------------------------------
+// Asset fetchers (with progress + AbortController)
+// ---------------------------------------------------------------------------
+function fetchBytes(url, onProgress) {
   return new Promise((resolve, reject) => {
     abortCurrentLoad();
     const controller = new AbortController();
     currentAbortController = controller;
     const signal = controller.signal;
-
     fetch(url, { signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -255,7 +316,7 @@ function fetchGlb(url, onProgress) {
                 const buf = new Uint8Array(loaded);
                 let off = 0;
                 for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
-                // Detect Git LFS pointer file (GitHub Pages may serve pointer instead of binary)
+                // Detect Git LFS pointer file
                 const header = new TextDecoder().decode(buf.subarray(0, Math.min(buf.length, 64)));
                 if (header.startsWith('version https://git-lfs')) {
                   const mediaUrl = 'https://media.githubusercontent.com/media/Rustoga/Composer/main/mokki/cabin.glb';
@@ -264,11 +325,10 @@ function fetchGlb(url, onProgress) {
                     return res2.arrayBuffer();
                   }).then((buf2) => {
                     currentAbortController = null;
-                    // Ensure we pass a proper ArrayBuffer, not Uint8Array
                     const ab = buf2 instanceof ArrayBuffer ? buf2 : buf2.buffer.slice(buf2.byteOffset, buf2.byteOffset + buf2.byteLength);
                     const dv = new DataView(ab);
                     const magic = dv.getUint32(0, true);
-                    if (magic !== 0x46546C67) { // "glTF"
+                    if (magic !== 0x46546C67) {
                       const first16 = Array.from(new Uint8Array(ab.slice(0, 16))).map((b) => b.toString(16).padStart(2, '0')).join(' ');
                       rejectRead(new Error('GLTFLoader: bad magic 0x' + magic.toString(16) + ', first 16 bytes: ' + first16));
                     } else {
@@ -277,11 +337,10 @@ function fetchGlb(url, onProgress) {
                   }).catch(rejectRead);
                 } else {
                   currentAbortController = null;
-                  // Convert Uint8Array to proper ArrayBuffer (no shared backing)
                   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
                   const dv = new DataView(ab);
                   const magic = dv.getUint32(0, true);
-                  if (magic !== 0x46546C67) { // "glTF"
+                  if (magic !== 0x46546C67) {
                     const first16 = Array.from(new Uint8Array(ab.slice(0, 16))).map((b) => b.toString(16).padStart(2, '0')).join(' ');
                     rejectRead(new Error('GLTFLoader: bad magic 0x' + magic.toString(16) + ', first 16 bytes: ' + first16));
                   } else {
@@ -300,19 +359,15 @@ function fetchGlb(url, onProgress) {
         });
       })
       .then((ab) => {
-        // Parse GLB with GLTFLoader (uncompressed glTF 2.0 — no extensions)
-        // CRITICAL: loader.parse expects an ArrayBuffer, NOT Uint8Array
-        const loader = new GLTFLoader();
-        loader.parse(ab, '', (gltf) => {
-          const root = gltf?.scene || gltf?.scenes?.[0];
-          if (!root) {
-            reject(new Error('GLTF parsed but contains no scene nodes'));
-            return;
-          }
-          resolve(gltf);
-        }, (err) => {
-          reject(new Error('GLTFLoader parse failed: ' + (err.message || String(err))));
-        });
+        // Verify magic
+        const dv = new DataView(ab);
+        const magic = dv.getUint32(0, true);
+        if (magic !== 0x46546C67) {
+          const first16 = Array.from(new Uint8Array(ab.slice(0, 16))).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+          reject(new Error('Bad magic 0x' + magic.toString(16) + ', first 16 bytes: ' + first16));
+        } else {
+          resolve(ab);
+        }
       })
       .catch((err) => {
         currentAbortController = null;
@@ -321,25 +376,85 @@ function fetchGlb(url, onProgress) {
   });
 }
 
+function loadSPZ(url, onProgress) {
+  return fetchBytes(url, onProgress).then((ab) => loadSparkSplatFromBuffer(ab));
+}
+
+function loadSplat(url, onProgress) {
+  return fetchBytes(url, onProgress).then((ab) => parseSplat(ab));
+}
+
+function loadPly(url, onProgress) {
+  return fetchBytes(url, onProgress).then((ab) => parsePly(ab));
+}
+
+function loadGlb(url, onProgress) {
+  return fetchBytes(url, onProgress).then((ab) => parseGlb(ab));
+}
+
+function loadSparkSplatFromBuffer(ab) {
+  return new Promise((resolve, reject) => {
+    loadSpark().then((Cls) => {
+      if (!Cls) reject(new Error('@sparkjsdev/spark not available'));
+      else {
+        // Spark may accept ArrayBuffer or URL; try loading from buffer via blob URL
+        const blob = new Blob([ab], { type: 'application/octet-stream' });
+        const blobUrl = URL.createObjectURL(blob);
+        const inst = new Cls();
+        const p = typeof inst.load === 'function' ? inst.load(blobUrl)
+          : typeof inst.loadSplat === 'function' ? inst.loadSplat(blobUrl)
+          : Promise.reject(new Error('No load method'));
+        p.then(() => {
+          URL.revokeObjectURL(blobUrl);
+          if (inst.scene) scene.add(inst.scene);
+          else if (inst.mesh) scene.add(inst.mesh);
+          else if (typeof inst.add === 'function') inst.add(scene);
+          resolve(inst);
+        }).catch((e) => {
+          URL.revokeObjectURL(blobUrl);
+          reject(e);
+        });
+      }
+    }).catch(reject);
+  });
+}
+
+function parseGlb(ab) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.parse(ab, '', (gltf) => {
+      const root = gltf?.scene || gltf?.scenes?.[0];
+      if (!root) reject(new Error('GLTF parsed but contains no scene nodes'));
+      else resolve(gltf);
+    }, (err) => {
+      reject(new Error('GLTFLoader parse failed: ' + (err.message || String(err))));
+    });
+  });
+}
+
+function loadGlbFromBuffer(buf) {
+  return parseGlb(buf);
+}
+
 // ---------------------------------------------------------------------------
 // Scene init
 // ---------------------------------------------------------------------------
 function initScene() {
   scene = new THREE.Scene();
+  // Warm Nordic sky gradient
   scene.background = new THREE.Color(0x1a222d);
   scene.fog = new THREE.FogExp2(0x060609, 0.006);
 
   camera = new THREE.PerspectiveCamera(FOV, container.clientWidth / container.clientHeight, NEAR, FAR);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setClearColor(0x1a222d, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
   container.appendChild(renderer.domElement);
 
-  // Hook Three.js r170 shader debug to surface GLSL compile/link errors verbatim
   renderer.debug.checkShaderErrors = true;
   renderer.debug.onShaderError = (gl, program, glVertexShader, glFragmentShader) => {
     const vsLog = gl.getShaderInfoLog(glVertexShader) || '(none)';
@@ -348,7 +463,7 @@ function initScene() {
     showError('GLSL shader error:\\nVERTEX: ' + vsLog + '\\nFRAGMENT: ' + fsLog + '\\nPROGRAM: ' + progLog);
   };
 
-  // Lighting for Scaniverse .glb (baked photographic textures)
+  // Lighting for .glb
   const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
   scene.add(ambientLight);
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x776655, 1.0);
@@ -359,19 +474,28 @@ function initScene() {
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
+  controls.dampingFactor = 0.06;
   controls.minDistance = 0.5;
   controls.maxDistance = 4000;
   controls.autoRotate = false;
+  controls.maxPolarAngle = Math.PI * 0.52;
 
-  window.addEventListener('keydown', (e) => { keys[e.code] = true; });
-  window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+  window.addEventListener('keydown', (e) => { keys[e.code] = true; markInteraction(); });
+  window.addEventListener('keyup', (e) => { keys[e.code] = false; markInteraction(); });
   window.addEventListener('resize', onResize);
+  window.addEventListener('mousedown', markInteraction);
+  window.addEventListener('mousemove', markInteraction);
+  window.addEventListener('touchstart', markInteraction);
+  window.addEventListener('touchmove', markInteraction);
+
+  // Controls change → render
+  controls.addEventListener('change', () => { needsRender = true; });
 
   btnAutoFly.addEventListener('click', () => {
     autoFly = !autoFly;
     if (btnAutoFly) btnAutoFly.classList.toggle('active', autoFly);
     controls.enabled = !autoFly;
+    markInteraction();
   });
   let flipUpAxis = false;
   btnFlipAxis.addEventListener('click', () => {
@@ -407,10 +531,11 @@ function initScene() {
       splats.geometry.computeBoundingSphere();
       resetView();
     }
+    markInteraction();
   });
-  btnReset.addEventListener('click', resetView);
-  if (btnReload) btnReload.addEventListener('click', () => start());
-  if (btnErrorRetry) btnErrorRetry.addEventListener('click', () => start());
+  btnSavePhoto.addEventListener('click', savePhoto);
+  btnReload.addEventListener('click', () => start());
+  btnErrorRetry.addEventListener('click', () => start());
   if (btnFile) btnFile.addEventListener('click', () => fileInput.click());
   if (fileInput) fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -433,6 +558,15 @@ function initScene() {
           console.error('GLB load failed:', err);
           if (splatCountEl) splatCountEl.textContent = 'Error loading file';
         });
+      } else if (fmt === 'spz') {
+        loadSparkSplatFromBuffer(buf).then((inst) => {
+          sparkMesh = inst;
+          renderMode = 'spark';
+          finishLoad();
+        }).catch((err) => {
+          console.error('SPZ load failed:', err);
+          if (splatCountEl) splatCountEl.textContent = 'Error loading file';
+        });
       } else {
         loadSplats(buf, null, fmt).catch((err) => {
           console.error('Load failed:', err);
@@ -447,108 +581,64 @@ function initScene() {
     if (timeoutBanner) timeoutBanner.classList.remove('visible');
     start();
   });
-}
 
-function loadGlbFromBuffer(buf) {
-  return new Promise((resolve, reject) => {
-    const loader = new GLTFLoader();
-    loader.parse(buf, '', (gltf) => {
-      const root = gltf?.scene || gltf?.scenes?.[0];
-      if (!root) {
-        reject(new Error('GLTF parsed but contains no scene nodes'));
-        return;
-      }
-      resolve(gltf);
-    }, (err) => {
-      reject(err);
-    });
-  });
+  // Camera preset pills
+  if (pillYard) pillYard.addEventListener('click', () => setPillActive(pillYard, camPresetYard));
+  if (pillFront) pillFront.addEventListener('click', () => setPillActive(pillFront, camPresetFront));
+  if (pillSide) pillSide.addEventListener('click', () => setPillActive(pillSide, camPresetSide));
+  if (pillBird) pillBird.addEventListener('click', () => setPillActive(pillBird, camPresetBird));
 }
 
 // ---------------------------------------------------------------------------
-// GLTF scene setup
+// Camera presets (Memory Postcards)
 // ---------------------------------------------------------------------------
-function buildGltf(gltf) {
-  // Safely resolve root scene from GLTF object
-  const root = gltf?.scene || gltf?.scenes?.[0];
-  if (!root) {
-    throw new Error('GLTF parsed but contains no scene nodes');
-  }
-
-  if (gltfScene) {
-    scene.remove(gltfScene);
-  }
-  gltfScene = root;
-  scene.add(root);
-
-  // Normalize materials: MeshBasicMaterial for guaranteed visibility
-  // (Scaniverse baked lighting into textures/vertex colors; MeshStandardMaterial
-  // renders pitch-black without an HDR environment map)
-  let meshCount = 0;
-  let triCount = 0;
-  root.traverse((child) => {
-    if (child.isMesh) {
-      meshCount++;
-      child.frustumCulled = false;
-
-      // Count triangles from index buffer or attribute count
-      const geo = child.geometry;
-      if (geo.index) {
-        triCount += geo.index.count / 3;
-      } else if (geo.attributes.position) {
-        triCount += geo.attributes.position.count / 3;
-      }
-
-      // Replace material with MeshBasicMaterial for crisp, unlit rendering
-      if (child.material) {
-        const oldMat = child.material;
-        child.material = new THREE.MeshBasicMaterial({
-          map: oldMat.map || null,
-          vertexColors: (geo.attributes.color) ? true : false,
-          side: THREE.DoubleSide,
-        });
-        child.material.needsUpdate = true;
-      }
-    }
+function setPillActive(activeEl, preset) {
+  [pillYard, pillFront, pillSide, pillBird].forEach((p) => {
+    if (p) p.classList.remove('active');
   });
+  if (activeEl) activeEl.classList.add('active');
+  startCameraEase(preset.pos, preset.target);
+  markInteraction();
+}
 
-  // Update world matrices and compute bounding box
-  root.updateMatrixWorld(true);
+const camPresetYard = { pos: [0, 1.6, 12], target: [0, 1.6, 0] };
+const camPresetFront = { pos: [0, 1.6, -10], target: [0, 1.6, 0] };
+const camPresetSide = { pos: [-10, 1.6, 0], target: [0, 1.6, 0] };
+const camPresetBird = { pos: [0, 14, 6], target: [0, 1.6, 0] };
 
-  // Step 1: Compute raw box and max dimension
-  const box1 = new THREE.Box3().setFromObject(root);
-  const size1 = box1.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size1.x, size1.y, size1.z);
+function startCameraEase(endPos, endTarget) {
+  camEase = {
+    startPos: camera.position.clone(),
+    endPos: new THREE.Vector3(endPos[0], endPos[1], endPos[2]),
+    startTarget: controls.target.clone(),
+    endTarget: new THREE.Vector3(endTarget[0], endTarget[1], endTarget[2]),
+    t: 0,
+    duration: CAM_EASE_DURATION,
+  };
+}
 
-  // Step 2: Apply uniform scale FIRST (before centering)
-  const s = maxDim > 0 ? 20 / maxDim : 1;
-  root.scale.setScalar(s);
-  root.updateMatrixWorld(true);
+function updateCameraEase(dt) {
+  if (!camEase) return false;
+  camEase.t += dt / camEase.duration;
+  if (camEase.t >= 1) {
+    camEase.t = 1;
+  }
+  const et = easeInOutCubic(camEase.t);
+  camera.position.lerpVectors(camEase.startPos, camEase.endPos, et);
+  controls.target.lerpVectors(camEase.startTarget, camEase.endTarget, et);
+  camera.lookAt(controls.target);
+  controls.update();
+  if (camEase.t >= 1) {
+    camEase = null;
+    needsRender = true;
+    return false;
+  }
+  needsRender = true;
+  return true;
+}
 
-  // Step 3: Recompute box after scaling, then subtract center
-  const box2 = new THREE.Box3().setFromObject(root);
-  const center2 = box2.getCenter(new THREE.Vector3());
-  root.position.sub(center2);
-  root.updateMatrixWorld(true);
-
-  // Recompute final box for camera framing
-  const box3 = new THREE.Box3().setFromObject(root);
-  box3.getCenter(center);
-  const size3 = box3.getSize(new THREE.Vector3());
-  radius = Math.max(size3.x, size3.y, size3.z) * 0.6;
-  if (radius < 2) radius = 2;
-
-  // Add a subtle ground grid at the bottom of the bounding box
-  const grid = new THREE.GridHelper(30, 30, 0x334455, 0x223344);
-  grid.position.y = box3.min.y;
-  scene.add(grid);
-
-  // Status: mesh count, triangle count, bounding box dimensions
-  const dims = size3.toArray().map((n) => n.toFixed(2));
-  if (splatCountEl) splatCountEl.textContent = `GLB: ${meshCount} mesh${meshCount !== 1 ? 'es' : ''}, ${Math.round(triCount)} tris, box=[${dims.join(', ')}]`;
-  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • GLB loaded ✓';
-
-  resetView();
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 // ---------------------------------------------------------------------------
@@ -560,16 +650,16 @@ function onResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(container.clientWidth, container.clientHeight);
   if (splats && splats.material && splats.material.uniforms.uPixelRatio) {
-    splats.material.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+    splats.material.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 1.5);
   }
+  needsRender = true;
 }
 
 // ---------------------------------------------------------------------------
-// Reset view (works for both splat and gltf modes)
+// Reset view
 // ---------------------------------------------------------------------------
 function resetView() {
   if (renderMode === 'gltf' && gltfScene) {
-    // Guaranteed framing using bounding sphere
     const box = new THREE.Box3().setFromObject(gltfScene);
     const sphere = new THREE.Sphere();
     box.getBoundingSphere(sphere);
@@ -581,6 +671,7 @@ function resetView() {
     camera.updateProjectionMatrix();
     camera.lookAt(0, 0, 0);
     controls.update();
+    needsRender = true;
     return;
   }
   if (!splats) return;
@@ -595,38 +686,79 @@ function resetView() {
   camera.position.set(center.x, eyeLevel, center.z + camDist);
   camera.lookAt(center);
   controls.update();
+  needsRender = true;
 }
 
 // ---------------------------------------------------------------------------
 // Fly controls
 // ---------------------------------------------------------------------------
 function updateFly(dt) {
-  if (!controls.enabled || autoFly || !camera) return;
+  if (!controls.enabled || autoFly || !camera) return false;
+  let moved = false;
   const move = new THREE.Vector3();
   camera.getWorldDirection(move);
   move.y = 0;
   move.normalize();
   const right = new THREE.Vector3().crossVectors(camera.up, move).normalize();
   const speed = FLY_SPEED * dt;
-  if (keys['KeyW'] || keys['ArrowUp']) camera.position.addScaledVector(move, speed);
-  if (keys['KeyS'] || keys['ArrowDown']) camera.position.addScaledVector(move, -speed);
-  if (keys['KeyD'] || keys['ArrowRight']) camera.position.addScaledVector(right, speed);
-  if (keys['KeyA'] || keys['ArrowLeft']) camera.position.addScaledVector(right, -speed);
-  if (keys['Space']) camera.position.y += speed;
-  if (keys['ShiftLeft'] || keys['ShiftRight']) camera.position.y -= speed;
-  controls.update();
+  if (keys['KeyW'] || keys['ArrowUp']) { camera.position.addScaledVector(move, speed); moved = true; }
+  if (keys['KeyS'] || keys['ArrowDown']) { camera.position.addScaledVector(move, -speed); moved = true; }
+  if (keys['KeyD'] || keys['ArrowRight']) { camera.position.addScaledVector(right, speed); moved = true; }
+  if (keys['KeyA'] || keys['ArrowLeft']) { camera.position.addScaledVector(right, -speed); moved = true; }
+  if (keys['Space']) { camera.position.y += speed; moved = true; }
+  if (keys['ShiftLeft'] || keys['ShiftRight']) { camera.position.y -= speed; moved = true; }
+  if (moved) controls.update();
+  return moved;
 }
 
 function updateAutoFly(dt) {
-  if (!autoFly || !camera) return;
+  if (!autoFly || !camera) return false;
   autoAngle += AUTO_SPEED * dt;
   const x = center.x + Math.cos(autoAngle) * radius;
   const z = center.z + Math.sin(autoAngle) * radius;
   camera.position.set(x, autoHeight, z);
   camera.lookAt(center);
   controls.update();
+  needsRender = true;
+  return true;
 }
 
+// ---------------------------------------------------------------------------
+// Save Photo
+// ---------------------------------------------------------------------------
+function savePhoto() {
+  const hudTop = document.getElementById('hud-top');
+  const hudBottom = document.getElementById('hud-bottom');
+  const flash = document.getElementById('hud-save-flash');
+  if (hudTop) hudTop.style.display = 'none';
+  if (hudBottom) hudBottom.style.display = 'none';
+  if (flash) flash.classList.add('flash');
+  // Render one clean frame
+  renderer.render(scene, camera);
+  needsRender = true;
+  // Export PNG
+  setTimeout(() => {
+    try {
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'mokki-memory.png';
+      link.href = dataURL;
+      link.click();
+    } catch (e) {
+      console.error('Save photo failed:', e);
+    }
+    // Restore HUD
+    setTimeout(() => {
+      if (hudTop) hudTop.style.display = '';
+      if (hudBottom) hudBottom.style.display = '';
+      if (flash) flash.classList.remove('flash');
+    }, 100);
+  }, 50);
+}
+
+// ---------------------------------------------------------------------------
+// Render loop (on-demand)
+// ---------------------------------------------------------------------------
 let _firstRenderDone = false;
 
 function updateSortOrder() {
@@ -636,7 +768,6 @@ function updateSortOrder() {
   const camPos = camera.position;
   const camDir = new THREE.Vector3();
   camera.getWorldDirection(camDir);
-
   if (!viewZBuffer || viewZBuffer.length !== count) viewZBuffer = new Float32Array(count);
   const viewZ = viewZBuffer;
   for (let i = 0; i < count; i++) {
@@ -645,7 +776,6 @@ function updateSortOrder() {
     const dz = positions[i * 3 + 2] - camPos.z;
     viewZ[i] = dx * camDir.x + dy * camDir.y + dz * camDir.z;
   }
-
   if (!sortIndices || sortIndices.length !== count) {
     sortIndices = new Uint32Array(count);
     for (let i = 0; i < count; i++) sortIndices[i] = i;
@@ -661,7 +791,6 @@ function applyProgressiveLOD() {
     lastCameraLook === null ||
     camera.position.distanceTo(lastCameraPos) > 0.5 ||
     Math.abs(camera.getWorldDirection(new THREE.Vector3()).angleTo(lastCameraLook)) > 0.02;
-
   if (cameraMoving) {
     updateSortOrder();
     lastCameraPos = camera.position.clone();
@@ -671,7 +800,6 @@ function applyProgressiveLOD() {
     activeCount = Math.min(activeCount + 5000, totalCount);
   }
   frameCount++;
-
   const stride = Math.max(1, Math.ceil(totalCount / activeCount));
   const drawnCount = Math.ceil(totalCount / stride);
   if (!strideIndices || strideIndices.length < drawnCount) {
@@ -682,7 +810,6 @@ function applyProgressiveLOD() {
   }
   splats.geometry.setIndex(strideIndices);
   splats.geometry.setDrawRange(0, drawnCount);
-
   splats.material.uniforms.uPointScale.value = Math.sqrt(totalCount / drawnCount);
 }
 
@@ -692,20 +819,24 @@ function animate(now = 0) {
   if (lastTime === 0) { lastTime = now; return; }
   const dt = Math.min(Math.max((now - lastTime) / 1000, 0), 0.1);
   lastTime = now;
+
+  let needsUpdate = false;
   updateFly(dt);
-  updateAutoFly(dt);
-  if (!autoFly && controls) controls.update();
+  if (updateAutoFly(dt)) needsUpdate = true;
+  if (updateCameraEase(dt)) needsUpdate = true;
 
   if (splats) {
     applyProgressiveLOD();
+    needsUpdate = true;
   }
 
-  try {
+  // Render if: interaction within RENDER_IDLE_MS, anything moved, or explicit needsRender
+  const interactionFresh = (performance.now() - lastInteraction) < RENDER_IDLE_MS;
+  if (needsUpdate || needsRender || interactionFresh) {
     renderer.render(scene, camera);
-  } catch (err) {
-    showError('WebGL render failed: ' + (err.message || String(err)));
-    return;
+    needsRender = false;
   }
+
   if (!_firstRenderDone) {
     _firstRenderDone = true;
     const gl = renderer.getContext();
@@ -740,36 +871,28 @@ function parseSplat(arrayBuffer) {
   const bytes = new Uint8Array(arrayBuffer);
   const count = Math.floor(bytes.length / 32);
   if (count === 0 || bytes.length % 32 !== 0) return null;
-
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const opacities = new Float32Array(count);
-
   const f32 = new Float32Array(arrayBuffer);
   const u8 = new Uint8Array(arrayBuffer);
-
   for (let i = 0; i < count; i++) {
     const base = i * 8;
     const cbase = i * 32 + 24;
     const pi = i * 3;
-
     positions[pi] = f32[base];
     positions[pi + 1] = f32[base + 1];
     positions[pi + 2] = f32[base + 2];
-
     const sx = f32[base + 3];
     const sy = f32[base + 4];
     const sz = f32[base + 5];
     sizes[i] = (sx + sy + sz) / 3;
-
     colors[pi] = u8[cbase] / 255;
     colors[pi + 1] = u8[cbase + 1] / 255;
     colors[pi + 2] = u8[cbase + 2] / 255;
-
     opacities[i] = u8[cbase + 3] / 255;
   }
-
   return { count, positions, colors, sizes, opacities };
 }
 
@@ -778,8 +901,7 @@ async function loadSplatsUrlWithFallback(onProgress) {
     return await loadSplats(SPLAT_URL, onProgress, 'splat');
   } catch (e) {
     if (e.message && e.message.includes('HTTP 404')) {
-      console.log('.splat not found, falling back to .ply');
-      return await loadSplats(DEFAULT_URL, onProgress, 'ply');
+      return await loadSplats(PLY_URL, onProgress, 'ply');
     }
     throw e;
   }
@@ -817,7 +939,6 @@ async function loadSplats(input, onProgress, formatHint) {
       if (!fmt) fmt = detectFormat(buf);
     }
     currentAbortController = null;
-
     let data;
     if (fmt === 'splat') {
       data = parseSplat(buf);
@@ -826,8 +947,8 @@ async function loadSplats(input, onProgress, formatHint) {
     }
     if (!data || data.count === 0) throw new Error('empty splat data');
     buildPoints(data);
-    if (splatCountEl) splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
-    if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
+    controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
     activeCount = Math.min(60000, data.count);
     frameCount = 0;
@@ -859,7 +980,6 @@ function parsePly(input) {
     else if (headText[dataStart] === '\r') dataStart += 2;
     headerText = headText.slice(0, endIdx);
   }
-
   const lines = headerText.split(/\r?\n/);
   let i = 0;
   const next = () => lines[i++].trim();
@@ -882,7 +1002,6 @@ function parsePly(input) {
       else cur.props.push({ list: false, type: p[1], name: p[2] });
     }
   }
-
   const typeSize = { char: 1, uchar: 1, int8: 1, uint8: 1, short: 2, ushort: 2, int16: 2, uint16: 2, int: 4, uint: 4, int32: 4, uint32: 4, float: 4, double: 8 };
   const readerMap = {
     float: (dv, o, l) => dv.getFloat32(o, l),
@@ -894,11 +1013,9 @@ function parsePly(input) {
     char: (dv, o) => dv.getInt8(o),
     uchar: (dv, o) => dv.getUint8(o),
   };
-
   const vertex = elements.find((e) => e.name === 'vertex');
   if (!vertex) return null;
   const count = vertex.count;
-
   const propReaders = {};
   let stride = 0;
   for (const pr of vertex.props) {
@@ -906,25 +1023,21 @@ function parsePly(input) {
     propReaders[pr.name] = { offset: stride, type: pr.type };
     stride += typeSize[pr.type] || 1;
   }
-
   const readProp = (dv, base, little, name) => {
     const r = propReaders[name];
     if (!r) return NaN;
     return readerMap[r.type](dv, base + r.offset, little);
   };
-
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const opacities = new Float32Array(count);
-
   const hasR = !!propReaders['red'];
   const hasG = !!propReaders['green'];
   const hasB = !!propReaders['blue'];
   const hasFdc = !!propReaders['f_dc_0'];
   const hasOpacity = !!propReaders['opacity'];
   const hasScale = !!propReaders['scale_0'];
-
   if (format === 'ascii') {
     const get = (vals, name) => { const o = propReaders[name]; return o === undefined ? NaN : parseFloat(vals[o.offset]); };
     let written = 0;
@@ -954,14 +1067,11 @@ function parsePly(input) {
     }
     return finalize(written, positions, colors, sizes, opacities);
   }
-
   if (format !== 'binary_little_endian' && format !== 'binary_big_endian') return null;
   if (!bytes) return null;
-
   const dv = new DataView(bytes.buffer, bytes.byteOffset + dataStart);
   const little = format === 'binary_little_endian';
   const totalBytes = dv.byteLength;
-
   let written = 0;
   let byteOff = 0;
   while (written < count && byteOff + stride <= totalBytes) {
@@ -1013,12 +1123,11 @@ function buildPoints(data) {
   geometry.setAttribute('size', new THREE.BufferAttribute(data.sizes, 1));
   geometry.setAttribute('opacity', new THREE.BufferAttribute(data.opacities, 1));
   geometry.computeBoundingSphere();
-
   const material = new THREE.ShaderMaterial({
     uniforms: {
       uPointScale: { value: 3.0 },
       uOpacity: { value: 0.6 },
-      uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+      uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 1.5) },
     },
     vertexShader,
     fragmentShader,
@@ -1028,7 +1137,6 @@ function buildPoints(data) {
     blending: THREE.NormalBlending,
     vertexColors: true,
   });
-
   splats = new THREE.Points(geometry, material);
   splats.frustumCulled = false;
   scene.add(splats);
@@ -1067,4 +1175,74 @@ function generateFallback() {
   return { count, positions, colors, sizes, opacities };
 }
 
+// ---------------------------------------------------------------------------
+// GLTF scene setup
+// ---------------------------------------------------------------------------
+function buildGltf(gltf) {
+  const root = gltf?.scene || gltf?.scenes?.[0];
+  if (!root) {
+    throw new Error('GLTF parsed but contains no scene nodes');
+  }
+  if (gltfScene) {
+    scene.remove(gltfScene);
+  }
+  gltfScene = root;
+  scene.add(root);
+
+  // Normalize materials: MeshBasicMaterial for guaranteed visibility
+  let meshCount = 0;
+  let triCount = 0;
+  root.traverse((child) => {
+    if (child.isMesh) {
+      meshCount++;
+      child.frustumCulled = false;
+      const geo = child.geometry;
+      if (geo.index) {
+        triCount += geo.index.count / 3;
+      } else if (geo.attributes.position) {
+        triCount += geo.attributes.position.count / 3;
+      }
+      if (child.material) {
+        const oldMat = child.material;
+        child.material = new THREE.MeshBasicMaterial({
+          map: oldMat.map || null,
+          vertexColors: (geo.attributes.color) ? true : false,
+          side: THREE.DoubleSide,
+        });
+        child.material.needsUpdate = true;
+      }
+    }
+  });
+
+  root.updateMatrixWorld(true);
+  const box1 = new THREE.Box3().setFromObject(root);
+  const size1 = box1.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size1.x, size1.y, size1.z);
+  const s = maxDim > 0 ? 20 / maxDim : 1;
+  root.scale.setScalar(s);
+  root.updateMatrixWorld(true);
+  const box2 = new THREE.Box3().setFromObject(root);
+  const center2 = box2.getCenter(new THREE.Vector3());
+  root.position.sub(center2);
+  root.updateMatrixWorld(true);
+  const box3 = new THREE.Box3().setFromObject(root);
+  box3.getCenter(center);
+  const size3 = box3.getSize(new THREE.Vector3());
+  radius = Math.max(size3.x, size3.y, size3.z) * 0.6;
+  if (radius < 2) radius = 2;
+
+  const grid = new THREE.GridHelper(30, 30, 0x334455, 0x223344);
+  grid.position.y = box3.min.y;
+  scene.add(grid);
+
+  const dims = size3.toArray().map((n) => n.toFixed(2));
+  if (splatCountEl) splatCountEl.textContent = `GLB: ${meshCount} mesh${meshCount !== 1 ? 'es' : ''}, ${Math.round(triCount)} tris, box=[${dims.join(', ')}]`;
+  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • GLB loaded ✓';
+
+  resetView();
+}
+
+// ---------------------------------------------------------------------------
+// Start
+// ---------------------------------------------------------------------------
 start();

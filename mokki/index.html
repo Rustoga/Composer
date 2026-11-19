@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mokki - Gaussian Splat Cabin Explorer</title>
+    <title>Mökki - Gaussian Splat Cabin Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -11,59 +11,159 @@
     {
       "imports": {
         "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+        "@sparkjsdev/spark": "https://cdn.jsdelivr.net/npm/@sparkjsdev/spark@0.1.10/dist/spark.module.js"
       }
     }
     </script>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0b0f; color: #eef2ff; font-family: "Inter", sans-serif; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #d8e2e8; color: #1a222d; font-family: "Inter", sans-serif; }
       #canvas-container { width: 100%; height: 100%; position: relative; }
       canvas { display: block; width: 100%; height: 100%; }
-      #ui { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
-      #hints { pointer-events: auto; text-align: center; margin-bottom: 0.6rem; }
-      .hint { font-family: "Syncopate", sans-serif; text-transform: uppercase; letter-spacing: 0.25rem; font-size: clamp(1rem, 2vw, 1.4rem); color: #ffffff; display: block; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
-      .sub { opacity: 0.9; font-size: 0.8rem; display: block; margin-top: 0.35rem; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
-      .btn { pointer-events: auto; padding: 0.45rem 0.95rem; border: 1px solid rgba(255,255,255,0.5); background: rgba(0,0,0,0.55); color: #ffffff; font-family: inherit; font-size: 0.75rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1rem; margin: 0.25rem 0.35rem; text-shadow: 0 0 6px rgba(0,0,0,0.8); }
-      .btn:hover { border-color: #fff; background: rgba(255,255,255,0.15); }
-      .btn.active { background: rgba(255,255,255,0.25); border-color: #fff; }
-      #loading { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: #0b0b0f; z-index: 20; transition: opacity 0.4s ease; }
+
+      /* Warm Nordic sky gradient background */
+      body {
+        background: linear-gradient(to top, #d8e2e8 0%, #b9c6cf 50%, #8fa8be 100%);
+      }
+
+      /* Top bar HUD */
+      #hud-top {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.4rem;
+        z-index: 20;
+        pointer-events: none;
+      }
+      #hud-title {
+        pointer-events: auto;
+        font-family: "Syncopate", sans-serif;
+        font-size: 1.35rem;
+        letter-spacing: 0.25rem;
+        text-transform: uppercase;
+        color: #1a222d;
+        text-shadow: 0 0 10px rgba(255,255,255,0.7);
+        font-weight: 700;
+      }
+      #hud-status {
+        pointer-events: auto;
+        font-size: 0.78rem;
+        color: #1a222d;
+        text-shadow: 0 0 8px rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.55);
+        padding: 0.3rem 0.7rem;
+        border-radius: 4px;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.8);
+        min-width: 200px;
+        text-align: center;
+      }
+      #hud-actions {
+        pointer-events: auto;
+        display: flex;
+        gap: 0.45rem;
+      }
+
+      /* Bottom bar HUD - memory postcard pills */
+      #hud-bottom {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.9rem 1rem;
+        z-index: 20;
+        pointer-events: none;
+      }
+      .pill {
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.42rem 0.9rem;
+        font-size: 0.72rem;
+        font-weight: 500;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.7);
+        background: rgba(255,255,255,0.6);
+        color: #1a222d;
+        text-shadow: 0 0 6px rgba(255,255,255,0.8);
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+      }
+      .pill:hover { background: rgba(255,255,255,0.8); border-color: rgba(255,255,255,1); }
+      .pill.active { background: #ffffff; border-color: #1a222d; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.12); }
+
+      /* Utility buttons */
+      .btn {
+        pointer-events: auto;
+        padding: 0.38rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.55);
+        color: #1a222d;
+        cursor: pointer;
+        text-shadow: 0 0 6px rgba(255,255,255,0.8);
+        backdrop-filter: blur(4px);
+      }
+      .btn:hover { background: rgba(255,255,255,0.75); border-color: rgba(255,255,255,1); }
+      .btn.active { background: #ffffff; border-color: #1a222d; font-weight: 600; }
+      .btn.save { border-color: #1a222d; background: #ffffff; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+      .btn.save:hover { background: #f5f5f5; }
+
+      /* Overlays */
+      #loading { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: #d8e2e8; z-index: 40; transition: opacity 0.4s ease; }
       #loading.visible { display: flex; }
-      #error { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(11,11,15,0.92); z-index: 30; text-align: center; padding: 1rem; }
+      #error { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,240,240,0.95); z-index: 50; text-align: center; padding: 1.2rem; }
       #error.visible { display: flex; }
-      #timeout-banner { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: #ff6b6b; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; display: none; pointer-events: auto; }
-      #timeout-banner.visible { display: block; }
-      .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.18); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+      .err-msg { color: #b3261e; margin: 0.5rem 0; font-size: 0.82rem; }
+      .spinner { width: 32px; height: 32px; border: 3px solid rgba(26,34,45,0.18); border-top-color: #1a222d; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 0.75rem; }
       @keyframes spin { to { transform: rotate(360deg); } }
-      #splat-count { font-size: 0.8rem; opacity: 0.6; margin-top: 0.25rem; }
-      .err-msg { color: #ff6b6b; margin: 0.5rem 0; font-size: 0.85rem; }
-      .progress-bar { width: 260px; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; margin-top: 1rem; }
-      .progress-bar-fill { width: 0%; height: 100%; background: #fff; transition: width 0.15s ease; }
+      #timeout-banner { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(179,38,30,0.12); border: 1px solid rgba(179,38,30,0.4); color: #b3261e; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.78rem; display: none; pointer-events: auto; z-index: 40; }
+      #timeout-banner.visible { display: block; }
+
+      /* Save photo HUD flash */
+      #hud-save-flash {
+        position: absolute; inset: 0; background: rgba(255,255,255,0); z-index: 60; pointer-events: none; transition: background 0.1s ease;
+      }
+      #hud-save-flash.flash { background: rgba(255,255,255,0.55); }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
-    <div id="ui">
-        <div id="hints">
-            <span class="hint">Mokki</span>
-            <span class="sub" id="control-hint">Drag to look • Pinch to zoom • WASD to fly • <span id="splat-count">loading engine…</span></span>
-        </div>
-        <div>
+    <div id="hud-save-flash"></div>
+
+    <header id="hud-top">
+        <div id="hud-title">MÖKKI</div>
+        <div id="hud-status">loading engine…</div>
+        <div id="hud-actions">
             <button class="btn" id="btn-autofly">Auto fly</button>
             <button class="btn" id="btn-flip-axis">Flip up-axis</button>
-            <button class="btn" id="btn-reset">Reset view</button>
-            <button class="btn" id="btn-reload" style="border-color:#ff6b6b;color:#ff6b6b;">Reload</button>
-            <button class="btn" id="btn-file">Open .GLB / .SPLAT / .PLY</button>
-            <input type="file" id="file-input" accept=".glb,.gltf,.splat,.ply" style="display: none;">
+            <button class="btn save" id="btn-save-photo">Save Photo</button>
+            <button class="btn" id="btn-file">Open .SPZ / .PLY / .GLB</button>
+            <input type="file" id="file-input" accept=".spz,.splat,.ply,.glb,.gltf" style="display: none;">
         </div>
-    </div>
+    </header>
+
+    <nav id="hud-bottom">
+        <button class="pill active" id="pill-yard">Yard View</button>
+        <button class="pill" id="pill-front">Front Approach</button>
+        <button class="pill" id="pill-side">Side Path</button>
+        <button class="pill" id="pill-bird">Bird's Eye</button>
+    </nav>
+
     <div id="loading">
         <div class="spinner"></div>
         <div id="loading-text">Loading engine…</div>
-        <div class="progress-bar"><div id="loading-progress" class="progress-bar-fill"></div></div>
     </div>
-    <div id="error"><div class="err-msg" id="error-msg"></div><button class="btn" id="btn-error-retry" style="border-color:#fff;color:#fff;margin-top:0.5rem;">Try again</button></div>
-    <div id="timeout-banner" class="timeout-banner">Still loading… using fallback scene. <button class="btn" id="btn-timeout-retry" style="border-color:#ff6b6b;color:#ff6b6b;font-size:0.7rem;padding:0.2rem 0.5rem;margin-left:0.5rem;">Retry</button></div>
+    <div id="error"><div class="err-msg" id="error-msg"></div><button class="btn" id="btn-error-retry" style="margin-top:0.5rem;">Try again</button></div>
+    <div id="timeout-banner" class="timeout-banner">Still loading… using fallback scene. <button class="btn" id="btn-timeout-retry" style="border-color:#b3261e;color:#b3261e;font-size:0.7rem;padding:0.2rem 0.5rem;margin-left:0.5rem;">Retry</button></div>
+
     <script>
       // Boot guard: visible error surface even if module import fails
       window.addEventListener('error', (e) => {
@@ -103,6 +203,6 @@
         }
       }, 5000);
     </script>
-    <script type="module" src="mokki.js?v=20261119g"></script>
+    <script type="module" src="mokki.js?v=20261119i"></script>
 </body>
 </html>
