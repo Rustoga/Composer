@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""Convert a binary_little_endian PLY Gaussian splat point cloud to the
-standard 32-byte-per-splat .splat format:
+"""Convert a binary_little_endian PLY point cloud to the standard 32-byte
+per-splat .splat format:
 
   Bytes 0-11:  float32[3] position (x, y, z)
   Bytes 12-23: float32[3] scale    (sx, sy, sz)
   Bytes 24-27: uint8[4]   RGBA color (0-255)
-  Bytes 28-31: uint8[4]   rotation quaternion, mapped [-1,1] -> [0,255]
+  Bytes 28-31: uint8[4]   rotation quaternion (mapped [-1, 1] -> [0, 255])
 
-If the PLY lacks scale/rotation/opacity, sensible defaults are synthesised
-(uniform scale 0.1, identity quaternion [255,128,128,128], full opacity 255)
-so the output renders identically to the current PLY shader.
+Input PLY is a dense RGB point cloud (x,y,z floats + red,green,blue uchar).
+Defaults are synthesised: uniform scale 0.1, identity quaternion [255,128,128,128],
+full opacity 255.
 
-Splats are sorted by mean scale descending (when scale data is present) so
-progressive streaming renders large structures first.
+Processing:
+  * Statistical outlier filtering (2nd-98th percentile bounding box, strip
+    points > 3.5x IQR from cabin core) to remove stray sky/horizon scan rays.
+  * Seeded Fisher-Yates shuffle so progressive HLOD samples the entire cabin
+    uniformly instead of drawing isolated scan-lines.
+  * Z-up -> Y-up axis swap (Scaniverse/LiDAR exports are typically Z-up;
+    Three.js uses Y-up).
 """
 import struct
 import sys
+import random
 from pathlib import Path
 
 TYPE_SIZES = {
@@ -25,17 +31,17 @@ TYPE_SIZES = {
 
 DEFAULT_SCALE = 0.1
 DEFAULT_ROTATION_UINT8 = (255, 128, 128, 128)  # identity quaternion [1,0,0,0]
+SHUFFLE_SEED = 42
 
 
 def read_ply(path):
     with open(path, 'rb') as f:
-        # --- header ---
         lines = []
         while True:
             line = f.readline()
             if not line:
                 raise ValueError("Unexpected EOF inside PLY header")
-            lines.append(line.decode('ascii').strip())
+            lines.append(line.decode('ascii', errors='replace').strip())
             if lines[-1] == 'end_header':
                 break
 
@@ -76,7 +82,6 @@ def read_ply(path):
 
         count = vertex['count']
 
-        # --- property map: name -> (byte_offset, type, size) ---
         prop_map = {}
         offset = 0
         for pr in vertex['props']:
@@ -87,7 +92,6 @@ def read_ply(path):
             offset += size
         stride = offset
 
-        # --- raw vertex block ---
         raw = f.read(count * stride)
         if len(raw) < count * stride:
             raise ValueError(
@@ -96,6 +100,67 @@ def read_ply(path):
             )
 
     return raw, count, stride, prop_map
+
+
+def compute_percentile(sorted_arr, p):
+    n = len(sorted_arr)
+    idx = int((p / 100.0) * (n - 1))
+    return sorted_arr[idx]
+
+
+def filter_outliers(raw, count, stride, prop_map):
+    """Remove points beyond 3.5x IQR from the 2nd-98th percentile bounding box."""
+    xs = [0.0] * count
+    ys = [0.0] * count
+    zs = [0.0] * count
+
+    for i in range(count):
+        base = i * stride
+        xs[i] = struct.unpack_from('<f', raw, base + prop_map['x'][0])[0]
+        ys[i] = struct.unpack_from('<f', raw, base + prop_map['y'][0])[0]
+        zs[i] = struct.unpack_from('<f', raw, base + prop_map['z'][0])[0]
+
+    xs.sort(); ys.sort(); zs.sort()
+
+    def bounds(arr):
+        p2 = compute_percentile(arr, 2)
+        p98 = compute_percentile(arr, 98)
+        iqr = p98 - p2
+        lo = p2 - 3.5 * iqr
+        hi = p98 + 3.5 * iqr
+        return lo, hi
+
+    x_lo, x_hi = bounds(xs)
+    y_lo, y_hi = bounds(ys)
+    z_lo, z_hi = bounds(zs)
+
+    keep = []
+    for i in range(count):
+        base = i * stride
+        x = struct.unpack_from('<f', raw, base + prop_map['x'][0])[0]
+        y = struct.unpack_from('<f', raw, base + prop_map['y'][0])[0]
+        z = struct.unpack_from('<f', raw, base + prop_map['z'][0])[0]
+        if x_lo <= x <= x_hi and y_lo <= y <= y_hi and z_lo <= z <= z_hi:
+            keep.append(i)
+
+    kept_raw = bytearray(len(keep) * stride)
+    for new_i, old_i in enumerate(keep):
+        old_base = old_i * stride
+        new_base = new_i * stride
+        kept_raw[new_base:new_base + stride] = raw[old_base:old_base + stride]
+
+    removed = count - len(keep)
+    print(f"Outlier filtering: {count} -> {len(keep)} points (removed {removed})")
+    return bytes(kept_raw), len(keep)
+
+
+def fisher_yates_shuffle(arr, seed):
+    """In-place seeded Fisher-Yates shuffle."""
+    rng = random.Random(seed)
+    n = len(arr)
+    for i in range(n - 1, 0, -1):
+        j = rng.randint(0, i)
+        arr[i], arr[j] = arr[j], arr[i]
 
 
 def convert(path):
@@ -114,15 +179,20 @@ def convert(path):
     if not has_xyz:
         raise ValueError("PLY vertex has no x/y/z position properties")
 
+    # --- outlier filtering ---
+    raw, count = filter_outliers(raw, count, stride, prop_map)
+
     # --- convert ---
     splats = []
     for i in range(count):
         base = i * stride
 
-        # position
+        # position (Z-up -> Y-up swap: y_new = z, z_new = y)
         x = struct.unpack_from('<f', raw, base + prop_map['x'][0])[0]
-        y = struct.unpack_from('<f', raw, base + prop_map['y'][0])[0]
-        z = struct.unpack_from('<f', raw, base + prop_map['z'][0])[0]
+        y_raw = struct.unpack_from('<f', raw, base + prop_map['y'][0])[0]
+        z_raw = struct.unpack_from('<f', raw, base + prop_map['z'][0])[0]
+        y = z_raw   # Z becomes Y (up)
+        z = y_raw   # Y becomes Z (depth)
 
         # color (RGBA uint8)
         if has_rgb:
@@ -131,13 +201,10 @@ def convert(path):
             b = raw[base + prop_map['blue'][0]]
             a = 255
         elif has_fdc:
-            # approximate RGB from spherical-harmonic DC coefficients
-            r = int(max(0, min(255,
-                (0.5 + struct.unpack_from('<f', raw, base + prop_map['f_dc_0'][0])[0]) * 255)))
-            g = int(max(0, min(255,
-                (0.5 + struct.unpack_from('<f', raw, base + prop_map['f_dc_1'][0])[0]) * 255)))
-            b = int(max(0, min(255,
-                (0.5 + struct.unpack_from('<f', raw, base + prop_map['f_dc_2'][0])[0]) * 255)))
+            C0 = 0.28209479177387814
+            r = int(max(0, min(255, (0.5 + C0 * struct.unpack_from('<f', raw, base + prop_map['f_dc_0'][0])[0]) * 255)))
+            g = int(max(0, min(255, (0.5 + C0 * struct.unpack_from('<f', raw, base + prop_map['f_dc_1'][0])[0]) * 255)))
+            b = int(max(0, min(255, (0.5 + C0 * struct.unpack_from('<f', raw, base + prop_map['f_dc_2'][0])[0]) * 255)))
             a = 255
         else:
             r = g = b = 128
@@ -164,10 +231,11 @@ def convert(path):
         else:
             rot = DEFAULT_ROTATION_UINT8
 
-        # opacity (stored in alpha channel of color)
+        # opacity
         if has_opacity:
             op = struct.unpack_from('<f', raw, base + prop_map['opacity'][0])[0]
-            a = int(max(0, min(255, op * 255)))
+            import math
+            a = int(max(0, min(255, (1.0 / (1.0 + math.exp(-op))) * 255)))
 
         mean_scale = (sx + sy + sz) / 3.0
         splats.append({
@@ -178,9 +246,8 @@ def convert(path):
             'mean_scale': mean_scale,
         })
 
-    # --- sort by size descending so large structures stream first ---
-    if has_scale:
-        splats.sort(key=lambda s: s['mean_scale'], reverse=True)
+    # --- seeded shuffle so progressive HLOD samples the whole cabin uniformly ---
+    fisher_yates_shuffle(splats, SHUFFLE_SEED)
 
     # --- write .splat ---
     out = bytearray(count * 32)

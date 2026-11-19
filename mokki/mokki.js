@@ -91,6 +91,7 @@ const errorMsg = document.getElementById('error-msg');
 const splatCountEl = document.getElementById('splat-count');
 const controlHintEl = document.getElementById('control-hint');
 const btnAutoFly = document.getElementById('btn-autofly');
+const btnFlipAxis = document.getElementById('btn-flip-axis');
 const btnReset = document.getElementById('btn-reset');
 const btnReload = document.getElementById('btn-reload');
 const btnErrorRetry = document.getElementById('btn-error-retry');
@@ -261,6 +262,23 @@ function initScene() {
     btnAutoFly.classList.toggle('active', autoFly);
     controls.enabled = !autoFly;
   });
+  let flipUpAxis = false;
+  btnFlipAxis.addEventListener('click', () => {
+    flipUpAxis = !flipUpAxis;
+    btnFlipAxis.classList.toggle('active', flipUpAxis);
+    if (!splats) return;
+    const positions = splats.geometry.attributes.position.array;
+    const count = positions.length / 3;
+    for (let i = 0; i < count; i++) {
+      const y = positions[i * 3 + 1];
+      const z = positions[i * 3 + 2];
+      positions[i * 3 + 1] = z;
+      positions[i * 3 + 2] = y;
+    }
+    splats.geometry.attributes.position.needsUpdate = true;
+    splats.geometry.computeBoundingSphere();
+    resetView();
+  });
   btnReset.addEventListener('click', resetView);
   btnReload.addEventListener('click', () => start());
   btnErrorRetry.addEventListener('click', () => start());
@@ -300,9 +318,11 @@ function resetView() {
   const s = geom.boundingSphere;
   center.copy(s.center);
   radius = Math.max(s.radius, 3);
-  autoHeight = center.y + radius * 0.55;
+  // Eye-level camera: ~1.6m above ground, looking directly at cabin center
+  const eyeLevel = center.y - radius + 1.6;
+  const camDist = radius * 1.4;
   controls.target.copy(center);
-  camera.position.set(center.x, center.y + radius, center.z + radius * 1.6);
+  camera.position.set(center.x, eyeLevel, center.z + camDist);
   camera.lookAt(center);
   controls.update();
 }
@@ -730,8 +750,8 @@ function buildPoints(data) {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      uPointScale: { value: 1.0 },
-      uOpacity: { value: 0.45 },
+      uPointScale: { value: 6.0 },
+      uOpacity: { value: 0.55 },
     },
     vertexShader,
     fragmentShader,
