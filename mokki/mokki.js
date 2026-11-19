@@ -52,6 +52,15 @@ let autoAngle = 0;
 let autoHeight = 0;
 const keys = {};
 let lastTime = 0;
+
+// Progressive LOD + depth sort state
+let activeCount = 60000;
+let sortIndices = null;
+let viewZBuffer = null;
+let strideIndices = null;
+let lastCameraPos = null;
+let lastCameraLook = null;
+let frameCount = 0;
 let loadError = '';
 
 let currentAbortController = null;
@@ -140,26 +149,27 @@ function hideError() {
 const vertexShader = `
 attribute float size;
 attribute float opacity;
+uniform float uPointScale;
 varying vec3 vColor;
 varying float vOpacity;
 void main() {
   vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mvPosition;
-  gl_PointSize = max(size * (220.0 / -mvPosition.z), 1.2);
+  gl_PointSize = clamp(size * uPointScale * (220.0 / -mvPosition.z), 1.2, 16.0);
   vColor = color;
   vOpacity = opacity;
 }
 `;
 
 const fragmentShader = `
+uniform float uOpacity;
 varying vec3 vColor;
 varying float vOpacity;
 void main() {
-  float dist = length(gl_PointCoord - vec2(0.5));
-  if (dist > 0.5) discard;
-  float gauss = exp(-(dist * dist) / (2.0 * 0.22 * 0.22));
-  float alpha = vOpacity * gauss;
-  if (alpha < 0.03) discard;
+  float r2 = dot(gl_PointCoord - vec2(0.5), gl_PointCoord - vec2(0.5));
+  if (r2 > 1.0) discard;
+  float alpha = exp(-4.5 * r2) * vOpacity * uOpacity;
+  if (alpha < 0.02) discard;
   gl_FragColor = vec4(vColor, alpha);
 }
 `;
@@ -204,6 +214,10 @@ function start() {
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
     controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
+    activeCount = Math.min(60000, data.count);
+    frameCount = 0;
+    lastCameraPos = null;
+    lastCameraLook = null;
     setProgress(100, '100% — Ready');
     lastTime = performance.now();
     animate();
@@ -322,6 +336,69 @@ function updateAutoFly(dt) {
 
 let _firstRenderDone = false;
 
+function updateSortOrder() {
+  if (!splats || !camera) return;
+  const positions = splats.geometry.attributes.position.array;
+  const count = positions.length / 3;
+  const camPos = camera.position;
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+
+  // Compute view-Z (distance from camera along camera direction) for each splat
+  if (!viewZBuffer || viewZBuffer.length !== count) viewZBuffer = new Float32Array(count);
+  const viewZ = viewZBuffer;
+  for (let i = 0; i < count; i++) {
+    const dx = positions[i * 3] - camPos.x;
+    const dy = positions[i * 3 + 1] - camPos.y;
+    const dz = positions[i * 3 + 2] - camPos.z;
+    viewZ[i] = dx * camDir.x + dy * camDir.y + dz * camDir.z;
+  }
+
+  // Sort indices back-to-front (farther = larger viewZ first)
+  if (!sortIndices || sortIndices.length !== count) {
+    sortIndices = new Uint32Array(count);
+    for (let i = 0; i < count; i++) sortIndices[i] = i;
+  }
+  sortIndices.sort((a, b) => viewZ[b] - viewZ[a]);
+}
+
+function applyProgressiveLOD() {
+  if (!splats || !sortIndices) return;
+  const totalCount = sortIndices.length;
+  const cameraMoving =
+    lastCameraPos === null ||
+    lastCameraLook === null ||
+    camera.position.distanceTo(lastCameraPos) > 0.5 ||
+    Math.abs(camera.getWorldDirection(new THREE.Vector3()).angleTo(lastCameraLook)) > 0.02;
+
+  if (cameraMoving) {
+    updateSortOrder();
+    lastCameraPos = camera.position.clone();
+    lastCameraLook = camera.getWorldDirection(new THREE.Vector3());
+    // When camera moves, reset progressive ramp to show coarse structure immediately
+    activeCount = Math.min(activeCount * 2, totalCount);
+  } else if (frameCount % 2 === 0) {
+    // Ramp up active count when idle
+    activeCount = Math.min(activeCount + 5000, totalCount);
+  }
+  frameCount++;
+
+  // Stride-based sampling on sorted indices so first N cover the whole bounding box
+  const stride = Math.max(1, Math.ceil(totalCount / activeCount));
+  const drawnCount = Math.ceil(totalCount / stride);
+  if (!strideIndices || strideIndices.length < drawnCount) {
+    strideIndices = new Uint32Array(drawnCount);
+  }
+  for (let i = 0; i < drawnCount; i++) {
+    strideIndices[i] = sortIndices[i * stride];
+  }
+  splats.geometry.setIndex(strideIndices);
+  splats.geometry.setDrawRange(0, drawnCount);
+
+  // Compensate density: fewer splats = bigger splats
+  splats.material.uniforms.uPointScale.value = Math.sqrt(totalCount / drawnCount);
+}
+
 function animate(now = 0) {
   requestAnimationFrame(animate);
   if (!renderer || !scene || !camera) return;
@@ -331,6 +408,11 @@ function animate(now = 0) {
   updateFly(dt);
   updateAutoFly(dt);
   if (!autoFly && controls) controls.update();
+
+  if (splats) {
+    applyProgressiveLOD();
+  }
+
   try {
     renderer.render(scene, camera);
   } catch (err) {
@@ -460,6 +542,11 @@ async function loadSplats(input, onProgress, formatHint) {
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
     controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
+    // Initialize progressive LOD state on first load
+    activeCount = Math.min(60000, data.count);
+    frameCount = 0;
+    lastCameraPos = null;
+    lastCameraLook = null;
     setProgress(100, '100% — Ready');
     setState(uiStates.READY);
     return data;
@@ -642,12 +729,16 @@ function buildPoints(data) {
   geometry.computeBoundingSphere();
 
   const material = new THREE.ShaderMaterial({
-    uniforms: {},
+    uniforms: {
+      uPointScale: { value: 1.0 },
+      uOpacity: { value: 0.45 },
+    },
     vertexShader,
     fragmentShader,
     transparent: true,
+    depthTest: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
     vertexColors: true,
   });
 
