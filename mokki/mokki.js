@@ -151,12 +151,15 @@ const vertexShader = `
 attribute float size;
 attribute float opacity;
 uniform float uPointScale;
+uniform float uPixelRatio;
 varying vec3 vColor;
 varying float vOpacity;
 void main() {
   vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mvPosition;
-  gl_PointSize = clamp(size * uPointScale * (220.0 / -mvPosition.z), 1.2, 16.0);
+  // Perspective-correct point size in screen pixels
+  float screenSize = size * uPointScale * (uPixelRatio * 220.0 / -mvPosition.z);
+  gl_PointSize = clamp(screenSize, 2.0, 24.0);
   vColor = color;
   vOpacity = opacity;
 }
@@ -169,8 +172,9 @@ varying float vOpacity;
 void main() {
   float r2 = dot(gl_PointCoord - vec2(0.5), gl_PointCoord - vec2(0.5));
   if (r2 > 1.0) discard;
-  float alpha = exp(-4.5 * r2) * vOpacity * uOpacity;
-  if (alpha < 0.02) discard;
+  // Soft circular Gaussian falloff: smooth blend between adjacent splats
+  float alpha = exp(-3.0 * r2) * vOpacity * uOpacity;
+  if (alpha < 0.03) discard;
   gl_FragColor = vec4(vColor, alpha);
 }
 `;
@@ -309,6 +313,9 @@ function onResize() {
   camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(container.clientWidth, container.clientHeight);
+  if (splats && splats.material && splats.material.uniforms.uPixelRatio) {
+    splats.material.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+  }
 }
 
 function resetView() {
@@ -750,8 +757,9 @@ function buildPoints(data) {
 
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      uPointScale: { value: 6.0 },
-      uOpacity: { value: 0.55 },
+      uPointScale: { value: 3.0 },
+      uOpacity: { value: 0.6 },
+      uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
     },
     vertexShader,
     fragmentShader,
