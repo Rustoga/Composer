@@ -110,19 +110,18 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1.25rem;
-      padding: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 10px;
+      padding: 8px;
     }
     .card {
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 22px;
+      border-radius: 10px;
+      padding: 14px 18px;
       background: var(--card);
       display: grid;
-      gap: 1.25rem;
-      min-height: 250px;
-      line-height: 1.55;
+      gap: 6px;
+      line-height: 1.5;
       transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
       position: relative;
     }
@@ -131,12 +130,25 @@
       overflow-wrap: break-word;
       word-break: normal;
     }
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--fire-glow), var(--fire), transparent);
-      opacity: 0.9;
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      align-items: center;
+    }
+    .meta-row .badge {
+      white-space: nowrap;
+    }
+    .price-detail {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .card:hover {
       transform: translateY(-2px);
@@ -272,8 +284,8 @@
       color: #f0e6da;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 12px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
       transition: all 0.15s;
     }
     .links a:hover { border-color: var(--accent-glow); color: var(--accent-glow); }
@@ -597,7 +609,8 @@ let refreshing = false
           return `${i.adult} €${i.reduced != null ? ' / ' + i.reduced + ' €' : ''}${days}`
         })
       const note = e.priceDetails.note ? ` · ${e.priceDetails.note}` : ''
-      return tiers.length || note ? `<div class="price-detail">🎟️ ${tiers.join(' · ')}${note}</div>` : ''
+      const fullText = `🎟️ ${tiers.join(' · ')}${note}`
+      return tiers.length || note ? `<div class="price-detail" title="${fullText}">${fullText}</div>` : ''
     }
 
     function ratingLabel(e) {
@@ -665,24 +678,19 @@ let refreshing = false
             <div class="grid">
               ${items.map((e) => `
                 <article class="card">
-                  <div class="badges">
+                  <div class="header-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="title">${e.title || 'Nimetön sauna'}</div>
+                      ${ratingLabel(e)}
+                    </div>
                     ${priceLabel(e)}
-                    ${ratingLabel(e)}
-                    ${userRatingLabel(e)}
-                    ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
-                    ${e.varaus ? '<span class="varaus">🔒 Varaus / Reservation</span>' : ''}
-                    ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
-                    ${e.nature ? '<span class="nature">🌲 Luontopuisto / Nature park</span>' : ''}
-                    ${e.busyHours ? `<span class="busy" title="${e.busyHours}">📊 ${e.busyHours.split(" · ")[0]}</span>` : ''}
                   </div>
-                  <div class="title">${e.title || 'Nimetön sauna'}</div>
-                  <div class="stars" data-id="${e.id}">
-                    ${[1,2,3,4,5].map(n => `<span class="star${userRatings[e.id] >= n ? ' filled' : ''}" data-val="${n}" onclick="saveUserRating('${e.id}', ${n})">★</span>`).join('')}
+                  <div class="meta-row">
+                    <span class="badge">${e.saunaType || e.category || 'Yleinen'}</span>
+                    <span>📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</span>
+                    ${e.stationKm != null ? `<span>🚉 ${Number(e.stationKm).toFixed(1)} km · ${e.stationWalking}</span>` : ''}
                   </div>
-                  ${e.shortDesc ? `<div class="meta shortdesc">🕒 ${e.shortDesc}</div>` : ''}
-                  ${e.stationKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
-                  <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</div>
-                  <div class="meta">🏷️ ${e.category || 'Yleinen'}</div>
+                  ${e.shortDesc ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">🕒 ${e.shortDesc}</div>` : ''}
                   ${priceDetailsLabel(e)}
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
