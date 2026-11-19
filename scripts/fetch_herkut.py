@@ -1,720 +1,585 @@
 #!/usr/bin/env python3
-# fetch_herkut.py - Herkku / Candy snapshot scraper
-#
-# Combines:
-#   1) Live-curated treat / bulk-candy / bakery offers from public retail sources
-#   2) Cheap movie ticket special days (<= 7 EUR) from MyHelsinki Linked Events API
-#
-# ZERO fake / hallucinated deals. Every item is parsed from a real, live source.
-# If no live source returns verified items, the snapshot is empty (honest empty state).
-#
-# Output: herkku/herkku_snapshot.json
-#
-# Uses only the Python standard library so it runs in GitHub Actions without extra deps.
+"""
+Self-aware treat, bakery & cheap-cinema deal aggregator for ://rudolfwesterholm.com.
+Sources:
+  1. ResQ Club v2 Public API (bakery/café surplus offers in Helsinki/Espoo/Vantaa/Lauttasaari)
+  2. MyHelsinki Linked Events API (free & <= 7 EUR cinema + coffee/pastry events)
+  3. K-Ruoka public campaign offers (Playwright + requests fallback)
+  4. Lidl Suomi weekly offers (Playwright + requests fallback)
+  5. S-Group public campaign offers (Playwright + requests fallback)
+"""
 
+import argparse
+import hashlib
 import json
-import math
-import os
 import re
-import sys
-import urllib.request
-import urllib.error
-import urllib.parse
-from datetime import datetime, timezone, timedelta
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 
-UA = "HerkkuBot/1.0 (+https://rudolfwesterholm.com; rudolf@westerholm.com)"
+import certifi
+import requests
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-VENUES_PATH = os.path.join(BASE_DIR, "data", "venues_coords.json")
-OUT_PATH = os.path.join(BASE_DIR, "herkku", "herkku_snapshot.json")
+TZ_HEL = ZoneInfo("Europe/Helsinki")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+SNAPSHOT_PATH = ROOT_DIR / "herkku" / "herkku_snapshot.json"
+VENUES_PATH = ROOT_DIR / "data" / "venues_coords.json"
+HEALTH_LOG_PATH = ROOT_DIR / "logs" / "scraper_health.json"
 
-STATION_LAT = 60.1719
-STATION_LON = 24.9414
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "fi-FI,fi;q=0.9,en;q=0.8",
+}
 
 TREAT_KEYWORDS = [
-    "irtokark", "makeis", "suklaa", "karkki", "pulla", "leivos", "munkki",
-    "croissant", "jäätelö", "keksi", "donitsi", "viineri", "kakku", "herkku",
-    "torttu", "pullat", "piirakka",
+    "irtokark", "makeis", "suklaa", "karkki", "pulla", "leivos",
+    "munkki", "croissant", "jäätelö", "keksi", "donitsi", "viineri",
+    "kakku", "herkku", "paistopiste", "kahvi", "glögi", "pipari",
+    "fazer", "arnolds", "robert's coffee", "espresso house", "gateau",
+    "kanniston", "picnic", "bakery", "pastry", "candy",
 ]
 
-MOVIE_KEYWORDS = [
-    "elokuva", "leffa", "kino", "cinema", "finnkino", "orion", "rex",
-    "regina", "riviera", "engel", "tennispalatsi", "kinopalatsi", "biorex",
-]
-
-MALLS = ["tripla", "kamppi", "redi", "forum", "itis", "iso omena", "sello", "lauttis"]
+CINEMA_KEYWORDS = ["elokuva", "kino", "leffa", "näytös", "cinema"]
 
 
-def helsinki_today():
-    """Today's date in Europe/Helsinki timezone."""
-    hel = timezone(timedelta(hours=3))
-    return datetime.now(hel).date()
+class SourceHealthMonitor:
+    """Tracks latency, HTTP status, item counts, and consecutive failures per source."""
+
+    def __init__(self, previous_health: Dict[str, Any]):
+        self.prev_sources = previous_health.get("sources", {})
+        self.sources: Dict[str, Dict[str, Any]] = {}
+
+    def record(
+        self,
+        source_key: str,
+        status: str,
+        items_found: int,
+        latency_ms: int,
+        http_status: Optional[int] = None,
+        error_reason: Optional[str] = None,
+    ) -> None:
+        prev_streak = self.prev_sources.get(source_key, {}).get("consecutive_failures", 0)
+        is_failure = status in ("blocked", "error")
+        self.sources[source_key] = {
+            "status": status,
+            "items_found": items_found,
+            "latency_ms": latency_ms,
+            "http_status": http_status,
+            "error_reason": error_reason,
+            "consecutive_failures": (prev_streak + 1) if is_failure else 0,
+            "checked_at": datetime.now(TZ_HEL).isoformat(),
+        }
+
+    def summary(self) -> Dict[str, Any]:
+        total = len(self.sources)
+        ok_count = sum(1 for s in self.sources.values() if s["status"] in ("ok", "empty"))
+        failing = [
+            k for k, v in self.sources.items() if v.get("consecutive_failures", 0) >= 2
+        ]
+        return {
+            "ok_sources": ok_count,
+            "total_sources": total,
+            "needs_attention": failing,
+            "sources": self.sources,
+        }
 
 
-def fetch_json(url, timeout=30):
-    req = urllib.request.Request(
-        url, headers={"User-Agent": UA, "Accept": "application/json"}
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def load_json(path: Path, default: Any) -> Any:
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default
 
 
-def fetch_text(url, timeout=20):
-    req = urllib.request.Request(
-        url, headers={"User-Agent": UA, "Accept": "text/html,application/json"}
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode("utf-8", errors="replace")
+def make_id(source: str, title: str, store: str) -> str:
+    digest = hashlib.sha256(f"{source}|{title}|{store}".encode("utf-8")).hexdigest()[:12]
+    return f"{source}_{digest}"
 
 
-def strip_html(s):
-    if not s:
-        return ""
-    s = re.sub(r"<[^>]*>", " ", s)
-    s = s.replace("&nbsp;", " ")
-    s = s.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-    s = s.replace("&quot;", '"').replace("&#39;", "'").replace("&apos;", "'")
-    return re.sub(r"\s+", " ", s).strip()
-
-
-def pick(obj, lang="fi"):
-    if not obj:
-        return ""
-    if isinstance(obj, str):
-        return obj
-    return obj.get(lang) or obj.get("fi") or obj.get("en") or obj.get("sv") or next(iter(obj.values()), "")
-
-
-def slug(s):
-    return (
-        re.sub(r"[^a-z0-9]+", "-", str(s or "").lower())
-        .strip("-")
-        [:80]
-    )
-
-
-def haversine_km(lat1, lon1, lat2, lon2):
-    to_rad = math.radians
-    R = 6371.0
-    dlat = to_rad(lat2 - lat1)
-    dlon = to_rad(lon2 - lon1)
-    a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(to_rad(lat1)) * math.cos(to_rad(lat2)) * math.sin(dlon / 2) ** 2
-    )
-    return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-
-def walking_min(km):
-    """Walking time at 80 m/min (~4.8 km/h brisk walking)."""
-    if km is None:
+def parse_price_eur(text: str) -> Optional[float]:
+    if not text:
         return None
-    mins = (km * 1000) / 80.0
-    if mins < 1:
-        return "< 1 min"
-    if mins < 60:
-        return f"{round(mins)} min"
-    h = math.floor(mins / 60)
-    m = round(mins % 60)
-    return f"{h} h" if m == 0 else f"{h} h {m} min"
-
-
-def load_venues():
-    with open(VENUES_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def venue_by_key(venues, key):
-    for v in venues:
-        if v["key"] == key:
-            return v
+    m = re.search(r"(\d+[.,]\d{1,2})\s*€", text)
+    if m:
+        return float(m.group(1).replace(",", "."))
+    m2 = re.search(r"(\d+)\s*€", text)
+    if m2:
+        return float(m2.group(1))
     return None
 
 
-def venue_by_name(venues, name):
-    for v in venues:
-        if v.get("name") and v["name"].lower() in name.lower():
-            return v
+def parse_price_kg(text: str) -> Optional[float]:
+    if not text:
+        return None
+    m = re.search(r"(\d+[.,]\d{1,2})\s*€\s*/\s*kg", text, re.IGNORECASE)
+    if m:
+        return float(m.group(1).replace(",", "."))
     return None
 
 
-def distance_from(lat, lon, origin_lat, origin_lon):
+def is_valid_deep_url(url: str) -> bool:
+    if not url or not url.startswith("https://"):
+        return False
+    parsed = urlparse(url)
+    return bool(parsed.netloc) and (len(parsed.path.strip("/")) > 0 or bool(parsed.query))
+
+
+def is_valid_finland_coords(lat: Optional[float], lon: Optional[float]) -> bool:
     if lat is None or lon is None:
-        return None, None
-    km = haversine_km(origin_lat, origin_lon, lat, lon)
-    return km, walking_min(km)
+        return False
+    return 59.5 <= float(lat) <= 70.1 and 19.0 <= float(lon) <= 31.6
 
 
-def region_for(locality):
-    if locality in ("Helsinki", "Espoo", "Vantaa"):
-        return locality
-    return "Muu Suomi"
+def infer_region(city_or_text: str) -> str:
+    low = (city_or_text or "").lower()
+    if any(k in low for k in ["espoo", "isoomena", "iso omena", "sello", "ainoa"]):
+        return "Espoo"
+    if any(k in low for k in ["vantaa", "jumbo", "dixi", "myyrmanni"]):
+        return "Vantaa"
+    return "Helsinki"
 
 
-def maps_url(street, locality, lat=None, lon=None):
-    q = ", ".join(x for x in [street, locality] if x)
-    if q:
-        return f"https://www.google.com/maps/search/?api=1&query={urllib.parse.quote(q)}"
-    if lat is not None and lon is not None:
-        return f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
-    return "https://www.google.com/maps/search/?api=1&query=Helsinki"
+def get_next_update_iso(now_hel: datetime) -> str:
+    today_06 = now_hel.replace(hour=6, minute=0, second=0, microsecond=0)
+    today_19 = now_hel.replace(hour=19, minute=0, second=0, microsecond=0)
+    if now_hel < today_06:
+        return today_06.isoformat()
+    if now_hel < today_19:
+        return today_19.isoformat()
+    return (today_06 + timedelta(days=1)).isoformat()
 
 
-def fmt_price_eur(v):
-    if v is None:
-        return "–"
-    return f"{v:.2f} €".replace(".", ",")
+def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
+    t0 = time.monotonic()
+    url = "https://resq-club.com"
+    params = {"lat": 60.1699, "lon": 24.9384, "radius": 15000}
+    items: List[Dict[str, Any]] = []
 
-
-def fmt_price_kg(v):
-    if v is None:
-        return "–"
-    return f"{v:.2f} €/kg".replace(".", ",")
-
-
-def is_treat(text):
-    t = (text or "").lower()
-    return any(k in t for k in TREAT_KEYWORDS)
-
-
-def is_movie(text):
-    t = (text or "").lower()
-    return any(k in t for k in MOVIE_KEYWORDS)
-
-
-def extract_eur_per_kg(text):
-    if not text:
-        return None
-    patterns = [
-        r"(\d+[.,]\d+)\s*€\s*/\s*kg",
-        r"(\d+[.,]\d+)\s*€/kg",
-        r"€/kg\s*(\d+[.,]\d+)",
-        r"(\d+)\s*€\s*/\s*kg",
-    ]
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE)
-        if m:
-            return float(m.group(1).replace(",", "."))
-    return None
-
-
-def extract_eur_price(text, max_eur=None):
-    if not text:
-        return None
-    patterns = [
-        r"(\d+[.,]\d+)\s*€",
-        r"€\s*(\d+[.,]\d+)",
-        r"(\d+)\s*€",
-    ]
-    for pat in patterns:
-        m = re.search(pat, text)
-        if m:
-            val = float(m.group(1).replace(",", "."))
-            if max_eur is not None and val > max_eur:
-                continue
-            return val
-    return None
-
-
-def next_update_iso():
-    hel = timezone(timedelta(hours=3))
-    now = datetime.now(hel)
-    candidates = []
-    for h in (6, 19):
-        d = now.replace(hour=h, minute=0, second=0, microsecond=0)
-        if d <= now:
-            d += timedelta(days=1)
-        candidates.append(d)
-    target = min(candidates)
-    return target.astimezone(timezone.utc).isoformat()
-
-
-def finnish_weekday(d):
-    weekdays = ["ma", "ti", "ke", "to", "pe", "la", "su"]
-    return weekdays[d.weekday()]
-
-
-def build_valid_label(valid_from, valid_until, date_str):
-    """Build a clear Finnish validity label."""
-    today = helsinki_today()
-    vf = None
-    vu = None
-    if valid_from:
-        try:
-            vf = datetime.fromisoformat(valid_from).date()
-        except Exception:
-            pass
-    if valid_until:
-        try:
-            vu = datetime.fromisoformat(valid_until).date()
-        except Exception:
-            pass
-
-    if vu and vu < today:
-        return "vanhentunut"  # filtered out by caller
-
-    if date_str:
-        return date_str
-
-    if vf and vu:
-        if vu == today:
-            return f"🔥 Viimeinen päivä! (tänään {today.day}.{today.month}. asti)"
-        if vf <= today:
-            days_left = (vu - today).days
-            vf_wd = finnish_weekday(vf)
-            vf_d = str(vf.day)
-            vf_m = str(vf.month)
-            vu_wd = finnish_weekday(vu)
-            vu_d = str(vu.day)
-            vu_m = str(vu.month)
-            return "🗓️ Voimassa " + vf_wd + " " + vf_d + "." + vf_m + "-" + vu_wd + " " + vu_d + "." + vu_m + " asti (vielä " + str(days_left) + " pv)"
-        vf_wd = finnish_weekday(vf)
-        vf_d = str(vf.day)
-        vf_m = str(vf.month)
-        vu_wd = finnish_weekday(vu)
-        vu_d = str(vu.day)
-        vu_m = str(vu.month)
-        return "🗓️ Voimassa " + vf_wd + " " + vf_d + "." + vf_m + "-" + vu_wd + " " + vu_d + "." + vu_m + "."
-    if vf:
-        vf_wd = finnish_weekday(vf)
-        vf_d = str(vf.day)
-        vf_m = str(vf.month)
-        return "🗓️ Voimassa alkaen " + vf_wd + " " + vf_d + "." + vf_m + "."
-    return ""
-
-
-def build_item(
-    *,
-    id,
-    title,
-    store_name,
-    mall_name,
-    region,
-    category,
-    price_kg=None,
-    price_eur=None,
-    valid_from=None,
-    valid_until=None,
-    source_type="live_verified",
-    source_name="",
-    deal_url="",
-    store_offers_url="",
-    street="",
-    locality="",
-    venue_key=None,
-    lat=None,
-    lon=None,
-    tags=None,
-    badge="🍬 Herkku",
-    date_str="",
-):
-    price_numeric = price_kg if price_kg is not None else price_eur
-    price_display = fmt_price_kg(price_kg) if price_kg is not None else fmt_price_eur(price_eur)
-    km, walking = distance_from(lat, lon, STATION_LAT, STATION_LON)
-    valid_label = build_valid_label(valid_from, valid_until, date_str)
-
-    return {
-        "id": id,
-        "title": title,
-        "store_name": store_name,
-        "mall_name": mall_name,
-        "region": region,
-        "category": category,
-        "price_display": price_display,
-        "price_numeric": price_numeric,
-        "price_kg": price_kg,
-        "price_eur": price_eur,
-        "price_label": price_display,
-        "valid_from": valid_from or "",
-        "valid_until": valid_until or "",
-        "valid": valid_label,
-        "source_type": source_type,
-        "source_name": source_name,
-        "deal_url": deal_url,
-        "store_offers_url": store_offers_url,
-        "street": street,
-        "locality": locality,
-        "venue_key": venue_key,
-        "lat": lat,
-        "lon": lon,
-        "station_km": km,
-        "station_walking": walking,
-        "distKm": km,
-        "distWalking": walking,
-        "maps_url": maps_url(street, locality, lat, lon),
-        "badge": badge,
-        "tags": tags or [],
-        "date_str": date_str,
-    }
-
-
-# ---------------------------------------------------------------------------
-# Live fetchers (best-effort; standard library only). Returns [] on failure.
-# ---------------------------------------------------------------------------
-
-def try_kruoka_treats(venues):
-    """Attempt to fetch K-Ruoka current weekly offers. Returns [] on failure - no fakes."""
-    items = []
     try:
-        text = fetch_text("https://www.k-ruoka.fi/tarjoukset", timeout=15)
-        low = text.lower()
-        if not any(k in low for k in TREAT_KEYWORDS):
-            return items
-        for m in re.finditer(
-            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-            text,
-            re.IGNORECASE,
-        ):
-            snippet = strip_html(m.group(1))
-            price_kg = extract_eur_per_kg(snippet)
-            price_eur = extract_eur_price(snippet)
-            if price_kg is None and price_eur is None:
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=15, verify=certifi.where())
+        latency = int((time.monotonic() - t0) * 1000)
+        if resp.status_code != 200:
+            monitor.record("resq_club", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+            return []
+
+        payload = resp.json()
+        offers = payload if isinstance(payload, list) else payload.get("offers", payload.get("data", []))
+        providers_map = {}
+        if isinstance(payload, dict) and isinstance(payload.get("providers"), list):
+            for p in payload["providers"]:
+                providers_map[p.get("id")] = p
+
+        for offer in offers:
+            offer_id = offer.get("id")
+            if not offer_id:
                 continue
-            items.append(
-                build_item(
-                    id=f"live:kruoka:{slug(snippet[:60])}",
-                    title=snippet[:120] or "K-Ruoka herkkutarjous",
-                    store_name="K-Ruoka (myymäläkohtaiset tarjoukset)",
-                    mall_name=None,
-                    region="Helsinki",
-                    category="Irtokarkit",
-                    price_kg=price_kg,
-                    price_eur=price_eur,
-                    source_type="live_verified",
-                    source_name="K-Ruoka Tarjoukset",
-                    deal_url="https://www.k-ruoka.fi/tarjoukset",
-                    store_offers_url="https://www.k-ruoka.fi/tarjoukset",
-                    tags=["irtokarkit"],
-                    badge="🍬 Irtokarkit",
-                )
-            )
-    except Exception as exc:
-        print(f"[info] K-Ruoka live fetch unavailable: {exc}", file=sys.stderr)
-    return items[:5]
+            provider = offer.get("provider") or providers_map.get(offer.get("providerId")) or {}
+            venue_name = provider.get("name") or offer.get("providerName") or "ResQ-kumppani"
+            offer_name = offer.get("name") or offer.get("title") or "Yllätyskassi"
+            combined_text = f"{venue_name} {offer_name} {offer.get('description', '')}".lower()
 
-
-def try_lidl_treats(venues):
-    """Attempt to fetch Lidl Suomi weekly tarjoukset. Returns [] on failure - no fakes."""
-    items = []
-    try:
-        text = fetch_text("https://www.lidl.fi/tarjoukset", timeout=15)
-        low = text.lower()
-        if not any(k in low for k in TREAT_KEYWORDS):
-            return items
-        for m in re.finditer(
-            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-            text,
-            re.IGNORECASE,
-        ):
-            snippet = strip_html(m.group(1))
-            price_eur = extract_eur_price(snippet)
-            price_kg = extract_eur_per_kg(snippet)
-            if price_eur is None and price_kg is None:
+            if not any(kw in combined_text for kw in TREAT_KEYWORDS):
                 continue
-            items.append(
-                build_item(
-                    id=f"live:lidl:{slug(snippet[:60])}",
-                    title=snippet[:120] or "Lidl herkkutarjous",
-                    store_name="Lidl Suomi",
-                    mall_name=None,
-                    region="Helsinki",
-                    category="Irtokarkit",
-                    price_kg=price_kg,
-                    price_eur=price_eur,
-                    source_type="live_verified",
-                    source_name="Lidl Suomi Tarjoukset",
-                    deal_url="https://www.lidl.fi/tarjoukset",
-                    store_offers_url="https://www.lidl.fi/tarjoukset",
-                    tags=["irtokarkit"],
-                    badge="🍬 Irtokarkit",
-                )
-            )
-    except Exception as exc:
-        print(f"[info] Lidl live fetch unavailable: {exc}", file=sys.stderr)
-    return items[:5]
 
+            raw_price = offer.get("price") or offer.get("discountedPrice")
+            orig_price = offer.get("originalPrice")
+            if isinstance(raw_price, dict):
+                raw_price = raw_price.get("amount")
+            if isinstance(orig_price, dict):
+                orig_price = orig_price.get("amount")
 
-def try_skaupat_treats(venues):
-    """Attempt to fetch S-Kaupat / Hok-Elanto weekly tarjoukset. Returns [] on failure - no fakes."""
-    items = []
-    try:
-        text = fetch_text("https://www.s-kanava.fi", timeout=15)
-        low = text.lower()
-        if not any(k in low for k in TREAT_KEYWORDS):
-            return items
-        for m in re.finditer(
-            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-            text,
-            re.IGNORECASE,
-        ):
-            snippet = strip_html(m.group(1))
-            price_eur = extract_eur_price(snippet)
-            price_kg = extract_eur_per_kg(snippet)
-            if price_eur is None and price_kg is None:
+            if raw_price is None:
                 continue
-            items.append(
-                build_item(
-                    id=f"live:skaupat:{slug(snippet[:60])}",
-                    title=snippet[:120] or "S-Kaupat herkkutarjous",
-                    store_name="S-Kaupat (Hok-Elanto)",
-                    mall_name=None,
-                    region="Helsinki",
-                    category="Leipomo & Kahvila",
-                    price_kg=price_kg,
-                    price_eur=price_eur,
-                    source_type="live_verified",
-                    source_name="S-ryhmä Tarjoukset",
-                    deal_url="https://www.s-kanava.fi",
-                    store_offers_url="https://www.s-kanava.fi",
-                    tags=["leipomo"],
-                    badge="🥐 Leipomo & Kahvila",
-                )
-            )
-    except Exception as exc:
-        print(f"[info] S-Kaupat live fetch unavailable: {exc}", file=sys.stderr)
-    return items[:5]
+            price_eur = float(raw_price) / 100.0 if float(raw_price) > 40 else float(raw_price)
+            orig_eur = (float(orig_price) / 100.0 if float(orig_price) > 40 else float(orig_price)) if orig_price else None
 
-
-# ---------------------------------------------------------------------------
-# Movie fetching from MyHelsinki Linked Events API (live, verified <= 7 EUR)
-# ---------------------------------------------------------------------------
-
-def fetch_linkedevents_movies(venues):
-    """Fetch cinema events <= 7 EUR from MyHelsinki Linked Events API."""
-    results = []
-    today_iso = datetime.now(timezone.utc).date().isoformat()
-    url = (
-        "https://api.hel.fi/linkedevents/v1/event/"
-        f"?language=fi&page_size=100&start={today_iso}&include=location"
-    )
-    pages = 0
-    seen = set()
-    today = helsinki_today()
-    try:
-        while url and pages < 15:
-            pages += 1
-            data = fetch_json(url)
-            for ev in data.get("data", []):
-                text = f"{pick(ev.get('name'))} {strip_html(pick(ev.get('description')))}"
-                if not is_movie(text):
-                    continue
-                key = f"{pick(ev.get('name'))}|{ev.get('start_time')}|{pick((ev.get('location') or {}).get('address_locality'))}"
-                if key in seen:
-                    continue
-                seen.add(key)
-
-                name = pick(ev.get("name")) or "Elokuvanäytös"
-                desc = strip_html(pick(ev.get("description")))
-                loc = ev.get("location") or {}
-                locality = pick(loc.get("address_locality")) or "Helsinki"
-                street = pick(loc.get("street_address")) or ""
-                pos = loc.get("position") or {}
-                coords = pos.get("coordinates") if isinstance(pos.get("coordinates"), list) else None
-                lon = coords[0] if coords else None
-                lat = coords[1] if coords else None
-
-                # Resolve venue from coords.json
-                v = None
-                for venue in venues:
-                    if venue.get("street") and venue["street"].lower() in street.lower():
-                        v = venue
-                        break
-                    if venue.get("name") and venue["name"].lower() in name.lower():
-                        v = venue
-                        break
-
-                lat = lat or (v["lat"] if v else None)
-                lon = lon or (v["lon"] if v else None)
-                street = street or (v["street"] if v else "")
-                locality = locality or (v["locality"] if v else "")
-                mall_name = v["mall"] if v and v.get("mall") else None
-
-                # Extract price <= 7 EUR
-                price_eur = extract_eur_price(text, max_eur=7.0)
-                if price_eur is None:
-                    for off in (ev.get("offers") or []):
-                        p = extract_eur_price(pick(off.get("price")) or "", max_eur=7.0)
-                        if p is not None:
-                            price_eur = p
-                            break
-                if price_eur is None or price_eur > 7.0:
-                    continue
-
-                # Parse dates
-                start = ev.get("start_time")
-                end = ev.get("end_time")
-                date_str = ""
-                valid_from = None
-                valid_until = None
-                if start:
-                    try:
-                        d = datetime.fromisoformat(start.replace("Z", "+00:00"))
-                        d_date = d.date()
-                        d_wd = finnish_weekday(d_date)
-                        d_day = str(d_date.day)
-                        d_month = str(d_date.month)
-                        date_str = d_wd + " " + d_day + "." + d_month + " klo " + f"{d.hour:02d}:" + f"{d.minute:02d}"
-                        valid_from = d_date.isoformat()
-                        if end:
-                            try:
-                                ed = datetime.fromisoformat(end.replace("Z", "+00:00"))
-                                valid_until = ed.date().isoformat()
-                            except Exception:
-                                valid_until = valid_from
-                        else:
-                            valid_until = valid_from
-                    except Exception:
-                        date_str = start
-
-                # Filter out past events
-                if valid_until:
-                    try:
-                        vu = datetime.fromisoformat(valid_until).date()
-                        if vu < today:
-                            continue
-                    except Exception:
-                        pass
-
-                region = region_for(locality)
-                info_url = ev.get("info_url") or ev.get("@id") or ""
-                results.append(
-                    build_item(
-                        id="movie:" + slug(ev.get("@id") or name),
-                        title=name,
-                        store_name="Finnkino / Kino",
-                        mall_name=mall_name,
-                        region=region,
-                        category="Leffapäivät",
-                        price_kg=None,
-                        price_eur=price_eur,
-                        valid_from=valid_from,
-                        valid_until=valid_until,
-                        source_type="live_verified",
-                        source_name="Linked Events (MyHelsinki avoin data)",
-                        deal_url=info_url,
-                        store_offers_url=info_url,
-                        street=street,
-                        locality=locality,
-                        venue_key=v["key"] if v else None,
-                        lat=lat,
-                        lon=lon,
-                        tags=["leffa", "elokuva"],
-                        badge="🎟️ Elokuva",
-                        date_str=date_str,
-                    )
-                )
-            url = (data.get("meta") or {}).get("next")
-    except Exception as exc:
-        print(f"[warn] Linked Events fetch failed: {exc}", file=sys.stderr)
-    return results
-
-
-def collect_treats(venues):
-    """Build treat items from live sources only. No fakes."""
-    items = []
-    for fetcher in (try_kruoka_treats, try_lidl_treats, try_skaupat_treats):
-        try:
-            items.extend(fetcher(venues))
-        except Exception as exc:
-            print(f"[info] Live fetcher {fetcher.__name__} raised: {exc}", file=sys.stderr)
-
-    today = helsinki_today()
-    resolved = []
-    for t in items:
-        v = venue_by_key(venues, t.get("venue_key") or "") if t.get("venue_key") else None
-        if not v:
-            v = venue_by_name(venues, t.get("store_name", ""))
-
-        lat = t.get("lat") or (v["lat"] if v else None)
-        lon = t.get("lon") or (v["lon"] if v else None)
-        street = t.get("street") or (v["street"] if v else "")
-        locality = t.get("locality") or (v["locality"] if v else "")
-        mall_name = t.get("mall_name") or (v.get("mall") if v else None)
-
-        km, walking = distance_from(lat, lon, STATION_LAT, STATION_LON)
-        price_numeric = t.get("price_kg") if t.get("price_kg") is not None else t.get("price_eur")
-
-        # Weekly offer validity: today through today+7 days
-        valid_from = today.isoformat()
-        valid_until = (today + timedelta(days=7)).isoformat()
-        try:
-            vu = datetime.fromisoformat(valid_until).date()
-            if vu < today:
+            if price_eur <= 0 or price_eur > 12.0:
                 continue
-        except Exception:
-            pass
-        end_date = today + timedelta(days=7)
-        end_wd = finnish_weekday(end_date)
-        end_day = str(end_date.day)
-        end_month = str(end_date.month)
 
-        resolved.append({
-            **t,
-            "lat": lat,
-            "lon": lon,
-            "street": street,
-            "locality": locality,
-            "mall_name": mall_name,
-            "station_km": km,
-            "station_walking": walking,
-            "distKm": km,
-            "distWalking": walking,
-            "maps_url": maps_url(street, locality, lat, lon),
-            "valid_from": valid_from,
-            "valid_until": valid_until,
-            "valid": "🗓️ Voimassa " + end_wd + " " + end_day + "." + end_month + " asti (vielä 7 pv)",
-            "price_numeric": price_numeric,
-        })
-    return resolved
+            coords = provider.get("location") or offer.get("location") or {}
+            lat = coords.get("latitude") or coords.get("lat")
+            lon = coords.get("longitude") or coords.get("lon") or coords.get("lng")
+            if not is_valid_finland_coords(lat, lon):
+                continue
 
+            address = provider.get("address") or provider.get("streetAddress") or "Helsinki"
+            city = provider.get("city") or address
+            pickup_end = offer.get("pickupEnd") or offer.get("expiresAt")
+            valid_until = now_hel.strftime("%Y-%m-%d")
+            pickup_label = None
+            if pickup_end:
+                try:
+                    dt_end = datetime.fromisoformat(pickup_end.replace("Z", "+00:00")).astimezone(TZ_HEL)
+                    if dt_end < now_hel:
+                        continue
+                    valid_until = dt_end.strftime("%Y-%m-%d")
+                    day_prefix = "Tänään" if dt_end.date() == now_hel.date() else f"{dt_end.day}.{dt_end.month}."
+                    pickup_label = f"Nouto {day_prefix} klo {dt_end.strftime('%H:%M')} asti"
+                except Exception:
+                    pass
 
-def collect_movies(venues):
-    """Build movie items from live Linked Events API only. No fakes."""
-    return fetch_linkedevents_movies(venues)
+            price_display = f"{price_eur:.2f}".replace(".", ",") + " €"
+            if orig_eur and orig_eur > price_eur:
+                price_display += f" (norm. {orig_eur:.2f}".replace(".", ",") + " €)"
 
-
-def run():
-    venues_data = load_venues()
-    venues = venues_data.get("venues", [])
-
-    treats = collect_treats(venues)
-    movies = collect_movies(venues)
-
-    events = treats + movies
-    # Unit-aware sort: separate price_kg and price_eur
-    def sort_key(e):
-        kg = e.get("price_kg")
-        eur = e.get("price_eur")
-        if kg is not None:
-            return (0, kg, e["title"])
-        if eur is not None:
-            return (1, eur, e["title"])
-        return (2, 9999, e["title"])
-    events.sort(key=sort_key)
-
-    today = helsinki_today().isoformat()
-    payload = {
-        "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "nextUpdateAt": next_update_iso(),
-        "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
-        "sources": [
-            "https://api.hel.fi/linkedevents/v1/event/",
-            "https://www.k-ruoka.fi/tarjoukset",
-            "https://www.lidl.fi/tarjoukset",
-            "https://www.s-kanava.fi",
-        ],
-        "total": len(events),
-        "today": today,
-        "treats": events,
-    }
-
-    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-        f.write("\n")
-    print(f"Herkku snapshot saved: {len(events)} items -> {OUT_PATH}")
-    print(f"  Treats: {len(treats)}, Movies: {len(movies)}")
-
-
-if __name__ == "__main__":
-    run()
+            deal_url = f"https://resq-club.com{offer_id}"
+            items.append({
+                "id": make_id("resq", offer_name, venue_name),
+                "title": f"{offer_name} – {venue_name}",
+                "store_name": venue_name,
+                "mall_name": "Lauttis" if "lauttasaari" in address.lower() or "lauttis" in venue_name.lower() else "",
+                "address": address,
+                "region": infer_region(f"{city} {address} {venue_name}"),
+                "category": "leipomo",
+                "price_eur": round(price_eur, 2),
+                "price_kg": None,
+                "price_display": price_display,
+                "valid_from": now_hel.strftime("%Y-%m-%d"),
+                "valid_until": valid_until,
+                "custom_time_label": pickup_label,
+                "lat": float(lat),
+                "lon": float(lon),
+                "source_type": "live_verified",
+                "source_name": "ResQ Club",
+                "deal_url": deal_url,
+                "store_offers_url": deal_url,
+"maps_url": f"google.com{lat},{lon}",
+"verified_at": now_hel.isoformat(),
+})
+monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
+except Exception as exc:
+latency = int((time.monotonic() - t0) * 1000)
+monitor.record("resq_club", "error", 0, latency, None, str(exc)[:180])
+return items
+def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
+t0 = time.monotonic()
+url = "hel.fi"
+end_dt = now_hel + timedelta(days=14)
+params = {
+"start": now_hel.strftime("%Y-%m-%d"),
+"end": end_dt.strftime("%Y-%m-%d"),
+"include": "location",
+"page_size": 100,
+"sort": "start_time",
+}
+items: List[Dict[str, Any]] = []
+try:
+resp = requests.get(url, params=params, headers=HEADERS, timeout=15, verify=certifi.where())
+latency = int((time.monotonic() - t0) * 1000)
+if resp.status_code != 200:
+monitor.record("myhelsinki_events", "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+return []
+events = resp.json().get("data", [])
+for ev in events:
+name_obj = ev.get("name") or {}
+title = name_obj.get("fi") or name_obj.get("en") or ""
+desc_obj = ev.get("short_description") or ev.get("description") or {}
+desc = desc_obj.get("fi") or desc_obj.get("en") or ""
+blob = f"{title} {desc}".lower()
+is_cinema = any(kw in blob for kw in CINEMA_KEYWORDS)
+is_treat = any(kw in blob for kw in ["kahvi", "pulla", "herkku", "suklaa", "jäätelö", "glögi", "pipari", "leivos"])
+if not (is_cinema or is_treat):
+continue
+offers = ev.get("offers") or []
+is_free = False
+ticket_price: Optional[float] = None
+offer_url = ""
+for off in offers:
+if off.get("is_free") is True:
+is_free = True
+ticket_price = 0.0
+price_txt = (off.get("price") or {}).get("fi") or (off.get("price") or {}).get("en") or ""
+parsed = parse_price_eur(price_txt)
+if parsed is not None:
+ticket_price = parsed
+info_u = (off.get("info_url") or {}).get("fi") or (off.get("info_url") or {}).get("en") or ""
+if info_u.startswith("https://"):
+offer_url = info_u
+if not is_free and (ticket_price is None or ticket_price > 7.0):
+continue
+loc = ev.get("location") or {}
+if not isinstance(loc, dict):
+continue
+pos = (loc.get("position") or {}).get("coordinates") or []
+if len(pos) < 2:
+continue
+lon, lat = float(pos[0]), float(pos[1])
+if not is_valid_finland_coords(lat, lon):
+continue
+venue_name = (loc.get("name") or {}).get("fi") or (loc.get("name") or {}).get("en") or "Helsinki"
+address = (loc.get("street_address") or {}).get("fi") or venue_name
+ev_info_url = (ev.get("info_url") or {}).get("fi") or (ev.get("info_url") or {}).get("en") or ""
+deal_url = offer_url if is_valid_deep_url(offer_url) else (
+ev_info_url if is_valid_deep_url(ev_info_url) else f"hel.fi{ev.get('id')}"
+)
+start_str = ev.get("start_time")
+if not start_str:
+continue
+dt_start = datetime.fromisoformat(start_str.replace("Z", "+00:00")).astimezone(TZ_HEL)
+if dt_start.date() < now_hel.date():
+continue
+price_val = 0.0 if is_free else float(ticket_price or 0.0)
+price_display = "Ilmainen (0 €)" if price_val == 0 else f"{price_val:.2f}".replace(".", ",") + " €"
+items.append({
+"id": make_id("hel", title, venue_name),
+"title": title,
+"store_name": venue_name,
+"mall_name": "Oodi" if "oodi" in venue_name.lower() else "",
+"address": address,
+"region": infer_region(f"{venue_name} {address}"),
+"category": "elokuva" if is_cinema else "leipomo",
+"price_eur": price_val,
+"price_kg": None,
+"price_display": price_display,
+"valid_from": dt_start.strftime("%Y-%m-%d"),
+"valid_until": dt_start.strftime("%Y-%m-%d"),
+"event_time": dt_start.strftime("%H:%M"),
+"lat": lat,
+"lon": lon,
+"source_type": "live_verified",
+"source_name": "MyHelsinki Linked Events",
+"deal_url": deal_url,
+"store_offers_url": deal_url,
+"maps_url": f"google.com{lat},{lon}",
+"verified_at": now_hel.isoformat(),
+})
+monitor.record("myhelsinki_events", "ok" if items else "empty", len(items), latency, resp.status_code)
+except Exception as exc:
+latency = int((time.monotonic() - t0) * 1000)
+monitor.record("myhelsinki_events", "error", 0, latency, None, str(exc)[:180])
+return items
+def render_page_text(url: str) -> tuple[Optional[int], str]:
+try:
+from playwright.sync_api import sync_playwright  # type: ignore
+with sync_playwright() as p:
+browser = p.chromium.launch(headless=True)
+context = browser.new_context(user_agent=HEADERS["User-Agent"], locale="fi-FI")
+page = context.new_page()
+resp = page.goto(url, wait_until="domcontentloaded", timeout=25000)
+page.wait_for_timeout(2500)
+status = resp.status if resp else 200
+text = page.inner_text("body")
+browser.close()
+return status, text
+except Exception:
+resp = requests.get(url, headers=HEADERS, timeout=15, verify=certifi.where())
+return resp.status_code, resp.text
+def extract_supermarket_deals_from_text(
+text: str,
+source_key: str,
+source_name: str,
+store_name: str,
+mall_name: str,
+address: str,
+lat: float,
+lon: float,
+campaign_url: str,
+now_hel: datetime,
+) -> List[Dict[str, Any]]:
+deals: List[Dict[str, Any]] = []
+lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+days_to_sunday = (6 - now_hel.weekday()) % 7
+valid_until = (now_hel + timedelta(days=days_to_sunday)).strftime("%Y-%m-%d")
+for idx, line in enumerate(lines):
+low = line.lower()
+if not any(kw in low for kw in ["irtokark", "suklaa", "makeis", "karkki", "jäätelö", "pulla", "croissant"]):
+continue
+window = " ".join(lines[max(0, idx - 1) : min(len(lines), idx + 4)])
+pkg = parse_price_kg(window)
+peur = parse_price_eur(window)
+if pkg is None and peur is None:
+continue
+is_bulk = "irtokark" in low or pkg is not None
+price_display = (
+f"{pkg:.2f}".replace(".", ",") + " €/kg"
+if pkg is not None
+else f"{peur:.2f}".replace(".", ",") + " €"
+)
+deals.append({
+"id": make_id(source_key, line[:60], store_name),
+"title": line[:90],
+"store_name": store_name,
+"mall_name": mall_name,
+"address": address,
+"region": infer_region(f"{store_name} {address}"),
+"category": "irtokarkit" if is_bulk else "makeiset",
+"price_eur": peur,
+"price_kg": pkg,
+"price_display": price_display,
+"valid_from": now_hel.strftime("%Y-%m-%d"),
+"valid_until": valid_until,
+"lat": lat,
+"lon": lon,
+"source_type": "live_verified",
+"source_name": source_name,
+"deal_url": campaign_url,
+"store_offers_url": campaign_url,
+"maps_url": f"google.com{lat},{lon}",
+"verified_at": now_hel.isoformat(),
+})
+return deals
+def fetch_supermarket_source(
+source_key: str,
+source_name: str,
+url: str,
+store_name: str,
+mall_name: str,
+address: str,
+lat: float,
+lon: float,
+monitor: SourceHealthMonitor,
+now_hel: datetime,
+) -> List[Dict[str, Any]]:
+t0 = time.monotonic()
+try:
+status, body = render_page_text(url)
+latency = int((time.monotonic() - t0) * 1000)
+if status and status >= 400:
+monitor.record(
+source_key,
+"blocked" if status in (403, 429) else "error",
+0,
+latency,
+status,
+f"HTTP {status}",
+)
+return []
+items = extract_supermarket_deals_from_text(
+body, source_key, source_name, store_name, mall_name, address, lat, lon, url, now_hel
+)
+monitor.record(source_key, "ok" if items else "empty", len(items), latency, status)
+return items
+except Exception as exc:
+latency = int((time.monotonic() - t0) * 1000)
+monitor.record(source_key, "error", 0, latency, None, str(exc)[:180])
+return []
+def validate_and_dedupe(items: List[Dict[str, Any]], today_str: str) -> List[Dict[str, Any]]:
+seen = set()
+clean: List[Dict[str, Any]] = []
+for item in items:
+valid_until = item.get("valid_until", "")
+if not valid_until or valid_until < today_str:
+continue
+if not is_valid_deep_url(item.get("deal_url", "")):
+continue
+if not is_valid_finland_coords(item.get("lat"), item.get("lon")):
+continue
+p_eur = item.get("price_eur")
+p_kg = item.get("price_kg")
+if (p_eur is None or p_eur < 0) and (p_kg is None or p_kg <= 0):
+continue
+dedupe_key = (item.get("title", "").strip().lower(), item.get("store_name", "").strip().lower())
+if dedupe_key in seen:
+continue
+seen.add(dedupe_key)
+clean.append(item)
+return clean
+def run_self_check() -> int:
+snapshot = load_json(SNAPSHOT_PATH, {})
+treats = snapshot.get("treats", [])
+diag = snapshot.get("diagnostics", {})
+print(f"[SELF-CHECK] Treats in snapshot: {len(treats)}")
+print(f"[SELF-CHECK] Sources OK: {diag.get('ok_sources', 0)}/{diag.get('total_sources', 0)}")
+failing = diag.get("needs_attention", [])
+if failing:
+print(f"[SELF-CHECK] Sources with >=2 consecutive failures: {', '.join(failing)}")
+if diag.get("total_sources", 0) > 0 and diag.get("ok_sources", 0) == 0:
+print("[SELF-CHECK] CRITICAL: 0 sources healthy.")
+return 1
+return 0
+def main() -> None:
+parser = argparse.ArgumentParser()
+parser.add_argument("--self-check", action="store_true", help="Validate generated snapshot health")
+args = parser.parse_args()
+if args.self_check:
+raise SystemExit(run_self_check())
+now_hel = datetime.now(TZ_HEL)
+today_str = now_hel.strftime("%Y-%m-%d")
+prev_snapshot = load_json(SNAPSHOT_PATH, {"treats": []})
+prev_health = load_json(HEALTH_LOG_PATH, {})
+monitor = SourceHealthMonitor(prev_health)
+source_results: Dict[str, List[Dict[str, Any]]] = {
+"resq_club": fetch_resq_club(monitor, now_hel),
+"myhelsinki_events": fetch_myhelsinki_events(monitor, now_hel),
+"k_ruoka": fetch_supermarket_source(
+"k_ruoka",
+"K-Ruoka Tarjoukset",
+"k-ruoka.fi",
+"K-Supermarket Lauttasaari (Lauttis)",
+"Lauttis",
+"Lauttasaarentie 28, 00200 Helsinki",
+60.1589,
+24.8825,
+monitor,
+now_hel,
+),
+"lidl": fetch_supermarket_source(
+"lidl",
+"Lidl Tarjoukset",
+"lidl.fi",
+"Lidl Lauttasaari",
+"Lauttasaari",
+"Heikkiläntie 2, 00210 Helsinki",
+60.1572,
+24.8861,
+monitor,
+now_hel,
+),
+"s_group": fetch_supermarket_source(
+"s_group",
+"S-ryhmä Tarjoukset",
+"s-kaupat.fi",
+"S-Market Lauttasaari",
+"Lauttasaari",
+"Lauttasaarentie 16, 00200 Helsinki",
+60.1595,
+24.8850,
+monitor,
+now_hel,
+),
+}
+combined: List[Dict[str, Any]] = []
+prev_treats = prev_snapshot.get("treats", [])
+source_name_map = {
+"resq_club": "ResQ Club",
+"myhelsinki_events": "MyHelsinki Linked Events",
+"k_ruoka": "K-Ruoka Tarjoukset",
+"lidl": "Lidl Tarjoukset",
+"s_group": "S-ryhmä Tarjoukset",
+}
+for src_key, fresh_items in source_results.items():
+src_status = monitor.sources.get(src_key, {}).get("status")
+if fresh_items:
+combined.extend(fresh_items)
+elif src_status in ("blocked", "error"):
+expected_name = source_name_map[src_key]
+for old in prev_treats:
+if old.get("source_name") == expected_name and old.get("valid_until", "") >= today_str:
+retained = dict(old)
+retained["source_type"] = "cached_valid"
+combined.append(retained)
+validated_treats = validate_and_dedupe(combined, today_str)
+diag_summary = monitor.summary()
+snapshot_out = {
+"generatedAt": now_hel.isoformat(),
+"nextUpdateAt": get_next_update_iso(now_hel),
+"timezone": "Europe/Helsinki",
+"totalCount": len(validated_treats),
+"diagnostics": diag_summary,
+"treats": validated_treats,
+}
+SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+HEALTH_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+SNAPSHOT_PATH.write_text(json.dumps(snapshot_out, ensure_ascii=False, indent=2), encoding="utf-8")
+HEALTH_LOG_PATH.write_text(json.dumps(diag_summary, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"Saved {len(validated_treats)} verified deals. Health: {diag_summary['ok_sources']}/{diag_summary['total_sources']} OK.")
+if name == "main":
+main()

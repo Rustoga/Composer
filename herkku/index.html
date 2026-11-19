@@ -1,923 +1,666 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Herkut – makeiset, leipomot & leffapäivät</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Herkut – makeiset, leipomot &amp; leffapäivät | Lokki</title>
   <style>
     :root {
       --bg: #FFF9FB;
-      --bg-tint: #FFF5F7;
       --card: #FFFFFF;
-      --card-hover: #FFF2F6;
-      --muted: #6B5B6B;
-      --line: #E3C9DA;
-      --accent: #FF4D8D;
-      --accent-glow: #FF85B2;
-      --mint: #2EC4B6;
-      --lemon: #FFBE0B;
-      --berry: #8338EC;
-      --ink: #3A2A3A;
-      --ok: #2EC4B6;
+      --border: #F3D5E1;
+      --text: #1F1624;
+      --muted: #5C4B66;
+      --strawberry: #D90452;
+      --plum: #4A0E4E;
+      --purple: #6D28D9;
+      --amber: #B45309;
+      --teal: #0F766E;
     }
+
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background:
-        radial-gradient(1000px 600px at 20% 10%, rgba(255,77,141,0.10), transparent 50%),
-        radial-gradient(800px 500px at 80% 80%, rgba(46,196,182,0.08), transparent 50%),
-        var(--bg-tint);
-      color: var(--ink);
-      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
     }
-    .wrap { max-width: 1100px; margin: 0 auto; }
-    header { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-    h1 {
-      margin: 0;
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
-      letter-spacing: -0.02em;
-      color: #FF4D8D;
-      text-shadow: 0 2px 10px rgba(255,77,141,0.25);
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
     }
-    .lede { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
-    .topbar {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 8px;
-      margin: 12px 0 14px;
-    }
-    input, select, button {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #FFFFFF;
-      color: var(--ink);
-      padding: 10px 12px;
-      font-size: 14px;
-    }
-    button { cursor: pointer; }
-    button.toggle.active {
-      background: var(--accent);
-      color: #FFFFFF;
-      border-color: var(--accent-glow);
-      box-shadow: 0 0 16px rgba(255,77,141,0.35);
-    }
-    button.refresh { background: var(--berry); border-color: var(--accent-glow); color: #fff; }
-    button.refresh:hover { background: #7a2cb8; }
-    .stats {
+
+    .top-nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px 18px;
-      margin: 6px 0 16px;
-      color: var(--muted);
-      font-size: 13px;
+      gap: 8px;
+      margin-bottom: 18px;
     }
-    .pill {
+    .nav-pill {
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
+    }
+    .nav-pill:hover { border-color: var(--strawberry); }
+    .nav-pill.active {
+      background: var(--strawberry);
+      color: #fff;
+      border-color: var(--strawberry);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.9rem;
+      color: var(--strawberry);
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      flex: 1 1 260px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .region-select {
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .view-toggle-group {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill-btn {
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.88rem;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      border: 1px solid var(--line);
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .pill-btn:hover { border-color: var(--strawberry); }
+    .pill-btn.active {
+      background: var(--strawberry);
+      color: #fff;
+      border-color: var(--strawberry);
+    }
+    .pill-btn.primary {
+      background: var(--plum);
+      color: #fff;
+      border-color: var(--plum);
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 18px;
+      font-size: 0.88rem;
+    }
+    .stat-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
       border-radius: 999px;
-      padding: 3px 10px;
     }
-    .pill strong { color: var(--ink); }
-    .pill .val { color: var(--accent); font-weight: 700; }
-    #loadStatus { color: #ef4444; font-weight: 600; }
-    .sections { display: grid; gap: 16px; }
-    .region {
-      border: 1px solid var(--line);
+    .stat-chip strong { color: var(--plum); }
+    .health-chip {
+      cursor: pointer;
+      background: #ECFDF5;
+      border: 1px solid #6EE7B7;
+      color: #065F46;
+      font-weight: 600;
+    }
+    .health-chip.warn {
+      background: #FEF3C7;
+      border-color: #FCD34D;
+      color: #92400E;
+    }
+    .health-panel {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--border);
       border-radius: 14px;
-      overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,245,247,0.7));
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 0.86rem;
     }
-    .region-head {
+    .health-panel.open { display: block; }
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .health-item {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #FAF5F8;
+      border: 1px solid var(--border);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 14px;
+    }
+    .deal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(74, 14, 78, 0.04);
+    }
+    .card-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(90deg, rgba(255,77,141,0.12), transparent);
+      align-items: flex-start;
+      gap: 8px;
     }
-    .region-head h2 {
+    .deal-title {
       margin: 0;
-      font-size: 14px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
+      font-size: 1.04rem;
       font-weight: 700;
+      color: var(--text);
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 10px;
-      padding: 8px;
-    }
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 14px 18px;
-      background: var(--card);
-      display: grid;
-      gap: 6px;
-      line-height: 1.5;
-      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
-      position: relative;
-    }
-    .card > * {
-      min-width: 0;
-      overflow-wrap: break-word;
-      word-break: normal;
-    }
-    .meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      align-items: center;
-    }
-    .meta-row .badge { white-space: nowrap; }
-    .price-detail {
-      font-size: 10px;
-      color: var(--muted);
-      line-height: 1.4;
-      max-width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent-glow);
-      box-shadow: 0 8px 24px rgba(255,77,141,0.10);
-    }
-    .title { font-weight: 700; line-height: 1.3; color: var(--ink); font-size: 15px; }
-    .meta { font-size: 12.5px; color: var(--muted); }
-    .badges { display: flex; flex-wrap: wrap; gap: 5px; }
-    /* High-contrast solid price pill */
+
     .price-pill {
-      display: inline-flex;
-      align-items: center;
-      background: #4A0E4E;
+      background: var(--plum);
       color: #FFFFFF;
       font-weight: 700;
-      font-size: 1rem;
-      padding: 4px 10px;
-      border-radius: 8px;
+      font-size: 0.96rem;
+      padding: 5px 11px;
+      border-radius: 999px;
       white-space: nowrap;
+      flex-shrink: 0;
     }
-    /* High-contrast solid category badges */
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
     .cat-badge {
-      display: inline-flex;
-      align-items: center;
-      font-size: 10.5px;
-      font-weight: 700;
       color: #FFFFFF;
-      padding: 3px 8px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 3px 10px;
       border-radius: 999px;
-      white-space: nowrap;
     }
-    .cat-elokuva { background: #6D28D9; }
+    .cat-elokuva { background: var(--purple); }
     .cat-irtokarkit { background: #BE185D; }
-    .cat-leipomo { background: #B45309; }
-    .cat-makeiset { background: #0F766E; }
-    .mall-badge {
-      font-size: 10px;
-      letter-spacing: 0.05em;
-      border: 1px solid rgba(255,190,11,0.55);
-      color: #FFD166;
-      background: rgba(255,190,11,0.15);
-      border-radius: 6px;
-      padding: 2.5px 6px;
-      width: fit-content;
-      text-transform: uppercase;
-    }
-    .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; }
-    .links a {
-      text-decoration: none;
-      color: var(--ink);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 0.82rem;
-      transition: all 0.15s;
-    }
-    .links a:hover { border-color: var(--accent-glow); color: var(--accent); }
-    .station-line { font-size: 11px; color: var(--accent-glow); margin-top: 2px; }
-    .station { color: var(--accent); font-weight: 700; }
-    .empty { padding: 20px; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; background: rgba(255,249,251,0.6); }
-    .helper {
-      margin-top: 14px;
-      padding: 12px 16px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-      background: rgba(255,255,255,0.6);
-    }
-    .helper b { color: var(--ink); }
-
-    /* Unified cross-page navigation */
-    .sitenav {
-      display: flex;
-      gap: 6px;
-      margin: 0 0 14px;
-      flex-wrap: wrap;
-    }
-    .navpill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 13px;
+    .cat-leipomo { background: var(--amber); }
+    .cat-makeiset { background: var(--teal); }
+    .source-tag {
+      background: #F3E8FF;
+      color: #4C1D95;
       font-weight: 600;
-      text-decoration: none;
-      color: var(--muted);
-      background: var(--card);
-      transition: all 0.15s;
-    }
-    .navpill:hover { border-color: var(--accent-glow); color: var(--accent); }
-    .navpill.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent-glow);
-      box-shadow: 0 0 14px rgba(255,77,141,0.45);
+      font-size: 0.76rem;
+      padding: 3px 9px;
+      border-radius: 999px;
     }
 
-    /* Origin + sort bar */
-    .origins {
+    .meta-line {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .card-actions {
       display: flex;
-      gap: 6px;
-      margin: 6px 0 14px;
       flex-wrap: wrap;
-      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
     }
-    .origin-label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .origin-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
+    .action-link {
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 6px 12px;
       border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 13px;
-      cursor: pointer;
-      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--plum);
+      background: #FFF5F9;
     }
-    .origin-pill.active {
-      background: var(--accent);
+    .action-link.verify {
+      background: var(--strawberry);
       color: #fff;
-      border-color: var(--accent-glow);
+      border-color: var(--strawberry);
     }
-    .sort-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 13px;
-      cursor: pointer;
-      background: #fff;
-      margin-left: 10px;
-    }
-    .sort-pill.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent-glow);
-    }
-    .gps-status {
-      font-size: 11px;
-      margin-left: 8px;
-      color: var(--muted);
-    }
-    .gps-status.ok { color: var(--mint); }
-    .gps-status.err { color: #ef4444; }
-    .gps-status.load { color: var(--lemon); }
 
-    /* Quick filter pills */
-    .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 14px; }
-    .filter-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 13px;
-      cursor: pointer;
-      background: #fff;
-    }
-    .filter-pill.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent-glow);
-    }
-    .filter-pill.active .tag { color: #fff; }
-
-    /* Comparison table */
     .table-wrap {
       overflow-x: auto;
-      margin: 20px 0;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--card);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
     }
-    .compare-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 0.9rem;
     }
-    .compare-table th {
-      background: var(--card-hover);
-      color: var(--ink);
+    th, td {
+      padding: 11px 12px;
       text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--line);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
     }
-    .compare-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--line);
-      color: var(--ink);
-      vertical-align: top;
+    th {
+      background: #FFF0F6;
+      color: var(--plum);
+      font-weight: 700;
     }
-    .compare-table tr:last-child td { border-bottom: none; }
-    .compare-table tr:hover { background: rgba(255,77,141,0.04); }
-    .compare-table .price-pill { font-size: 0.9rem; }
-    .compare-table .kg { color: var(--accent); }
-    .compare-table .km { white-space: nowrap; }
-    .compare-table .links a {
-      display: inline-block;
-      margin-right: 6px;
-      font-size: 10.5px;
-      padding: 3px 7px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      text-decoration: none;
-      color: var(--ink);
-    }
-    .compare-table .links a:hover { border-color: var(--accent-glow); color: var(--accent); }
-    .table-caption {
-      margin: 6px 0 10px;
-      font-size: 13px;
+
+    .empty-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
       color: var(--muted);
     }
-    @media (max-width: 780px) {
-      .topbar { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: 1fr; }
-      .filters { justify-content: center; }
-      .sitenav { justify-content: center; }
-      .origins { flex-direction: column; align-items: stretch; }
-      .origin-label, .sort-pill { width: 100%; text-align: left; margin-left: 0 !important; }
+    .footer-note {
+      margin-top: 24px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      font-size: 0.86rem;
+      color: var(--muted);
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <nav class="sitenav">
-      <a href="../lokki/" class="navpill">🕊️ Tapahtumat</a>
-      <a href="../sauna/" class="navpill">♨ Saunat</a>
-      <a href="./" class="navpill active">🍬 Herkut &amp; Leffat</a>
+  <div class="container">
+    <nav class="top-nav" aria-label="Päävalikko">
+      <a class="nav-pill" href="/lokki">🕊️ Tapahtumat</a>
+      <a class="nav-pill" href="/sauna">♨ Saunat</a>
+      <a class="nav-pill active" href="/herkku">🍬 Herkut &amp; Leffat</a>
     </nav>
-    <header>
-      <h1>🍬 Herkut Helsingissä</h1>
-      <p class="lede">Vahvistettuja herkku- ja leffatarjouksia Helsingissä, Espoossa ja Vantaalla. Tarjoukset haetaan live-lähteistä (MyHelsinki Linked Events, K-Ruoka, Lidl, S-ryhmä) ja päivitetään automaattisesti kahdesti päivässä (06:00 ja 19:00). Kaikki hinnat on tarkistettavissa suoraan lähdelinkistä ennen käyntiä.</p>
-    </header>
 
-    <div class="topbar">
-      <input id="search" placeholder="Etsi herkkua, paikkaa tai kauppakeskusta…" />
-      <select id="regionSelect">
-        <option value="ALL">Kaikki alueet</option>
+    <h1>🍬 Herkut Helsingissä</h1>
+    <p class="subtitle">
+      Vahvistettuja herkku-, leipomo- ja leffatarjouksia (≤ 7 €) Helsingissä, Lauttasaaressa, Espoossa ja Vantaalla.
+      Lähteinä ResQ Club, MyHelsinki Linked Events, K-Ruoka, Lidl ja S-ryhmä (päivitys klo 06:00 ja 19:00).
+    </p>
+
+    <div class="controls-row">
+      <input id="searchInput" class="search-input" type="search" placeholder="Etsi herkkua, paikkaa tai kauppakeskusta..." />
+      <select id="regionSelect" class="region-select" aria-label="Alue">
+        <option value="all">Kaikki alueet</option>
         <option value="Helsinki">Helsinki</option>
         <option value="Espoo">Espoo</option>
         <option value="Vantaa">Vantaa</option>
-        <option value="Muu Suomi">Muu Suomi</option>
       </select>
-      <button id="refreshNow" class="refresh">Päivitä</button>
-      <button id="viewToggle" class="toggle active">🎴 Korttinäkymä</button>
-      <button id="tableViewToggle" class="toggle">📋 Taulukkonäkymä</button>
+      <div class="view-toggle-group">
+        <button id="refreshBtn" class="pill-btn primary" type="button">Päivitä</button>
+        <button id="cardViewBtn" class="pill-btn active" type="button">🎴 Korttinäkymä</button>
+        <button id="tableViewBtn" class="pill-btn" type="button">📋 Taulukkonäkymä</button>
+      </div>
     </div>
 
-    <div class="filters">
-      <button class="filter-pill" data-filter="all">Kaikki</button>
-      <button class="filter-pill" data-filter="irtokarkit">🍬 Irtokarkit</button>
-      <button class="filter-pill" data-filter="leipomo">🥐 Leipomo &amp; Kahvila</button>
-      <button class="filter-pill" data-filter="mall">🏬 Kauppakeskus</button>
-      <button class="filter-pill" data-filter="movie">🎟️ Leffapäivät (≤ 7 €)</button>
-      <button class="filter-pill" data-filter="cheap">💶 Superhalvat (≤ 6 €/kg tai ≤ 5 €)</button>
+    <div class="controls-row" id="categoryRow">
+      <button class="pill-btn active" data-cat="all" type="button">Kaikki</button>
+      <button class="pill-btn" data-cat="irtokarkit" type="button">🍬 Irtokarkit</button>
+      <button class="pill-btn" data-cat="leipomo" type="button">🥐 Leipomo &amp; Kahvila</button>
+      <button class="pill-btn" data-cat="mall" type="button">🏬 Kauppakeskus</button>
+      <button class="pill-btn" data-cat="elokuva" type="button">🎟️ Leffapäivät (≤ 7 €)</button>
+      <button class="pill-btn" data-cat="cheap" type="button">💶 Superhalvat (≤ 6 €/kg tai ≤ 5 €)</button>
     </div>
 
-    <div class="origins">
-      <span class="origin-label">Etäisyys kohteesta:</span>
-      <button class="origin-pill active" data-origin="station">🚆 Rautatieasema</button>
-      <button class="origin-pill" data-origin="lauttis">🏝️ Lauttis</button>
-      <button class="origin-pill" data-origin="gps">📍 Oma sijainti (GPS)</button>
-      <span id="gpsStatus" class="gps-status"></span>
-      <button class="sort-pill" data-sort="nearest">↕️ Järjestä: Lähin ensin</button>
+    <div class="controls-row">
+      <span style="font-weight: 600; font-size: 0.9rem;">Etäisyys kohteesta:</span>
+      <button class="pill-btn active" data-origin="station" type="button">🚆 Rautatieasema</button>
+      <button class="pill-btn" data-origin="lauttis" type="button">🏝️ Lauttis</button>
+      <button class="pill-btn" data-origin="gps" type="button">📍 Oma sijainti (GPS)</button>
+      <button id="sortBtn" class="pill-btn" type="button">↕️ Järjestä: Lähin ensin</button>
     </div>
 
-    <div class="stats">
-      <span class="pill">Yhteensä: <strong class="val" id="totalCount">0</strong></span>
-      <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
-      <span class="pill">Seuraava päivitys: <strong id="nextUpdate">-</strong> (06:00 / 19:00)</span>
-      <span class="pill">Countdown: <strong id="countdown">-</strong></span>
-      <span id="loadStatus" class="pill">Ladataan vahvistettuja tarjouksia…</span>
-    </div>
+    <div class="status-bar">
+      <span class="stat-chip">Yhteensä: <strong id="totalCount">…</strong></span>
+      <span class="stat-chip">Päivitetty: <strong id="updatedAt">-</strong></span>
+      <span class="stat-chip">Seuraava päivitys: <strong id="nextUpdateAt">-</strong> (06:00 / 19:00)</span>
+      <span class="stat-chip">Countdown: <strong id="countdown">-</strong></span>
 
-    <div class="table-caption" id="tableCaption">Vertaa herkkuja ja leffalippuja</div>
-    <div class="table-wrap" id="tableWrap" style="display:none">
-      <table class="compare-table" id="compareTable">
-        <thead>
-          <tr>
-            <th>Herkku / Tarjous</th>
-            <th>Paikka / Kauppakeskus</th>
-            <th id="distHeader">Etäisyys asemalta</th>
-            <th>Kävelyaika</th>
-            <th>Hinta (€ / €/kg)</th>
-            <th>Voimassa</th>
-            <th>Linkki</th>
-          </tr>
-        </thead>
-        <tbody id="compareTableBody"></tbody>
-      </table>
-    </div>
+      🔍 Lähteiden tila: -
 
-    <div id="sections" class="sections"></div>
+Automaattinen lähdediagnostiikka (viimeisin ajo)
 
-    <div class="helper">
-      <b>Hintoja ja aukioloja voi vaihtua – tarkista aina kaupan tai elokuvateatterin omilta sivuilta ennen käyntiä.</b>
-      Kaikki tarjoukset on haettu live-lähteistä ja niiden voimassaolo on tarkistettu. Irtokarkkien hinnat on normalisoitu €/kg -muotoon vertailua varten.
-    </div>
-  </div>
+Ladataan vahvistettuja tarjouksia…
+Hintoja ja saatavuutta voi vaihtua – tarkista aina tarjous suorasta lähdelinkistä ennen käyntiä.
+Näytämme vain tänään tai tulevaisuudessa voimassa olevat vahvistetut tarjoukset. Kävelyaika lasketaan nopeudella 80 m/min.
 
-  <script>
-    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
-    const ORIGIN_STATION = { lat: 60.1719, lon: 24.9414, label: 'Rautatieasema', name: 'Helsingin rautatieasema' }
-    const ORIGIN_LAUTTIS = { lat: 60.1589, lon: 24.8825, label: 'Lauttis', name: 'Kauppakeskus Lauttis' }
-    let snapshot = { treats: [], today: '' }
-    let searchTerm = ''
-    let regionFilter = 'ALL'
-    let categoryFilter = 'all'
-    let viewMode = 'cards'
-    let refreshing = false
-    let origin = 'station' // 'station' | 'lauttis' | 'gps'
-    let sortNearest = false
-    let userLat = null
-    let userLon = null
-    let gpsStatus = 'idle' // 'idle' | 'loading' | 'ok' | 'err'
+const ORIGINS = {
+station: { label: "Rautatieasema", short: "asemalta", lat: 60.1719, lon: 24.9414 },
+lauttis: { label: "Lauttis", short: "Lauttiksesta", lat: 60.1589, lon: 24.8825 },
+gps: { label: "Oma sijainti", short: "sinusta", lat: null, lon: null }
+};
+const state = {
+treats: [],
+diagnostics: null,
+region: "all",
+category: "all",
+search: "",
+origin: "station",
+sortMode: "distance",
+viewMode: "cards"
+};
+function haversineKm(lat1, lon1, lat2, lon2) {
+const R = 6371;
+const dLat = (lat2 - lat1) * Math.PI / 180;
+const dLon = (lon2 - lon1) * Math.PI / 180;
+const a = Math.sin(dLat / 2) ** 2 +
+Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+Math.sin(dLon / 2) ** 2;
+return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function getHelsinkiTodayStr() {
+return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Helsinki" }).format(new Date());
+}
+function computeNextHelsinkiUpdate() {
+const now = new Date();
+const parts = new Intl.DateTimeFormat("en-GB", {
+timeZone: "Europe/Helsinki",
+year: "numeric", month: "2-digit", day: "2-digit",
+hour: "2-digit", minute: "2-digit", second: "2-digit",
+hour12: false
+}).formatToParts(now).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+const helHour = Number(parts.hour);
+const targetHour = helHour < 6 ? "06:00" : (helHour < 19 ? "19:00" : "06:00 (huomenna)");
+const tzOffset = new Intl.DateTimeFormat("en-US", {
+timeZone: "Europe/Helsinki", timeZoneName: "shortOffset"
+}).formatToParts(now).find(p => p.type === "timeZoneName")?.value || "GMT+2";
+const match = tzOffset.match(/GMT([+-]\d+)/);
+const offsetHours = match ? parseInt(match, 10) : 2;
+const sign = offsetHours >= 0 ? "+" : "-";
+const pad = String(Math.abs(offsetHours)).padStart(2, "0");
+const baseDate = ${parts.year}-${parts.month}-${parts.day};
+let candidate = new Date(${baseDate}T${helHour < 6 ? "06:00:00" : "19:00:00"}${sign}${pad}:00);
+if (helHour >= 19) {
+candidate = new Date(candidate.getTime() + 11 * 3600 * 1000);
+}
+return { dateObj: candidate, label: targetHour };
+}
+function formatFinnishValidity(item) {
+if (item.custom_time_label) return 📅 ${item.custom_time_label};
+const todayStr = getHelsinkiTodayStr();
+const until = item.valid_until;
+if (!until) return "🗓️ Voimassa nyt";
+const todayMs = new Date(${todayStr}T00:00:00Z).getTime();
+const untilMs = new Date(${until}T00:00:00Z).getTime();
+const diffDays = Math.round((untilMs - todayMs) / 86400000);
+const dObj = new Date(${until}T12:00:00Z);
+const wd = new Intl.DateTimeFormat("fi-FI", { weekday: "short", timeZone: "UTC" }).format(dObj);
+const dm = ${dObj.getUTCDate()}.${dObj.getUTCMonth() + 1}.;
+if (item.valid_from === until) {
+const timePart = item.event_time ?  klo ${item.event_time} : "";
+return diffDays === 0
+? 📅 Tänään ${wd} ${dm}${timePart}
+: 📅 ${wd.charAt(0).toUpperCase() + wd.slice(1)} ${dm}${timePart};
+}
+if (diffDays === 0) return 🔥 Viimeinen päivä! (tänään ${dm} asti);
+return 🗓️ Voimassa ${wd} ${dm} asti (vielä ${diffDays} pv);
+}
+function categoryMeta(cat) {
+switch (cat) {
+case "elokuva": return { label: "🎟️ Elokuva", cls: "cat-elokuva" };
+case "irtokarkit": return { label: "🍬 Irtokarkit", cls: "cat-irtokarkit" };
+case "leipomo": return { label: "🥐 Leipomo & Kahvila", cls: "cat-leipomo" };
+default: return { label: "🍫 Makeiset & Herkut", cls: "cat-makeiset" };
+}
+}
+function getActiveOrigin() {
+const o = ORIGINS[state.origin];
+if (state.origin === "gps" && (o.lat === null || o.lon === null)) {
+return ORIGINS.station;
+}
+return o;
+}
+function renderDiagnostics() {
+const diag = state.diagnostics;
+const btn = document.getElementById("healthToggleBtn");
+const grid = document.getElementById("healthGrid");
+if (!diag || !diag.sources) {
+btn.textContent = "🔍 Lähteiden tila: ei dataa";
+return;
+}
+const ok = diag.ok_sources ?? 0;
+const tot = diag.total_sources ?? 0;
+btn.textContent = 🔍 Lähteiden tila: ${ok}/${tot} OK;
+btn.classList.toggle("warn", ok < tot);
+grid.innerHTML = Object.entries(diag.sources).map(([key, info]) => {
+const icon = info.status === "ok" ? "✅" : (info.status === "empty" ? "🟡" : "⚠️");
+return <div class="health-item"> <div><strong>${icon} ${key}</strong></div> <div>Tila: ${info.status} (${info.items_found} kpl, ${info.latency_ms} ms)</div> ${info.error_reason ?${info.error_reason}: ""} </div>;
+}).join("");
+}
+function render() {
+const todayStr = getHelsinkiTodayStr();
+const origin = getActiveOrigin();
+const q = state.search.trim().toLowerCase();
+let filtered = state.treats.filter(item => {
+if (item.valid_until && item.valid_until < todayStr) return false;
+if (state.region !== "all" && item.region !== state.region) return false;
+if (state.category === "mall" && !item.mall_name) return false;
+if (state.category === "cheap") {
+const okKg = item.price_kg !== null && item.price_kg <= 6.0;
+const okEur = item.price_eur !== null && item.price_eur <= 5.0;
+if (!okKg && !okEur) return false;
+} else if (!["all", "mall"].includes(state.category) && item.category !== state.category) {
+return false;
+}
+if (q) {
+const hay = ${item.title} ${item.store_name} ${item.mall_name || ""} ${item.address || ""}.toLowerCase();
+if (!hay.includes(q)) return false;
+}
+return true;
+}).map(item => {
+const distKm = haversineKm(origin.lat, origin.lon, item.lat, item.lon);
+const walkMins = Math.max(1, Math.round((distKm * 1000) / 80));
+return { ...item, _distKm: distKm, _walkMins: walkMins };
+});
+if (state.sortMode === "distance") {
+filtered.sort((a, b) => a._distKm - b._distKm);
+} else {
+filtered.sort((a, b) => {
+const pa = a.price_kg ?? a.price_eur ?? 999;
+const pb = b.price_kg ?? b.price_eur ?? 999;
+return pa - pb;
+});
+}
+document.getElementById("totalCount").textContent = String(filtered.length);
+const container = document.getElementById("resultsContainer");
+if (filtered.length === 0) {
+container.innerHTML = <div class="empty-box"> Ei vahvistettuja tarjouksia valituilla suodattimilla juuri nyt — tarkistetaan seuraavaksi klo 06:00 / 19:00. </div>;
+return;
+}
+if (state.viewMode === "cards") {
+container.innerHTML = <div class="cards-grid">${filtered.map(item => { const cat = categoryMeta(item.category); const distStr = item._distKm < 1 ? ${Math.round(item._distKm * 1000)} m:${item._distKm.toFixed(1)} km; return 
 
-    function getOrigin() {
-      if (origin === 'gps' && userLat != null && userLon != null) {
-        return { lat: userLat, lon: userLon, label: 'Oma sijainti', name: 'Oma sijainti (GPS)' }
-      }
-      if (origin === 'lauttis') return ORIGIN_LAUTTIS
-      return ORIGIN_STATION
-    }
 
-    function haversineKm(lat1, lon1, lat2, lon2) {
-      const toRad = (d) => (d * Math.PI) / 180
-      const R = 6371
-      const dLat = toRad(lat2 - lat1)
-      const dLon = toRad(lon2 - lon1)
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
-      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    }
 
-    function walkingMin(km) {
-      if (km == null) return '–'
-      const mins = (km * 1000) / 80 // 80 m/min brisk walking
-      if (mins < 1) return '< 1 min'
-      if (mins < 60) return `${Math.round(mins)} min`
-      const h = Math.floor(mins / 60)
-      const m = round(mins % 60)
-      return m === 0 ? `${h} h` : `${h} h ${m} min`
-    }
-    function round(x) { return Math.round(x) }
+${item.title}
+${item.price_display}
 
-    function attachDistances(t) {
-      const o = getOrigin()
-      if (t.lat == null || t.lon == null) {
-        t.distKm = null
-        t.distWalking = '–'
-        return
-      }
-      const km = haversineKm(o.lat, o.lon, t.lat, t.lon)
-      t.distKm = km
-      t.distWalking = walkingMin(km)
-    }
 
-    function sortRegions(keys) {
-      return [...keys].sort((a, b) => {
-        const ai = PRIORITY.indexOf(a)
-        const bi = PRIORITY.indexOf(b)
-        if (ai === -1 && bi === -1) return a.localeCompare(b)
-        if (ai === -1) return 1
-        if (bi === -1) return -1
-        return ai - bi
-      })
-    }
+${cat.label}
+✅ ${item.source_name}
 
-    function normalize(str) {
-      return String(str || '').toLowerCase()
-    }
 
-    function fmtEur(v) {
-      if (v == null) return '–'
-      return v.toFixed(2).replace('.', ',')
-    }
 
-    function filteredTreats(treats) {
-      const q = normalize(searchTerm)
-      return treats.filter((t) => {
-        if (regionFilter !== 'ALL' && t.region !== regionFilter) return false
+📍 ${item.store_name}${item.address ?  (${item.address}) : ""}
+🚶 ${origin.label}: ${distStr} · ${item._walkMins} min
+${formatFinnishValidity(item)}
 
-        if (categoryFilter === 'irtokarkit') {
-          if (!/irtokarkit/.test(t.tags.join(' '))) return false
-        } else if (categoryFilter === 'leipomo') {
-          if (!/leipomo/.test(t.category || '')) return false
-        } else if (categoryFilter === 'mall') {
-          if (!t.mall_name) return false
-        } else if (categoryFilter === 'movie') {
-          if (!/leffa/.test(t.tags.join(' '))) return false
-        } else if (categoryFilter === 'cheap') {
-          const kg = t.price_kg
-          const eur = t.price_eur
-          if (kg != null && kg > 6) return false
-          if (eur != null && eur > 5) return false
-          if (kg == null && eur == null) return false
-        }
 
-        if (!q) return true
-        return (
-          normalize(t.title).includes(q) ||
-          normalize(t.store_name || '').includes(q) ||
-          normalize(t.mall_name || '').includes(q) ||
-          normalize(t.street || '').includes(q) ||
-          normalize(t.category || '').includes(q)
-        )
-      })
-    }
+Tarkista tarjous ↗
+📍 Kartta
 
-    function groupByRegion(treats) {
-      const map = new Map()
-      for (const t of treats) {
-        const r = t.region || 'Muu Suomi'
-        if (!map.has(r)) map.set(r, [])
-        map.get(r).push(t)
-      }
-      return map
-    }
 
-    function categoryBadge(t) {
-      const tags = t.tags.join(' ').toLowerCase()
-      const cat = (t.category || '').toLowerCase()
-      if (/leffa/.test(tags) || /elokuva/.test(cat)) return `<span class="cat-badge cat-elokuva">🎟️ Elokuva</span>`
-      if (/irtokarkit/.test(tags)) return `<span class="cat-badge cat-irtokarkit">🍬 Irtokarkit</span>`
-      if (/leipomo/.test(cat)) return `<span class="cat-badge cat-leipomo">🥐 Leipomo &amp; Kahvila</span>`
-      if (/makeis/.test(cat) || /herkku/.test(cat)) return `<span class="cat-badge cat-makeiset">🍫 Makeiset &amp; Herkut</span>`
-      return `<span class="cat-badge cat-irtokarkit">🍬 Herkku</span>`
-    }
+; }).join("")}</div>;
+} else {
+container.innerHTML = `
+{filtered.map(item => {
+const distStr = item._distKm < 1
+? `{Math.round(item._distKm * 1000)} m:${item._distKm.toFixed(1)} km; return 
+`;
+}).join("")}
 
-    function priceBadge(t) {
-      if (t.price_kg != null) return `<span class="price-pill">${fmtEur(t.price_kg)} €/kg</span>`
-      if (t.price_eur != null) return `<span class="price-pill">${fmtEur(t.price_eur)} €</span>`
-      return '<span class="price-pill">–</span>'
-    }
+Herkku / Tarjous	Paikka / Kauppakeskus	Etäisyys (${origin.short})	Kävelyaika	Hinta	Voimassa	Vahvistus
+${item.title}
+	${item.store_name}	${distStr}	${item._walkMins} min	${item.price_display}	${formatFinnishValidity(item)}	
 
-    function mallBadge(t) {
-      if (!t.mall_name) return ''
-      return `<span class="mall-badge">🏬 ${t.mall_name}</span>`
-    }
+`;
+}
+}
+async function loadSnapshot() {
+const errEl = document.getElementById("loadError");
+errEl.textContent = "";
+const urls = [
+./herkku_snapshot.json?t=${Date.now()},
+/herkku/herkku_snapshot.json?t=${Date.now()}
+];
+for (const u of urls) {
+try {
+const res = await fetch(u);
+if (!res.ok) continue;
+const data = await res.json();
+state.treats = Array.isArray(data.treats) ? data.treats : [];
+state.diagnostics = data.diagnostics || null;
+if (data.generatedAt) {
+const d = new Date(data.generatedAt);
+document.getElementById("updatedAt").textContent = new Intl.DateTimeFormat("fi-FI", {
+timeZone: "Europe/Helsinki",
+day: "2-digit", month: "2-digit", year: "numeric",
+hour: "2-digit", minute: "2-digit"
+}).format(d);
+}
+renderDiagnostics();
+render();
+return;
+} catch (_) {}
+}
+errEl.textContent = "Virhe: herkku_snapshot.json ei latautunut.";
+document.getElementById("totalCount").textContent = "0";
+}
+function tickCountdown() {
+const { dateObj, label } = computeNextHelsinkiUpdate();
+document.getElementById("nextUpdateAt").textContent = label;
+const diffMs = Math.max(0, dateObj.getTime() - Date.now());
+const hrs = Math.floor(diffMs / 3600000);
+const mins = Math.floor((diffMs % 3600000) / 60000);
+document.getElementById("countdown").textContent = ${hrs}h ${mins}m;
+}
+document.getElementById("searchInput").addEventListener("input", e => {
+state.search = e.target.value;
+render();
+});
+document.getElementById("regionSelect").addEventListener("change", e => {
+state.region = e.target.value;
+render();
+});
+document.getElementById("refreshBtn").addEventListener("click", loadSnapshot);
+document.getElementById("cardViewBtn").addEventListener("click", () => {
+state.viewMode = "cards";
+document.getElementById("cardViewBtn").classList.add("active");
+document.getElementById("tableViewBtn").classList.remove("active");
+render();
+});
+document.getElementById("tableViewBtn").addEventListener("click", () => {
+state.viewMode = "table";
+document.getElementById("tableViewBtn").classList.add("active");
+document.getElementById("cardViewBtn").classList.remove("active");
+render();
+});
+document.querySelectorAll("#categoryRow .pill-btn").forEach(btn => {
+btn.addEventListener("click", () => {
+document.querySelectorAll("#categoryRow .pill-btn").forEach(b => b.classList.remove("active"));
+btn.classList.add("active");
+state.category = btn.dataset.cat;
+render();
+});
+});
+document.querySelectorAll("[data-origin]").forEach(btn => {
+btn.addEventListener("click", () => {
+const chosen = btn.dataset.origin;
+if (chosen === "gps") {
+if (!navigator.geolocation) {
+alert("Selaimesi ei tue GPS-paikannusta.");
+return;
+}
+btn.textContent = "📍 Haetaan sijaintia…";
+navigator.geolocation.getCurrentPosition(
+pos => {
+ORIGINS.gps.lat = pos.coords.latitude;
+ORIGINS.gps.lon = pos.coords.longitude;
+state.origin = "gps";
+document.querySelectorAll("[data-origin]").forEach(b => b.classList.remove("active"));
+btn.classList.add("active");
+btn.textContent = "📍 Oma sijainti (GPS)";
+render();
+},
+() => {
+btn.textContent = "📍 Oma sijainti (GPS)";
+alert("Sijaintilupaa ei annettu — käytetään Rautatieasemaa.");
+}
+);
+return;
+}
+state.origin = chosen;
+document.querySelectorAll("[data-origin]").forEach(b => b.classList.remove("active"));
+btn.classList.add("active");
+render();
+});
+});
+document.getElementById("sortBtn").addEventListener("click", e => {
+state.sortMode = state.sortMode === "distance" ? "price" : "distance";
+e.target.textContent = state.sortMode === "distance"
+? "↕️ Järjestä: Lähin ensin"
+: "↕️ Järjestä: Edullisin ensin";
+render();
+});
+document.getElementById("healthToggleBtn").addEventListener("click", () => {
+document.getElementById("healthPanel").classList.toggle("open");
+});
+tickCountdown();
+setInterval(tickCountdown, 30000);
+loadSnapshot();
 
-    function stationLabel(t) {
-      if (t.distKm == null) return ''
-      const km = Number(t.distKm).toFixed(1)
-      const o = getOrigin()
-      const from = o.label === 'Oma sijainti' ? 'sijainnistasi' : `${o.label}ltä`
-      return `<span class="station">🚉 ${km} km ${from} · ${t.distWalking}</span>`
-    }
-
-    function originLabel() {
-      const o = getOrigin()
-      if (o.label === 'Oma sijainti') return 'sijainnistasi'
-      if (o.label === 'Lauttis') return 'Lauttiksesta'
-      return 'asemalta'
-    }
-
-    function render() {
-      const treats = filteredTreats(snapshot.treats || [])
-      treats.forEach(attachDistances)
-      document.getElementById('totalCount').textContent = String(treats.length)
-      const root = document.getElementById('sections')
-      const loadStatus = document.getElementById('loadStatus')
-
-      if (loadStatus) loadStatus.style.display = 'none'
-
-      if (!treats.length) {
-        root.innerHTML = '<div class="empty">Ei vahvistettuja tarjouksia juuri nyt — tarkistetaan seuraavaksi klo 06:00 / 19:00.</div>'
-        return
-      }
-
-      const grouped = groupByRegion(treats)
-      const regions = sortRegions(Array.from(grouped.keys()))
-
-      root.innerHTML = regions.map((region) => {
-        const items = grouped.get(region) || []
-        items.sort((a, b) => {
-          if (sortNearest) {
-            const aKm = a.distKm == null ? 9999 : a.distKm
-            const bKm = b.distKm == null ? 9999 : b.distKm
-            if (aKm !== bKm) return aKm - bKm
-            return (a.title || '').localeCompare(b.title || '')
-          }
-          // Unit-aware price sort: kg and eur separated
-          const aKg = a.price_kg != null ? a.price_kg : null
-          const aEur = a.price_eur != null ? a.price_eur : null
-          const bKg = b.price_kg != null ? b.price_kg : null
-          const bEur = b.price_eur != null ? b.price_eur : null
-          // kg-sorted items come first, then eur-sorted
-          const aGroup = aKg != null ? 0 : (aEur != null ? 1 : 2)
-          const bGroup = bKg != null ? 0 : (bEur != null ? 1 : 2)
-          if (aGroup !== bGroup) return aGroup - bGroup
-          const aVal = aKg != null ? aKg : (aEur != null ? aEur : 9999)
-          const bVal = bKg != null ? bKg : (bEur != null ? bEur : 9999)
-          if (aVal !== bVal) return aVal - bVal
-          return (a.title || '').localeCompare(b.title || '')
-        })
-        return `
-          <section class="region">
-            <div class="region-head">
-              <h2>${region}</h2>
-              <span class="meta">${items.length} herkkua</span>
-            </div>
-            <div class="grid">
-              ${items.map((t) => `
-                <article class="card">
-                  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                      <div class="title">${t.title || 'Nimetön herkku'}</div>
-                      ${categoryBadge(t)}
-                    </div>
-                    ${priceBadge(t)}
-                  </div>
-                  <div class="meta-row">
-                    ${mallBadge(t)}
-                    <span>📍 ${[t.street, t.locality].filter(Boolean).join(', ') || 'Osoite ei saatavilla'}</span>
-                    ${t.distKm != null ? `<span>🚉 ${Number(t.distKm).toFixed(1)} km · ${t.distWalking}</span>` : ''}
-                  </div>
-                  ${t.valid && t.valid !== 'vanhentunut' ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">${t.valid}</div>` : ''}
-                  <div class="links">
-                    ${t.deal_url ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
-                    ${t.store_offers_url ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>` : ''}
-                    ${t.maps_url ? `<a href="${t.maps_url}" target="_blank" rel="noreferrer">📍 Kartta</a>` : ''}
-                  </div>
-                </article>
-              `).join('')}
-            </div>
-          </section>
-        `
-      }).join('')
-    }
-
-    function setTimeStats() {
-      const last = snapshot.generatedAt ? new Date(snapshot.generatedAt) : null
-      const next = snapshot.nextUpdateAt ? new Date(snapshot.nextUpdateAt) : null
-      document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
-      document.getElementById('nextUpdate').textContent = next && !Number.isNaN(next) ? next.toLocaleString('fi-FI') : '-'
-
-      if (window._countdownTimer) clearInterval(window._countdownTimer)
-      if (!next || Number.isNaN(next.getTime())) return
-      const tick = () => {
-        const ms = next.getTime() - Date.now()
-        if (ms <= 0) {
-          document.getElementById('countdown').textContent = 'Päivitetään pian'
-          return
-        }
-        const h = Math.floor(ms / (1000 * 60 * 60))
-        const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
-        document.getElementById('countdown').textContent = `${h}h ${m}m`
-      }
-      tick()
-      window._countdownTimer = setInterval(tick, 30000)
-    }
-
-    function updateOriginUI() {
-      document.querySelectorAll('.origin-pill').forEach((p) => {
-        const active = p.getAttribute('data-origin') === origin
-        p.classList.toggle('active', active)
-      })
-      document.querySelectorAll('.sort-pill').forEach((p) => {
-        const active = p.getAttribute('data-sort') === 'nearest' && sortNearest
-        p.classList.toggle('active', active)
-      })
-      const distHeader = document.getElementById('distHeader')
-      if (distHeader) {
-        const o = getOrigin()
-        distHeader.textContent = `Etäisyys (${o.label})`
-      }
-      const status = document.getElementById('gpsStatus')
-      if (status) {
-        if (gpsStatus === 'ok') { status.textContent = '✓ GPS käytössä'; status.className = 'gps-status ok' }
-        else if (gpsStatus === 'err') { status.textContent = '✗ GPS ei käytettävissä'; status.className = 'gps-status err' }
-        else if (gpsStatus === 'loading') { status.textContent = '⏳ Haetaan sijaintia…'; status.className = 'gps-status load' }
-        else { status.textContent = ''; status.className = 'gps-status' }
-      }
-      render()
-      renderComparisonTable()
-    }
-
-    function renderComparisonTable() {
-      const treats = filteredTreats(snapshot.treats || [])
-      treats.forEach(attachDistances)
-      const body = document.getElementById('compareTableBody')
-      const caption = document.getElementById('tableCaption')
-
-      caption.textContent = `Vertaa herkkuja ja leffalippuja (${treats.length} kpl)`
-
-      body.innerHTML = treats.map((t) => {
-        const price = t.price_kg != null
-          ? `<span class="price-pill">${fmtEur(t.price_kg)} €/kg</span>`
-          : (t.price_eur != null ? `<span class="price-pill">${fmtEur(t.price_eur)} €</span>` : '<span class="price-pill">–</span>')
-        const km = t.distKm != null ? `<span class="km">${Number(t.distKm).toFixed(1)} km</span>` : '-'
-        const walk = t.distWalking || '-'
-        const mall = t.mall_name || '-'
-        const place = `${t.store_name || ''}${mall ? ` (${mall})` : ''}`
-        const website = t.deal_url
-          ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>`
-          : '-'
-        const store = t.store_offers_url
-          ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>`
-          : '-'
-        const maps = t.maps_url
-          ? `<a href="${t.maps_url}" target="_blank" rel="noreferrer">📍 Kartta</a>`
-          : '-'
-        const valid = t.valid && t.valid !== 'vanhentunut' ? t.valid : '–'
-
-        return `
-          <tr>
-            <td><strong>${t.title || 'Nimetön herkku'}</strong><br>${categoryBadge(t)}</td>
-            <td>${place}</td>
-            <td class="km">${km}</td>
-            <td>${walk}</td>
-            <td>${price}</td>
-            <td style="max-width: 160px;">${valid}</td>
-            <td class="links">${website} ${store} ${maps}</td>
-          </tr>
-        `
-      }).join('')
-    }
-
-    async function load() {
-      if (refreshing) return
-      refreshing = true
-      const btn = document.getElementById('refreshNow')
-      const status = document.getElementById('loadStatus')
-      if (btn) btn.disabled = true
-      if (status) { status.textContent = 'Ladataan vahvistettuja tarjouksia…'; status.style.display = 'inline-flex' }
-      const urls = ['./herkku_snapshot.json', '/herkku/herkku_snapshot.json']
-      let lastErr = null
-      try {
-        let data = null
-        for (const u of urls) {
-          try {
-            const res = await fetch(u + '?t=' + Date.now(), { cache: 'no-store' })
-            if (!res.ok) throw new Error('HTTP ' + res.status)
-            data = await res.json()
-            break
-          } catch (e) {
-            lastErr = e
-            continue
-          }
-        }
-        if (!data) throw lastErr || new Error('All fetch URLs failed')
-        snapshot = Array.isArray(data) ? { treats: data, today: data.today || '' } : data
-        if (!Array.isArray(snapshot.treats)) snapshot.treats = []
-        setTimeStats()
-        try { render() } catch (err) { console.error('render failed:', err) }
-        try { renderComparisonTable() } catch (err) { console.error('renderComparisonTable failed:', err) }
-      } catch (err) {
-        console.error('Herkku data load failed:', err)
-        const msg = 'Herkkujen lataaminen epäonnistui: ' + String(err.message || err)
-        const root = document.getElementById('sections')
-        if (root) root.innerHTML = '<div class="empty">' + msg + '</div>'
-        if (status) { status.textContent = msg; status.style.display = 'inline-flex' }
-      } finally {
-        refreshing = false
-        if (btn) btn.disabled = false
-      }
-    }
-
-    function requestGps() {
-      if (!navigator.geolocation) {
-        gpsStatus = 'err'
-        updateOriginUI()
-        return
-      }
-      gpsStatus = 'loading'
-      updateOriginUI()
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          userLat = pos.coords.latitude
-          userLon = pos.coords.longitude
-          gpsStatus = 'ok'
-          origin = 'gps'
-          updateOriginUI()
-        },
-        (err) => {
-          gpsStatus = 'err'
-          origin = 'station'
-          updateOriginUI()
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      )
-    }
-
-    document.getElementById('search').addEventListener('input', (e) => {
-      searchTerm = e.target.value || ''
-      render()
-      renderComparisonTable()
-    })
-
-    document.getElementById('regionSelect').addEventListener('change', (e) => {
-      regionFilter = e.target.value
-      render()
-      renderComparisonTable()
-    })
-
-    document.querySelectorAll('.filter-pill').forEach((pill) => {
-      pill.addEventListener('click', (e) => {
-        const f = e.currentTarget.getAttribute('data-filter')
-        categoryFilter = f
-        document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('active'))
-        e.currentTarget.classList.add('active')
-        render()
-        renderComparisonTable()
-      })
-    })
-
-    document.querySelectorAll('.origin-pill').forEach((pill) => {
-      pill.addEventListener('click', (e) => {
-        const o = e.currentTarget.getAttribute('data-origin')
-        if (o === 'gps') {
-          requestGps()
-          return
-        }
-        origin = o
-        userLat = null
-        userLon = null
-        gpsStatus = 'idle'
-        updateOriginUI()
-      })
-    })
-
-    document.querySelector('.sort-pill').addEventListener('click', () => {
-      sortNearest = !sortNearest
-      updateOriginUI()
-    })
-
-    document.getElementById('viewToggle').addEventListener('click', () => {
-      viewMode = 'cards'
-      document.getElementById('viewToggle').classList.add('active')
-      document.getElementById('tableViewToggle').classList.remove('active')
-      document.getElementById('tableCaption').style.display = 'none'
-      document.getElementById('tableWrap').style.display = 'none'
-      document.getElementById('sections').style.display = ''
-      render()
-    })
-
-    document.getElementById('tableViewToggle').addEventListener('click', () => {
-      viewMode = 'table'
-      document.getElementById('tableViewToggle').classList.add('active')
-      document.getElementById('viewToggle').classList.remove('active')
-      document.getElementById('tableCaption').style.display = ''
-      document.getElementById('tableWrap').style.display = ''
-      document.getElementById('sections').style.display = 'none'
-      renderComparisonTable()
-    })
-
-    document.getElementById('refreshNow').addEventListener('click', () => {
-      load()
-    })
-
-    updateOriginUI()
-    load()
-  </script>
-</body>
-</html>
