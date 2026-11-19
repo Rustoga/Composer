@@ -138,12 +138,8 @@ function hideError() {
 // Shaders
 // ---------------------------------------------------------------------------
 const vertexShader = `
-attribute vec3 position;
-attribute vec3 color;
 attribute float size;
 attribute float opacity;
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
 varying vec3 vColor;
 varying float vOpacity;
 void main() {
