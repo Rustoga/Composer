@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T22:25:53.435565+02:00",
+  "generatedAt": "2026-11-19T22:36:50.244016+02:00",
   "nextUpdateAt": "2026-11-20T06:00:00+02:00",
   "timezone": "Europe/Helsinki",
   "totalCount": 1,
@@ -16,47 +16,47 @@
       "resq_club": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 53,
+        "latency_ms": 25,
         "http_status": null,
-        "error_reason": "HTTPSConnectionPool(host='api.resq-club.com', port=443): Max retries exceeded with url: /v2/offers?neLat=60.35&neLng=25.25&swLat=60.1&swLng=24.6 (Caused by NameResolutionError(\"HTT",
-        "consecutive_failures": 6,
-        "checked_at": "2026-11-19T22:25:53.489339+02:00"
+        "error_reason": "HTTPSConnectionPool(host='api.resq-club.com', port=443): Max retries exceeded with url: /api/v2/offers?neLat=60.35&neLng=25.25&swLat=60.1&swLng=24.6 (Caused by NameResolutionError(",
+        "consecutive_failures": 7,
+        "checked_at": "2026-11-19T22:36:50.269426+02:00"
       },
       "myhelsinki_events": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 628,
+        "latency_ms": 960,
         "http_status": null,
         "error_reason": "Expecting value: line 1 column 1 (char 0)",
-        "consecutive_failures": 6,
-        "checked_at": "2026-11-19T22:25:54.117842+02:00"
+        "consecutive_failures": 7,
+        "checked_at": "2026-11-19T22:36:51.229528+02:00"
       },
       "k_ruoka": {
         "status": "blocked",
         "items_found": 0,
-        "latency_ms": 3199,
+        "latency_ms": 8334,
         "http_status": 403,
         "error_reason": "HTTP 403",
-        "consecutive_failures": 3,
-        "checked_at": "2026-11-19T22:25:57.318114+02:00"
+        "consecutive_failures": 4,
+        "checked_at": "2026-11-19T22:36:59.565442+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 4536,
+        "latency_ms": 5294,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T22:26:01.855396+02:00"
+        "checked_at": "2026-11-19T22:37:04.860357+02:00"
       },
       "s_group": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 3545,
+        "latency_ms": 3890,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 4,
-        "checked_at": "2026-11-19T22:26:05.400565+02:00"
+        "consecutive_failures": 5,
+        "checked_at": "2026-11-19T22:37:08.751375+02:00"
       }
     }
   },
