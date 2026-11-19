@@ -221,7 +221,7 @@ function loadGlbWithFallback(onProgress) {
     currentAbortController = null;
     renderMode = 'gltf';
     gltfScene = gltf.scene;
-    buildGltf(gltfScene);
+    buildGltf(gltf);
     setProgress(100, '100% — Ready');
     setState(uiStates.READY);
     lastTime = performance.now();
@@ -304,6 +304,11 @@ function fetchGlb(url, onProgress) {
         // CRITICAL: loader.parse expects an ArrayBuffer, NOT Uint8Array
         const loader = new GLTFLoader();
         loader.parse(ab, '', (gltf) => {
+          const root = gltf?.scene || gltf?.scenes?.[0];
+          if (!root) {
+            reject(new Error('GLTF parsed but contains no scene nodes'));
+            return;
+          }
           resolve(gltf);
         }, (err) => {
           reject(new Error('GLTFLoader parse failed: ' + (err.message || String(err))));
@@ -419,7 +424,7 @@ function initScene() {
         loadGlbFromBuffer(buf).then((gltf) => {
           renderMode = 'gltf';
           gltfScene = gltf.scene;
-          buildGltf(gltfScene);
+          buildGltf(gltf);
           setProgress(100, '100% — Ready');
           setState(uiStates.READY);
           lastTime = performance.now();
@@ -448,6 +453,11 @@ function loadGlbFromBuffer(buf) {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
     loader.parse(buf, '', (gltf) => {
+      const root = gltf?.scene || gltf?.scenes?.[0];
+      if (!root) {
+        reject(new Error('GLTF parsed but contains no scene nodes'));
+        return;
+      }
       resolve(gltf);
     }, (err) => {
       reject(err);
@@ -459,18 +469,24 @@ function loadGlbFromBuffer(buf) {
 // GLTF scene setup
 // ---------------------------------------------------------------------------
 function buildGltf(gltf) {
+  // Safely resolve root scene from GLTF object
+  const root = gltf?.scene || gltf?.scenes?.[0];
+  if (!root) {
+    throw new Error('GLTF parsed but contains no scene nodes');
+  }
+
   if (gltfScene) {
     scene.remove(gltfScene);
   }
-  gltfScene = gltf.scene;
-  scene.add(gltfScene);
+  gltfScene = root;
+  scene.add(root);
 
   // Normalize materials: MeshBasicMaterial for guaranteed visibility
   // (Scaniverse baked lighting into textures/vertex colors; MeshStandardMaterial
   // renders pitch-black without an HDR environment map)
   let meshCount = 0;
   let triCount = 0;
-  gltfScene.traverse((child) => {
+  root.traverse((child) => {
     if (child.isMesh) {
       meshCount++;
       child.frustumCulled = false;
@@ -497,26 +513,26 @@ function buildGltf(gltf) {
   });
 
   // Update world matrices and compute bounding box
-  gltf.scene.updateMatrixWorld(true);
+  root.updateMatrixWorld(true);
 
   // Step 1: Compute raw box and max dimension
-  const box1 = new THREE.Box3().setFromObject(gltf.scene);
+  const box1 = new THREE.Box3().setFromObject(root);
   const size1 = box1.getSize(new THREE.Vector3());
   const maxDim = Math.max(size1.x, size1.y, size1.z);
 
   // Step 2: Apply uniform scale FIRST (before centering)
   const s = maxDim > 0 ? 20 / maxDim : 1;
-  gltf.scene.scale.setScalar(s);
-  gltf.scene.updateMatrixWorld(true);
+  root.scale.setScalar(s);
+  root.updateMatrixWorld(true);
 
   // Step 3: Recompute box after scaling, then subtract center
-  const box2 = new THREE.Box3().setFromObject(gltf.scene);
+  const box2 = new THREE.Box3().setFromObject(root);
   const center2 = box2.getCenter(new THREE.Vector3());
-  gltf.scene.position.sub(center2);
-  gltf.scene.updateMatrixWorld(true);
+  root.position.sub(center2);
+  root.updateMatrixWorld(true);
 
   // Recompute final box for camera framing
-  const box3 = new THREE.Box3().setFromObject(gltf.scene);
+  const box3 = new THREE.Box3().setFromObject(root);
   box3.getCenter(center);
   const size3 = box3.getSize(new THREE.Vector3());
   radius = Math.max(size3.x, size3.y, size3.z) * 0.6;
