@@ -174,6 +174,17 @@
       display: inline-block;
       margin-left: 4px;
     }
+    .badge.unknown-badge {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(148,163,184,0.55);
+      color: #cbd5e1;
+      background: rgba(148,163,184,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
     .price-detail {
       font-size: 10px;
       color: var(--muted);
@@ -643,6 +654,30 @@ let refreshing = false
       const todayFi = fiWeekdays[helsinkiTime.getDay()]
       const todayIdx = helsinkiTime.getDay()
       const currentMinutes = helsinkiTime.getHours() * 60 + helsinkiTime.getMinutes()
+      const todayD = helsinkiTime.getDate()
+      const todayM = helsinkiTime.getMonth() + 1
+      const todayDM = todayD + '.' + todayM + '.'
+
+      // Priority 1 — Exact calendar date match (dateSchedules or D.M. patterns)
+      if (e.dateSchedules && Array.isArray(e.dateSchedules) && e.dateSchedules.length > 0) {
+        const todayEntry = e.dateSchedules.find(s => s.startsWith(todayDM + ' '))
+        if (todayEntry) {
+          const timeMatch = todayEntry.match(/([0-9]{1,2})[:.]([0-9]{2})\\s*[-–]\\s*([0-9]{1,2})[:.]([0-9]{2})/)
+          if (timeMatch) {
+            const openMinutes = parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2])
+            const closeMinutes = parseInt(timeMatch[3]) * 60 + parseInt(timeMatch[4])
+            if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+              return { status: 'open', closeTime: timeMatch[3] + ':' + timeMatch[4] }
+            } else if (currentMinutes >= closeMinutes) {
+              return { status: 'closed-late', closeTime: timeMatch[3] + ':' + timeMatch[4] }
+            } else {
+              return { status: 'closed-early', openTime: timeMatch[1] + ':' + timeMatch[2] }
+            }
+          }
+        }
+        // Has dateSchedules but today not listed → no public session today
+        return { status: 'closed-today' }
+      }
 
       // Closed today?
       const closedToday = new RegExp(todayFi + '\\s*suljettu', 'i').test(oh)
@@ -659,14 +694,14 @@ let refreshing = false
         } else if (currentMinutes >= closeMinutes) {
           return { status: 'closed-late', closeTime: match[3] + ':' + match[4] }
         } else {
-          return { status: 'closed-early', closeTime: match[3] + ':' + match[4] }
+          return { status: 'closed-early', openTime: match[1] + ':' + match[2] }
         }
       }
 
       // Open today if weekday mentioned but no specific time range found
       if (new RegExp(todayFi).test(oh)) return { status: 'open' }
 
-      // If no weekday info at all, assume open
+      // If no weekday info at all, assume unknown
       return { status: 'unknown' }
     }
 
@@ -686,7 +721,11 @@ let refreshing = false
           const price = e.priceAdult != null ? e.priceAdult : (e.priceDetails?.items?.[0]?.adult ?? null)
           if (!isFree && (price == null || price > 15)) return false
         }
-        if (openTodayFilter && getOpenStatus(e).status === 'closed') return false
+        if (openTodayFilter) {
+          const s = getOpenStatus(e)
+          // Show if open now, always open, will open later today, or was open earlier today
+          if (s.status === 'closed-today' || s.status === 'closed') return false
+        }
         if (!q) return true
         return (
           normalize(e.title).includes(q) ||
@@ -814,8 +853,7 @@ let refreshing = false
                   ${e.shortDesc ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">🕒 ${e.shortDesc}</div>` : ''}
                   ${priceDetailsLabel(e)}
                   ${isSeasonalSummer(e) ? `<span class="badge seasonal" title="Kesäsauna, avoinna vain touko–syyskuussa">☀️ Kesäsauna (touko–syyskuu)</span>` : ''}
-                  ${openTodayFilter ? `<span class="badge open-badge" title="Avoinna tänään">✓ Auki</span>` : ''}
-                  ${getOpenStatus(e).status === 'open' || getOpenStatus(e).status === 'open24h' ? `<span class="badge open-badge" title="Avoinna nyt">✓ Auki</span>` : getOpenStatus(e).status === 'closed-late' ? `<span class="badge closed-badge" title="Suljettu nyt">Suljettu nyt (${getOpenStatus(e).closeTime})</span>` : ''}
+                  ${getOpenStatus(e).status === 'open' || getOpenStatus(e).status === 'open24h' ? `<span class="badge open-badge" title="Avoinna nyt">${e.id === 'helsinki-sompasauna' ? '✓ Auki 24/7' : '✓ Auki nyt'}${getOpenStatus(e).closeTime ? ' (sulkeutuu ' + getOpenStatus(e).closeTime + ')' : ''}</span>` : getOpenStatus(e).status === 'closed-late' ? `<span class="badge closed-badge" title="Suljettu nyt">Suljettu nyt (sulkeutui ' + getOpenStatus(e).closeTime + ')</span>` : getOpenStatus(e).status === 'closed-early' ? `<span class="badge closed-badge" title="Avautuu tänään">Avautuu tänään klo ' + getOpenStatus(e).openTime + '</span>` : getOpenStatus(e).status === 'closed-today' ? `<span class="badge unknown-badge" title="Ei yleisövuoroa tänään">Ei yleisövuoroa tänään</span>` : `<span class="badge unknown-badge" title="Tarkista aukioloajat">ℹ️ Tarkista vuorot sivuilta</span>`}
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
                     ${e.mapsUrl && !/^https?:\/\/(www\.)?google\.com(\/|$)/.test(e.mapsUrl) ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : (e.title ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title + ' ' + (e.street||'') + ' ' + e.location)}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : '')}
