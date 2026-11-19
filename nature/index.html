@@ -791,8 +791,27 @@
   }, 1000);
 
   var audioHintShown = true;
-  function enableAudioOnce(){
-    if(audioCtx){ return; }
+  function enableAudioOnce(e){
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    if(state.playing) return;
+    if(audioCtx){
+      // Context exists but not playing - try to resume
+      try{
+        if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+        state.playing = true;
+        updateAudio();
+        if(audioHint){ audioHint.classList.add('audio-hid'); }
+        if(liveText){ liveText.textContent = 'Spectrum active &mdash; move mouse to explore'; }
+        return;
+      }catch(err){
+        console.log('audio resume failed', err);
+        audioCtx = null;
+        masterGain = null;
+        analyser = null;
+        freqData = null;
+        oscillators = [];
+      }
+    }
     initAudio();
   }
 
