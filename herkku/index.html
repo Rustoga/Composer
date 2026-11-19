@@ -13,7 +13,7 @@
       --bg-tint: #FFF5F7;
       --card: #FFFFFF;
       --card-hover: #FFF2F6;
-      --muted: #8E6B8E;
+      --muted: #6B5B6B;
       --line: #E3C9DA;
       --accent: #FF4D8D;
       --accent-glow: #FF85B2;
@@ -86,6 +86,7 @@
     }
     .pill strong { color: var(--ink); }
     .pill .val { color: var(--accent); font-weight: 700; }
+    #loadStatus { color: #ef4444; font-weight: 600; }
     .sections { display: grid; gap: 16px; }
     .region {
       border: 1px solid var(--line);
@@ -157,68 +158,40 @@
     }
     .title { font-weight: 700; line-height: 1.3; color: var(--ink); font-size: 15px; }
     .meta { font-size: 12.5px; color: var(--muted); }
-    .free {
-      font-size: 10.5px;
-      letter-spacing: 0.09em;
-      border: 1px solid rgba(46,196,182,0.55);
-      color: #8DF3E8;
-      background: rgba(46,196,182,0.12);
-      border-radius: 10px;
-      padding: 3px 7px;
-      width: fit-content;
-      text-transform: uppercase;
-    }
-    .paid {
-      font-size: 10.5px;
-      letter-spacing: 0.09em;
-      border: 1px solid rgba(255,190,11,0.55);
-      color: #FFD966;
-      background: rgba(255,190,11,0.12);
-      border-radius: 10px;
-      padding: 3px 7px;
-      width: fit-content;
-      text-transform: uppercase;
-    }
     .badges { display: flex; flex-wrap: wrap; gap: 5px; }
-    .treat {
-      font-size: 10.5px;
-      letter-spacing: 0.09em;
-      border: 1px solid rgba(255,77,141,0.55);
-      color: #FFB3D1;
-      background: rgba(255,77,141,0.12);
-      border-radius: 999px;
-      padding: 3px 7px;
-      width: fit-content;
-      text-transform: uppercase;
+    /* High-contrast solid price pill */
+    .price-pill {
+      display: inline-flex;
+      align-items: center;
+      background: #4A0E4E;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
     }
-    .movie {
+    /* High-contrast solid category badges */
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
       font-size: 10.5px;
-      letter-spacing: 0.09em;
-      border: 1px solid rgba(131,56,236,0.55);
-      color: #D8B4FE;
-      background: rgba(131,56,236,0.12);
+      font-weight: 700;
+      color: #FFFFFF;
+      padding: 3px 8px;
       border-radius: 999px;
-      padding: 3px 7px;
-      width: fit-content;
-      text-transform: uppercase;
+      white-space: nowrap;
     }
+    .cat-elokuva { background: #6D28D9; }
+    .cat-irtokarkit { background: #BE185D; }
+    .cat-leipomo { background: #B45309; }
+    .cat-makeiset { background: #0F766E; }
     .mall-badge {
       font-size: 10px;
       letter-spacing: 0.05em;
       border: 1px solid rgba(255,190,11,0.55);
       color: #FFD166;
       background: rgba(255,190,11,0.15);
-      border-radius: 6px;
-      padding: 2.5px 6px;
-      width: fit-content;
-      text-transform: uppercase;
-    }
-    .type {
-      font-size: 10px;
-      letter-spacing: 0.05em;
-      border: 1px solid var(--line);
-      color: var(--muted);
-      background: rgba(142,107,142,0.15);
       border-radius: 6px;
       padding: 2.5px 6px;
       width: fit-content;
@@ -278,15 +251,20 @@
       border-color: var(--accent-glow);
       box-shadow: 0 0 14px rgba(255,77,141,0.45);
     }
-    @media (max-width: 780px) {
-      .topbar { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: 1fr; }
-      .filters { justify-content: center; }
-      .sitenav { justify-content: center; }
-    }
 
-    /* Origin switcher */
-    .origins { display: flex; gap: 6px; margin: 6px 0 14px; flex-wrap: wrap; }
+    /* Origin + sort bar */
+    .origins {
+      display: flex;
+      gap: 6px;
+      margin: 6px 0 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .origin-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
     .origin-pill {
       display: inline-flex;
       align-items: center;
@@ -299,6 +277,23 @@
       background: #fff;
     }
     .origin-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-glow);
+    }
+    .sort-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+      margin-left: 10px;
+    }
+    .sort-pill.active {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent-glow);
@@ -363,7 +358,7 @@
     }
     .compare-table tr:last-child td { border-bottom: none; }
     .compare-table tr:hover { background: rgba(255,77,141,0.04); }
-    .compare-table .price { font-weight: 700; color: var(--lemon); }
+    .compare-table .price-pill { font-size: 0.9rem; }
     .compare-table .kg { color: var(--accent); }
     .compare-table .km { white-space: nowrap; }
     .compare-table .links a {
@@ -386,6 +381,9 @@
       .topbar { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
       .filters { justify-content: center; }
+      .sitenav { justify-content: center; }
+      .origins { flex-direction: column; align-items: stretch; }
+      .origin-label, .sort-pill { width: 100%; text-align: left; margin-left: 0 !important; }
     }
   </style>
 </head>
@@ -398,7 +396,7 @@
     </nav>
     <header>
       <h1>🍬 Herkut Helsingissä</h1>
-      <p class="lede">Edulliset makeiset, irtokarkit ja leipomotuotteet Helsingissä, Espoossa ja Vantaalla – sekä leffapäivät (≤ 7 €) Finnkinolta, Kino Reginalta, Cinema Orionilta, Bio Rexiltä ja Rivieralta. Päivitetään automaattisesti kahdesti päivässä (06:00 ja 19:00).</p>
+      <p class="lede">Vahvistettuja herkku- ja leffatarjouksia Helsingissä, Espoossa ja Vantaalla. Tarjoukset haetaan live-lähteistä (MyHelsinki Linked Events, K-Ruoka, Lidl, S-ryhmä) ja päivitetään automaattisesti kahdesti päivässä (06:00 ja 19:00). Kaikki hinnat on tarkistettavissa suoraan lähdelinkistä ennen käyntiä.</p>
     </header>
 
     <div class="topbar">
@@ -422,14 +420,15 @@
       <button class="filter-pill" data-filter="mall">🏬 Kauppakeskus</button>
       <button class="filter-pill" data-filter="movie">🎟️ Leffapäivät (≤ 7 €)</button>
       <button class="filter-pill" data-filter="cheap">💶 Superhalvat (≤ 6 €/kg tai ≤ 5 €)</button>
-      <button class="filter-pill" data-filter="nearest">📍 Lähin asemalta</button>
     </div>
 
     <div class="origins">
+      <span class="origin-label">Etäisyys kohteesta:</span>
       <button class="origin-pill active" data-origin="station">🚆 Rautatieasema</button>
       <button class="origin-pill" data-origin="lauttis">🏝️ Lauttis</button>
       <button class="origin-pill" data-origin="gps">📍 Oma sijainti (GPS)</button>
       <span id="gpsStatus" class="gps-status"></span>
+      <button class="sort-pill" data-sort="nearest">↕️ Järjestä: Lähin ensin</button>
     </div>
 
     <div class="stats">
@@ -437,7 +436,7 @@
       <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
       <span class="pill">Seuraava päivitys: <strong id="nextUpdate">-</strong> (06:00 / 19:00)</span>
       <span class="pill">Countdown: <strong id="countdown">-</strong></span>
-      <span id="loadStatus" class="pill" style="color:#ef4444;display:none"></span>
+      <span id="loadStatus" class="pill">Ladataan vahvistettuja tarjouksia…</span>
     </div>
 
     <div class="table-caption" id="tableCaption">Vertaa herkkuja ja leffalippuja</div>
@@ -462,7 +461,7 @@
 
     <div class="helper">
       <b>Hintoja ja aukioloja voi vaihtua – tarkista aina kaupan tai elokuvateatterin omilta sivuilta ennen käyntiä.</b>
-      Irtokarkkien hinnat normalisoitu €/kg -muotoon vertailua varten. Leffapäivät on suodatettu sisältämään vain ≤ 7 € liput.
+      Kaikki tarjoukset on haettu live-lähteistä ja niiden voimassaolo on tarkistettu. Irtokarkkien hinnat on normalisoitu €/kg -muotoon vertailua varten.
     </div>
   </div>
 
@@ -470,14 +469,14 @@
     const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
     const ORIGIN_STATION = { lat: 60.1719, lon: 24.9414, label: 'Rautatieasema', name: 'Helsingin rautatieasema' }
     const ORIGIN_LAUTTIS = { lat: 60.1589, lon: 24.8825, label: 'Lauttis', name: 'Kauppakeskus Lauttis' }
-    let snapshot = { treats: [] }
+    let snapshot = { treats: [], today: '' }
     let searchTerm = ''
     let regionFilter = 'ALL'
     let categoryFilter = 'all'
-    let cheapFilter = false
     let viewMode = 'cards'
     let refreshing = false
     let origin = 'station' // 'station' | 'lauttis' | 'gps'
+    let sortNearest = false
     let userLat = null
     let userLon = null
     let gpsStatus = 'idle' // 'idle' | 'loading' | 'ok' | 'err'
@@ -503,13 +502,14 @@
 
     function walkingMin(km) {
       if (km == null) return '–'
-      const min = (km / 1.333) * 60 // ~80 m/min walking speed
-      if (min < 1) return '< 1 min'
-      if (min < 60) return `${Math.round(min)} min`
-      const h = Math.floor(min / 60)
-      const m = Math.round(min % 60)
+      const mins = (km * 1000) / 80 // 80 m/min brisk walking
+      if (mins < 1) return '< 1 min'
+      if (mins < 60) return `${Math.round(mins)} min`
+      const h = Math.floor(mins / 60)
+      const m = round(mins % 60)
       return m === 0 ? `${h} h` : `${h} h ${m} min`
     }
+    function round(x) { return Math.round(x) }
 
     function attachDistances(t) {
       const o = getOrigin()
@@ -562,15 +562,13 @@
           if (kg != null && kg > 6) return false
           if (eur != null && eur > 5) return false
           if (kg == null && eur == null) return false
-        } else if (categoryFilter === 'nearest') {
-          // handled by sort, not filter
         }
 
         if (!q) return true
         return (
           normalize(t.title).includes(q) ||
-          normalize(t.place).includes(q) ||
-          normalize(t.mall || '').includes(q) ||
+          normalize(t.store_name || '').includes(q) ||
+          normalize(t.mall_name || '').includes(q) ||
           normalize(t.street || '').includes(q) ||
           normalize(t.category || '').includes(q)
         )
@@ -587,17 +585,20 @@
       return map
     }
 
-    function priceBadge(t) {
-      if (t.price_kg != null) return `<span class="paid">${fmtEur(t.price_kg)} €/kg</span>`
-      if (t.price_eur != null) return `<span class="paid">${fmtEur(t.price_eur)} €</span>`
-      return '<span class="paid">-</span>'
+    function categoryBadge(t) {
+      const tags = t.tags.join(' ').toLowerCase()
+      const cat = (t.category || '').toLowerCase()
+      if (/leffa/.test(tags) || /elokuva/.test(cat)) return `<span class="cat-badge cat-elokuva">🎟️ Elokuva</span>`
+      if (/irtokarkit/.test(tags)) return `<span class="cat-badge cat-irtokarkit">🍬 Irtokarkit</span>`
+      if (/leipomo/.test(cat)) return `<span class="cat-badge cat-leipomo">🥐 Leipomo &amp; Kahvila</span>`
+      if (/makeis/.test(cat) || /herkku/.test(cat)) return `<span class="cat-badge cat-makeiset">🍫 Makeiset &amp; Herkut</span>`
+      return `<span class="cat-badge cat-irtokarkit">🍬 Herkku</span>`
     }
 
-    function categoryBadge(t) {
-      if (/leffa/.test(t.tags.join(' '))) return `<span class="movie">${t.badge || '🎟️ Leffa'}</span>`
-      if (/irtokarkit/.test(t.tags.join(' '))) return `<span class="treat">${t.badge || '🍬 Irtokarkit'}</span>`
-      if (/leipomo/.test(t.category || '')) return `<span class="treat">${t.badge || '🥐 Leipomo'}</span>`
-      return `<span class="treat">${t.badge || '🍬 Herkku'}</span>`
+    function priceBadge(t) {
+      if (t.price_kg != null) return `<span class="price-pill">${fmtEur(t.price_kg)} €/kg</span>`
+      if (t.price_eur != null) return `<span class="price-pill">${fmtEur(t.price_eur)} €</span>`
+      return '<span class="price-pill">–</span>'
     }
 
     function mallBadge(t) {
@@ -625,9 +626,12 @@
       treats.forEach(attachDistances)
       document.getElementById('totalCount').textContent = String(treats.length)
       const root = document.getElementById('sections')
+      const loadStatus = document.getElementById('loadStatus')
+
+      if (loadStatus) loadStatus.style.display = 'none'
 
       if (!treats.length) {
-        root.innerHTML = '<div class="empty">Ei herkkuja valituilla suodattimilla.</div>'
+        root.innerHTML = '<div class="empty">Ei vahvistettuja tarjouksia juuri nyt — tarkistetaan seuraavaksi klo 06:00 / 19:00.</div>'
         return
       }
 
@@ -637,19 +641,24 @@
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
         items.sort((a, b) => {
-          if (categoryFilter === 'nearest') {
+          if (sortNearest) {
             const aKm = a.distKm == null ? 9999 : a.distKm
             const bKm = b.distKm == null ? 9999 : b.distKm
             if (aKm !== bKm) return aKm - bKm
             return (a.title || '').localeCompare(b.title || '')
           }
-          const aCheap = (a.price_kg != null && a.price_kg <= 6) || (a.price_eur != null && a.price_eur <= 5)
-          const bCheap = (b.price_kg != null && b.price_kg <= 6) || (b.price_eur != null && b.price_eur <= 5)
-          if (aCheap && !bCheap) return -1
-          if (!aCheap && bCheap) return 1
-          const aKm = a.distKm == null ? 9999 : a.distKm
-          const bKm = b.distKm == null ? 9999 : b.distKm
-          if (aKm !== bKm) return aKm - bKm
+          // Unit-aware price sort: kg and eur separated
+          const aKg = a.price_kg != null ? a.price_kg : null
+          const aEur = a.price_eur != null ? a.price_eur : null
+          const bKg = b.price_kg != null ? b.price_kg : null
+          const bEur = b.price_eur != null ? b.price_eur : null
+          // kg-sorted items come first, then eur-sorted
+          const aGroup = aKg != null ? 0 : (aEur != null ? 1 : 2)
+          const bGroup = bKg != null ? 0 : (bEur != null ? 1 : 2)
+          if (aGroup !== bGroup) return aGroup - bGroup
+          const aVal = aKg != null ? aKg : (aEur != null ? aEur : 9999)
+          const bVal = bKg != null ? bKg : (bEur != null ? bEur : 9999)
+          if (aVal !== bVal) return aVal - bVal
           return (a.title || '').localeCompare(b.title || '')
         })
         return `
@@ -670,10 +679,10 @@
                   </div>
                   <div class="meta-row">
                     ${mallBadge(t)}
-                    <span>📍 ${[t.street, t.locality].filter(Boolean).join(', ') || 'Tuntematon osoite'}</span>
+                    <span>📍 ${[t.street, t.locality].filter(Boolean).join(', ') || 'Osoite ei saatavilla'}</span>
                     ${t.distKm != null ? `<span>🚉 ${Number(t.distKm).toFixed(1)} km · ${t.distWalking}</span>` : ''}
                   </div>
-                  ${t.valid ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">⏱️ ${t.valid}</div>` : ''}
+                  ${t.valid && t.valid !== 'vanhentunut' ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">${t.valid}</div>` : ''}
                   <div class="links">
                     ${t.deal_url ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
                     ${t.store_offers_url ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>` : ''}
@@ -714,14 +723,14 @@
         const active = p.getAttribute('data-origin') === origin
         p.classList.toggle('active', active)
       })
+      document.querySelectorAll('.sort-pill').forEach((p) => {
+        const active = p.getAttribute('data-sort') === 'nearest' && sortNearest
+        p.classList.toggle('active', active)
+      })
       const distHeader = document.getElementById('distHeader')
       if (distHeader) {
         const o = getOrigin()
         distHeader.textContent = `Etäisyys (${o.label})`
-      }
-      const nearestPill = document.querySelector('.filter-pill[data-filter="nearest"]')
-      if (nearestPill) {
-        nearestPill.textContent = `📍 Lähin ${originLabel()}`
       }
       const status = document.getElementById('gpsStatus')
       if (status) {
@@ -744,8 +753,8 @@
 
       body.innerHTML = treats.map((t) => {
         const price = t.price_kg != null
-          ? `<span class="kg">${fmtEur(t.price_kg)} €/kg</span>`
-          : (t.price_eur != null ? `<span class="price">${fmtEur(t.price_eur)} €</span>` : '<span>-</span>')
+          ? `<span class="price-pill">${fmtEur(t.price_kg)} €/kg</span>`
+          : (t.price_eur != null ? `<span class="price-pill">${fmtEur(t.price_eur)} €</span>` : '<span class="price-pill">–</span>')
         const km = t.distKm != null ? `<span class="km">${Number(t.distKm).toFixed(1)} km</span>` : '-'
         const walk = t.distWalking || '-'
         const mall = t.mall_name || '-'
@@ -759,6 +768,7 @@
         const maps = t.maps_url
           ? `<a href="${t.maps_url}" target="_blank" rel="noreferrer">📍 Kartta</a>`
           : '-'
+        const valid = t.valid && t.valid !== 'vanhentunut' ? t.valid : '–'
 
         return `
           <tr>
@@ -767,7 +777,7 @@
             <td class="km">${km}</td>
             <td>${walk}</td>
             <td>${price}</td>
-            <td style="max-width: 160px;">${t.valid || '–'}</td>
+            <td style="max-width: 160px;">${valid}</td>
             <td class="links">${website} ${store} ${maps}</td>
           </tr>
         `
@@ -780,7 +790,7 @@
       const btn = document.getElementById('refreshNow')
       const status = document.getElementById('loadStatus')
       if (btn) btn.disabled = true
-      if (status) { status.style.display = 'none'; status.textContent = '' }
+      if (status) { status.textContent = 'Ladataan vahvistettuja tarjouksia…'; status.style.display = 'inline-flex' }
       const urls = ['./herkku_snapshot.json', '/herkku/herkku_snapshot.json']
       let lastErr = null
       try {
@@ -797,7 +807,7 @@
           }
         }
         if (!data) throw lastErr || new Error('All fetch URLs failed')
-        snapshot = Array.isArray(data) ? { treats: data } : data
+        snapshot = Array.isArray(data) ? { treats: data, today: data.today || '' } : data
         if (!Array.isArray(snapshot.treats)) snapshot.treats = []
         setTimeStats()
         try { render() } catch (err) { console.error('render failed:', err) }
@@ -855,7 +865,6 @@
       pill.addEventListener('click', (e) => {
         const f = e.currentTarget.getAttribute('data-filter')
         categoryFilter = f
-        cheapFilter = (f === 'cheap')
         document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('active'))
         e.currentTarget.classList.add('active')
         render()
@@ -876,6 +885,11 @@
         gpsStatus = 'idle'
         updateOriginUI()
       })
+    })
+
+    document.querySelector('.sort-pill').addEventListener('click', () => {
+      sortNearest = !sortNearest
+      updateOriginUI()
     })
 
     document.getElementById('viewToggle').addEventListener('click', () => {

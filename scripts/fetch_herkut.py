@@ -2,15 +2,13 @@
 # fetch_herkut.py - Herkku / Candy snapshot scraper
 #
 # Combines:
-#   1) Live-curated treat / bulk-candy / bakery offers across Helsinki, Espoo, Vantaa
-#      (supermarkets + kauppakeskukset) with verification metadata and graceful fallback.
+#   1) Live-curated treat / bulk-candy / bakery offers from public retail sources
 #   2) Cheap movie ticket special days (<= 7 EUR) from MyHelsinki Linked Events API
-#      plus curated cinema campaign days, with graceful fallback.
+#
+# ZERO fake / hallucinated deals. Every item is parsed from a real, live source.
+# If no live source returns verified items, the snapshot is empty (honest empty state).
 #
 # Output: herkku/herkku_snapshot.json
-#
-# Every item carries mandatory verification fields so users can verify an offer
-# is real before traveling (no wasted trips).
 #
 # Uses only the Python standard library so it runs in GitHub Actions without extra deps.
 
@@ -32,8 +30,6 @@ OUT_PATH = os.path.join(BASE_DIR, "herkku", "herkku_snapshot.json")
 
 STATION_LAT = 60.1719
 STATION_LON = 24.9414
-LAUTTIS_LAT = 60.1589
-LAUTTIS_LON = 24.8825
 
 TREAT_KEYWORDS = [
     "irtokark", "makeis", "suklaa", "karkki", "pulla", "leivos", "munkki",
@@ -48,13 +44,11 @@ MOVIE_KEYWORDS = [
 
 MALLS = ["tripla", "kamppi", "redi", "forum", "itis", "iso omena", "sello", "lauttis"]
 
-# Week boundary (Monday -> Sunday) for weekly offer validity
-_TODAY = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=3))).date()
-_WEEK_START = _TODAY - timedelta(days=_TODAY.weekday())
-_WEEK_END = _WEEK_START + timedelta(days=6)
-VALID_FROM = _WEEK_START.isoformat()
-VALID_UNTIL = _WEEK_END.isoformat()
-VERIFIED_AT = datetime.now(timezone.utc).isoformat()
+
+def helsinki_today():
+    """Today's date in Europe/Helsinki timezone."""
+    hel = timezone(timedelta(hours=3))
+    return datetime.now(hel).date()
 
 
 def fetch_json(url, timeout=30):
@@ -112,15 +106,16 @@ def haversine_km(lat1, lon1, lat2, lon2):
 
 
 def walking_min(km):
+    """Walking time at 80 m/min (~4.8 km/h brisk walking)."""
     if km is None:
         return None
-    min_ = (km / 1.333) * 60.0  # ~80 m/min
-    if min_ < 1:
+    mins = (km * 1000) / 80.0
+    if mins < 1:
         return "< 1 min"
-    if min_ < 60:
-        return f"{round(min_)} min"
-    h = math.floor(min_ / 60)
-    m = round(min_ % 60)
+    if mins < 60:
+        return f"{round(mins)} min"
+    h = math.floor(mins / 60)
+    m = round(mins % 60)
     return f"{h} h" if m == 0 else f"{h} h {m} min"
 
 
@@ -132,6 +127,13 @@ def load_venues():
 def venue_by_key(venues, key):
     for v in venues:
         if v["key"] == key:
+            return v
+    return None
+
+
+def venue_by_name(venues, name):
+    for v in venues:
+        if v.get("name") and v["name"].lower() in name.lower():
             return v
     return None
 
@@ -227,9 +229,59 @@ def next_update_iso():
     return target.astimezone(timezone.utc).isoformat()
 
 
-# ---------------------------------------------------------------------------
-# Verification field builder (mandatory schema)
-# ---------------------------------------------------------------------------
+def finnish_weekday(d):
+    weekdays = ["ma", "ti", "ke", "to", "pe", "la", "su"]
+    return weekdays[d.weekday()]
+
+
+def build_valid_label(valid_from, valid_until, date_str):
+    """Build a clear Finnish validity label."""
+    today = helsinki_today()
+    vf = None
+    vu = None
+    if valid_from:
+        try:
+            vf = datetime.fromisoformat(valid_from).date()
+        except Exception:
+            pass
+    if valid_until:
+        try:
+            vu = datetime.fromisoformat(valid_until).date()
+        except Exception:
+            pass
+
+    if vu and vu < today:
+        return "vanhentunut"  # filtered out by caller
+
+    if date_str:
+        return date_str
+
+    if vf and vu:
+        if vu == today:
+            return f"🔥 Viimeinen päivä! (tänään {today.day}.{today.month}. asti)"
+        if vf <= today:
+            days_left = (vu - today).days
+            vf_wd = finnish_weekday(vf)
+            vf_d = str(vf.day)
+            vf_m = str(vf.month)
+            vu_wd = finnish_weekday(vu)
+            vu_d = str(vu.day)
+            vu_m = str(vu.month)
+            return "🗓️ Voimassa " + vf_wd + " " + vf_d + "." + vf_m + "-" + vu_wd + " " + vu_d + "." + vu_m + " asti (vielä " + str(days_left) + " pv)"
+        vf_wd = finnish_weekday(vf)
+        vf_d = str(vf.day)
+        vf_m = str(vf.month)
+        vu_wd = finnish_weekday(vu)
+        vu_d = str(vu.day)
+        vu_m = str(vu.month)
+        return "🗓️ Voimassa " + vf_wd + " " + vf_d + "." + vf_m + "-" + vu_wd + " " + vu_d + "." + vu_m + "."
+    if vf:
+        vf_wd = finnish_weekday(vf)
+        vf_d = str(vf.day)
+        vf_m = str(vf.month)
+        return "🗓️ Voimassa alkaen " + vf_wd + " " + vf_d + "." + vf_m + "."
+    return ""
+
 
 def build_item(
     *,
@@ -241,22 +293,25 @@ def build_item(
     category,
     price_kg=None,
     price_eur=None,
-    valid_from=VALID_FROM,
-    valid_until=VALID_UNTIL,
-    source_type="curated_fallback",
-    source_name="Curated fallback data",
+    valid_from=None,
+    valid_until=None,
+    source_type="live_verified",
+    source_name="",
     deal_url="",
     store_offers_url="",
+    street="",
+    locality="",
     venue_key=None,
     lat=None,
     lon=None,
     tags=None,
     badge="🍬 Herkku",
-    date="",
+    date_str="",
 ):
     price_numeric = price_kg if price_kg is not None else price_eur
     price_display = fmt_price_kg(price_kg) if price_kg is not None else fmt_price_eur(price_eur)
     km, walking = distance_from(lat, lon, STATION_LAT, STATION_LON)
+    valid_label = build_valid_label(valid_from, valid_until, date_str)
 
     return {
         "id": id,
@@ -270,565 +325,171 @@ def build_item(
         "price_kg": price_kg,
         "price_eur": price_eur,
         "price_label": price_display,
-        "valid_from": valid_from,
-        "valid_until": valid_until,
-        "valid": f"{valid_from} – {valid_until}" if valid_from and valid_until else "",
+        "valid_from": valid_from or "",
+        "valid_until": valid_until or "",
+        "valid": valid_label,
         "source_type": source_type,
         "source_name": source_name,
         "deal_url": deal_url,
         "store_offers_url": store_offers_url,
-        "verified_at": VERIFIED_AT,
+        "street": street,
+        "locality": locality,
         "venue_key": venue_key,
-        "street": "",
-        "locality": "",
         "lat": lat,
         "lon": lon,
         "station_km": km,
         "station_walking": walking,
         "distKm": km,
         "distWalking": walking,
-        "maps_url": maps_url("", "", lat, lon),
+        "maps_url": maps_url(street, locality, lat, lon),
         "badge": badge,
         "tags": tags or [],
-        "date": date,
+        "date_str": date_str,
     }
 
 
 # ---------------------------------------------------------------------------
-# Live fetchers (best-effort; standard library only)
+# Live fetchers (best-effort; standard library only). Returns [] on failure.
 # ---------------------------------------------------------------------------
 
 def try_kruoka_treats(venues):
-    """Attempt to fetch K-Ruoka current weekly offers. Best-effort; returns [] on failure."""
+    """Attempt to fetch K-Ruoka current weekly offers. Returns [] on failure - no fakes."""
     items = []
     try:
-        # K-Ruoka public tarjoukset page (may be JS-rendered; best-effort text scan)
         text = fetch_text("https://www.k-ruoka.fi/tarjoukset", timeout=15)
         low = text.lower()
-        if any(k in low for k in TREAT_KEYWORDS):
-            # Extract candidate treat mentions near price patterns
-            for m in re.finditer(
-                r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-                text,
-                re.IGNORECASE,
-            ):
-                snippet = strip_html(m.group(1))
-                price_kg = extract_eur_per_kg(snippet)
-                price_eur = extract_eur_price(snippet)
-                if price_kg is None and price_eur is None:
-                    continue
-                items.append(
-                    build_item(
-                        id=f"live:kruoka:{slug(snippet[:60])}",
-                        title=snippet[:120] or "K-Ruoka herkkutarjous",
-                        store_name="K-Ruoka (myymäläkohtaiset tarjoukset)",
-                        mall_name=None,
-                        region="Helsinki",
-                        category="Irtokarkit",
-                        price_kg=price_kg,
-                        price_eur=price_eur,
-                        source_type="live_verified",
-                        source_name="K-Ruoka Tarjoukset",
-                        deal_url="https://www.k-ruoka.fi/tarjoukset",
-                        store_offers_url="https://www.k-ruoka.fi/tarjoukset",
-                        tags=["irtokarkit"],
-                        badge="🍬 Irtokarkit",
-                    )
+        if not any(k in low for k in TREAT_KEYWORDS):
+            return items
+        for m in re.finditer(
+            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
+            text,
+            re.IGNORECASE,
+        ):
+            snippet = strip_html(m.group(1))
+            price_kg = extract_eur_per_kg(snippet)
+            price_eur = extract_eur_price(snippet)
+            if price_kg is None and price_eur is None:
+                continue
+            items.append(
+                build_item(
+                    id=f"live:kruoka:{slug(snippet[:60])}",
+                    title=snippet[:120] or "K-Ruoka herkkutarjous",
+                    store_name="K-Ruoka (myymäläkohtaiset tarjoukset)",
+                    mall_name=None,
+                    region="Helsinki",
+                    category="Irtokarkit",
+                    price_kg=price_kg,
+                    price_eur=price_eur,
+                    source_type="live_verified",
+                    source_name="K-Ruoka Tarjoukset",
+                    deal_url="https://www.k-ruoka.fi/tarjoukset",
+                    store_offers_url="https://www.k-ruoka.fi/tarjoukset",
+                    tags=["irtokarkit"],
+                    badge="🍬 Irtokarkit",
                 )
+            )
     except Exception as exc:
         print(f"[info] K-Ruoka live fetch unavailable: {exc}", file=sys.stderr)
     return items[:5]
 
 
 def try_lidl_treats(venues):
-    """Attempt to fetch Lidl Suomi weekly tarjoukset. Best-effort; returns [] on failure."""
+    """Attempt to fetch Lidl Suomi weekly tarjoukset. Returns [] on failure - no fakes."""
     items = []
     try:
         text = fetch_text("https://www.lidl.fi/tarjoukset", timeout=15)
         low = text.lower()
-        if any(k in low for k in TREAT_KEYWORDS):
-            for m in re.finditer(
-                r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-                text,
-                re.IGNORECASE,
-            ):
-                snippet = strip_html(m.group(1))
-                price_eur = extract_eur_price(snippet)
-                price_kg = extract_eur_per_kg(snippet)
-                if price_eur is None and price_kg is None:
-                    continue
-                items.append(
-                    build_item(
-                        id=f"live:lidl:{slug(snippet[:60])}",
-                        title=snippet[:120] or "Lidl herkkutarjous",
-                        store_name="Lidl Suomi",
-                        mall_name=None,
-                        region="Helsinki",
-                        category="Irtokarkit",
-                        price_kg=price_kg,
-                        price_eur=price_eur,
-                        source_type="live_verified",
-                        source_name="Lidl Suomi Tarjoukset",
-                        deal_url="https://www.lidl.fi/tarjoukset",
-                        store_offers_url="https://www.lidl.fi/tarjoukset",
-                        tags=["irtokarkit"],
-                        badge="🍬 Irtokarkit",
-                    )
+        if not any(k in low for k in TREAT_KEYWORDS):
+            return items
+        for m in re.finditer(
+            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
+            text,
+            re.IGNORECASE,
+        ):
+            snippet = strip_html(m.group(1))
+            price_eur = extract_eur_price(snippet)
+            price_kg = extract_eur_per_kg(snippet)
+            if price_eur is None and price_kg is None:
+                continue
+            items.append(
+                build_item(
+                    id=f"live:lidl:{slug(snippet[:60])}",
+                    title=snippet[:120] or "Lidl herkkutarjous",
+                    store_name="Lidl Suomi",
+                    mall_name=None,
+                    region="Helsinki",
+                    category="Irtokarkit",
+                    price_kg=price_kg,
+                    price_eur=price_eur,
+                    source_type="live_verified",
+                    source_name="Lidl Suomi Tarjoukset",
+                    deal_url="https://www.lidl.fi/tarjoukset",
+                    store_offers_url="https://www.lidl.fi/tarjoukset",
+                    tags=["irtokarkit"],
+                    badge="🍬 Irtokarkit",
                 )
+            )
     except Exception as exc:
         print(f"[info] Lidl live fetch unavailable: {exc}", file=sys.stderr)
     return items[:5]
 
 
 def try_skaupat_treats(venues):
-    """Attempt to fetch S-Kaupat / Hok-Elanto weekly tarjoukset. Best-effort."""
+    """Attempt to fetch S-Kaupat / Hok-Elanto weekly tarjoukset. Returns [] on failure - no fakes."""
     items = []
     try:
         text = fetch_text("https://www.s-kanava.fi", timeout=15)
         low = text.lower()
-        if any(k in low for k in TREAT_KEYWORDS):
-            for m in re.finditer(
-                r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
-                text,
-                re.IGNORECASE,
-            ):
-                snippet = strip_html(m.group(1))
-                price_eur = extract_eur_price(snippet)
-                price_kg = extract_eur_per_kg(snippet)
-                if price_eur is None and price_kg is None:
-                    continue
-                items.append(
-                    build_item(
-                        id=f"live:skaupat:{slug(snippet[:60])}",
-                        title=snippet[:120] or "S-Kaupat herkkutarjous",
-                        store_name="S-Kaupat (Hok-Elanto)",
-                        mall_name=None,
-                        region="Helsinki",
-                        category="Leipomo & Kahvila",
-                        price_kg=price_kg,
-                        price_eur=price_eur,
-                        source_type="live_verified",
-                        source_name="S-ryhmä Tarjoukset",
-                        deal_url="https://www.s-kanava.fi",
-                        store_offers_url="https://www.s-kanava.fi",
-                        tags=["leipomo"],
-                        badge="🥐 Leipomo & Kahvila",
-                    )
+        if not any(k in low for k in TREAT_KEYWORDS):
+            return items
+        for m in re.finditer(
+            r"([^\n]{0,80}(?:irtokark|makeis|suklaa|karkki|pulla|munkki|leivos|jäätelö|kakku|herkku)[^\n]{0,80})",
+            text,
+            re.IGNORECASE,
+        ):
+            snippet = strip_html(m.group(1))
+            price_eur = extract_eur_price(snippet)
+            price_kg = extract_eur_per_kg(snippet)
+            if price_eur is None and price_kg is None:
+                continue
+            items.append(
+                build_item(
+                    id=f"live:skaupat:{slug(snippet[:60])}",
+                    title=snippet[:120] or "S-Kaupat herkkutarjous",
+                    store_name="S-Kaupat (Hok-Elanto)",
+                    mall_name=None,
+                    region="Helsinki",
+                    category="Leipomo & Kahvila",
+                    price_kg=price_kg,
+                    price_eur=price_eur,
+                    source_type="live_verified",
+                    source_name="S-ryhmä Tarjoukset",
+                    deal_url="https://www.s-kanava.fi",
+                    store_offers_url="https://www.s-kanava.fi",
+                    tags=["leipomo"],
+                    badge="🥐 Leipomo & Kahvila",
                 )
+            )
     except Exception as exc:
         print(f"[info] S-Kaupat live fetch unavailable: {exc}", file=sys.stderr)
     return items[:5]
 
 
 # ---------------------------------------------------------------------------
-# Curated fallback data (used when live sources are unavailable)
+# Movie fetching from MyHelsinki Linked Events API (live, verified <= 7 EUR)
 # ---------------------------------------------------------------------------
 
-FALLBACK_TREATS = [
-    {
-        "title": "Irtokarkit 4,95 €/kg",
-        "store_name": "K-Citymarket Itäkeskus (Itis)",
-        "mall_name": "Itis",
-        "street": "Itäkatu 1-5",
-        "locality": "Helsinki",
-        "venue_key": "k-citymarket-itakeskus",
-        "category": "Irtokarkit",
-        "price_kg": 4.95,
-        "price_eur": None,
-        "source_name": "K-Ruoka Tarjoukset",
-        "deal_url": "https://www.k-ruoka.fi/tarjoukset",
-        "store_offers_url": "https://www.k-ruoka.fi/kauppa/k-citymarket-itakeskus/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Irtokarkit 6,99 €/kg",
-        "store_name": "Prisma Itäkeskus (Itis)",
-        "mall_name": "Itis",
-        "street": "Itäkatu 1-5",
-        "locality": "Helsinki",
-        "venue_key": "prisma-itakeskus",
-        "category": "Irtokarkit",
-        "price_kg": 6.99,
-        "price_eur": None,
-        "source_name": "S-ryhmä Tarjoukset",
-        "deal_url": "https://www.s-kanava.fi",
-        "store_offers_url": "https://www.s-kanava.fi/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Suklaalevyt 2,99 €/kpl",
-        "store_name": "Lidl Kamppi (Kamppi)",
-        "mall_name": "Kamppi",
-        "street": "Urho Kekkosen katu 1",
-        "locality": "Helsinki",
-        "venue_key": "lidl-kamppi",
-        "category": "Irtokarkit",
-        "price_kg": None,
-        "price_eur": 2.99,
-        "source_name": "Lidl Suomi Tarjoukset",
-        "deal_url": "https://www.lidl.fi/tarjoukset",
-        "store_offers_url": "https://www.lidl.fi/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Tuorepullat 1,49 €/kpl",
-        "store_name": "S-Market Hakaniemi",
-        "mall_name": None,
-        "street": "Hakaniemenkatu 4",
-        "locality": "Helsinki",
-        "venue_key": "s-market-hakaniemi",
-        "category": "Leipomo & Kahvila",
-        "price_kg": None,
-        "price_eur": 1.49,
-        "source_name": "S-ryhmä Tarjoukset",
-        "deal_url": "https://www.s-kanava.fi",
-        "store_offers_url": "https://www.s-kanava.fi/tarjoukset",
-        "tags": ["leipomo"],
-        "badge": "🥐 Leipomo & Kahvila",
-    },
-    {
-        "title": "Irtokarkit 7,49 €/kg",
-        "store_name": "K-Citymarket Tripla (Tripla)",
-        "mall_name": "Tripla",
-        "street": "Fredikanterassi 1",
-        "locality": "Helsinki",
-        "venue_key": "k-citymarket-tripla",
-        "category": "Irtokarkit",
-        "price_kg": 7.49,
-        "price_eur": None,
-        "source_name": "K-Ruoka Tarjoukset",
-        "deal_url": "https://www.k-ruoka.fi/tarjoukset",
-        "store_offers_url": "https://www.k-ruoka.fi/kauppa/k-citymarket-tripla/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Munkit 2 tarjouksessa",
-        "store_name": "Prisma Olari",
-        "mall_name": None,
-        "street": "Olarinpuisto 6",
-        "locality": "Espoo",
-        "venue_key": "prisma-olenus",
-        "category": "Leipomo & Kahvila",
-        "price_kg": None,
-        "price_eur": 2.0,
-        "source_name": "S-ryhmä Tarjoukset",
-        "deal_url": "https://www.s-kanava.fi",
-        "store_offers_url": "https://www.s-kanava.fi/tarjoukset",
-        "tags": ["leipomo"],
-        "badge": "🥐 Leipomo & Kahvila",
-    },
-    {
-        "title": "Irtokarkit 5,49 €/kg",
-        "store_name": "K-Citymarket Iso Omena (Iso Omena)",
-        "mall_name": "Iso Omena",
-        "street": "Piispansilta 11",
-        "locality": "Espoo",
-        "venue_key": "citymarket-iso-omena",
-        "category": "Irtokarkit",
-        "price_kg": 5.49,
-        "price_eur": None,
-        "source_name": "K-Ruoka Tarjoukset",
-        "deal_url": "https://www.k-ruoka.fi/tarjoukset",
-        "store_offers_url": "https://www.k-ruoka.fi/kauppa/k-citymarket-iso-omena/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Irtokarkit 5,95 €/kg",
-        "store_name": "K-Supermarket Lauttasaari (Lauttis)",
-        "mall_name": "Lauttis",
-        "street": "Lauttasaarentie 20",
-        "locality": "Helsinki",
-        "venue_key": "k-supermarket-lauttasaari",
-        "category": "Irtokarkit",
-        "price_kg": 5.95,
-        "price_eur": None,
-        "source_name": "K-Ruoka Tarjoukset",
-        "deal_url": "https://www.k-ruoka.fi/tarjoukset",
-        "store_offers_url": "https://www.k-ruoka.fi/kauppa/k-supermarket-lauttasaari/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Irtokarkit 6,49 €/kg",
-        "store_name": "S-Market Lauttasaari (Lauttis)",
-        "mall_name": "Lauttis",
-        "street": "Lauttasaarentie 20",
-        "locality": "Helsinki",
-        "venue_key": "s-market-lauttasaari",
-        "category": "Irtokarkit",
-        "price_kg": 6.49,
-        "price_eur": None,
-        "source_name": "S-ryhmä Tarjoukset",
-        "deal_url": "https://www.s-kanava.fi",
-        "store_offers_url": "https://www.s-kanava.fi/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-    {
-        "title": "Suklaalevyt 2,79 €/kpl",
-        "store_name": "Lidl Lauttasaari (Lauttis)",
-        "mall_name": "Lauttis",
-        "street": "Lauttasaarentie 20",
-        "locality": "Helsinki",
-        "venue_key": "lidl-lauttasaari",
-        "category": "Irtokarkit",
-        "price_kg": None,
-        "price_eur": 2.79,
-        "source_name": "Lidl Suomi Tarjoukset",
-        "deal_url": "https://www.lidl.fi/tarjoukset",
-        "store_offers_url": "https://www.lidl.fi/tarjoukset",
-        "tags": ["irtokarkit"],
-        "badge": "🍬 Irtokarkit",
-    },
-]
-
-FALLBACK_MOVIES = [
-    {
-        "title": "Finnkino Superpäivä – elokuvat 5 €",
-        "store_name": "Finnkino Tennispalatsi",
-        "mall_name": None,
-        "street": "Eteläinen Rautatiekatu 8",
-        "locality": "Helsinki",
-        "venue_key": "tennispalatsi",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 5.0,
-        "source_name": "Finnkino kampanjat",
-        "deal_url": "https://www.finnkino.fi",
-        "store_offers_url": "https://www.finnkino.fi/ohjelmisto",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 5,00 €",
-        "date": "Tiistaisin",
-    },
-    {
-        "title": "Finnkino Superpäivä – elokuvat 5 €",
-        "store_name": "Finnkino Kinopalatsi",
-        "mall_name": None,
-        "street": "Kluuvikatu 3",
-        "locality": "Helsinki",
-        "venue_key": "kinopalatsi",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 5.0,
-        "source_name": "Finnkino kampanjat",
-        "deal_url": "https://www.finnkino.fi",
-        "store_offers_url": "https://www.finnkino.fi/ohjelmisto",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 5,00 €",
-        "date": "Tiistaisin",
-    },
-    {
-        "title": "Kino Regina edulliset näytökset",
-        "store_name": "Kino Regina (Oodi)",
-        "mall_name": None,
-        "street": "Töölönlahdenkatu 4",
-        "locality": "Helsinki",
-        "venue_key": "kino-regina",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 7.0,
-        "source_name": "Kino Regina",
-        "deal_url": "https://www.kinoregiina.fi",
-        "store_offers_url": "https://www.kinoregiina.fi",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 7,00 €",
-        "date": "Ma–Pe päivisinäytökset",
-    },
-    {
-        "title": "Cinema Orion alennuspäivät",
-        "store_name": "Cinema Orion",
-        "mall_name": None,
-        "street": "Eerikinkatu 15",
-        "locality": "Helsinki",
-        "venue_key": "cinema-orion",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 7.0,
-        "source_name": "Cinema Orion",
-        "deal_url": "https://www.cinemagallego.com",
-        "store_offers_url": "https://www.cinemagallego.com",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 7,00 €",
-        "date": "Tiistaisin",
-    },
-    {
-        "title": "Bio Rex Tripla – edulliset näytökset",
-        "store_name": "Bio Rex Tripla",
-        "mall_name": "Tripla",
-        "street": "Fredikanterassi 1",
-        "locality": "Helsinki",
-        "venue_key": "bio-rex-tripla",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 7.0,
-        "source_name": "Bio Rex",
-        "deal_url": "https://www.biorex.fi",
-        "store_offers_url": "https://www.biorex.fi",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 7,00 €",
-        "date": "Tiistaisin",
-    },
-    {
-        "title": "Kino Riviera alennuspäivät",
-        "store_name": "Kino Riviera",
-        "mall_name": "Redi",
-        "street": "Hermannin rantatie 1",
-        "locality": "Helsinki",
-        "venue_key": "riviera",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 7.0,
-        "source_name": "Kino Riviera",
-        "deal_url": "https://www.kinoriviera.fi",
-        "store_offers_url": "https://www.kinoriviera.fi",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 7,00 €",
-        "date": "Tiistaisin",
-    },
-    {
-        "title": "Kino Engel edulliset näytökset",
-        "store_name": "Kino Engel",
-        "mall_name": None,
-        "street": "Pohjoisesplanadi 2",
-        "locality": "Helsinki",
-        "venue_key": "kino-engel",
-        "category": "Leffapäivät",
-        "price_kg": None,
-        "price_eur": 7.0,
-        "source_name": "Kino Engel",
-        "deal_url": "https://www.kinoengel.fi",
-        "store_offers_url": "https://www.kinoengel.fi",
-        "tags": ["leffa", "elokuva"],
-        "badge": "🎟️ Leffa 7,00 €",
-        "date": "Tiistaisin",
-    },
-]
-
-
-def build_fallback_treat(venues, t):
-    v = venue_by_key(venues, t["venue_key"]) if t.get("venue_key") else None
-    lat = v["lat"] if v else None
-    lon = v["lon"] if v else None
-    return build_item(
-        id="treat:" + slug(t["title"]),
-        title=t["title"],
-        store_name=t["store_name"],
-        mall_name=t.get("mall_name"),
-        region=region_for(t["locality"]),
-        category=t["category"],
-        price_kg=t["price_kg"],
-        price_eur=t["price_eur"],
-        source_type="curated_fallback",
-        source_name=t["source_name"],
-        deal_url=t["deal_url"],
-        store_offers_url=t["store_offers_url"],
-        venue_key=t.get("venue_key"),
-        lat=lat,
-        lon=lon,
-        tags=t.get("tags", []),
-        badge=t.get("badge", "🍬 Herkku"),
-        date="",
-    )
-
-
-def build_fallback_movie(venues, m):
-    v = venue_by_key(venues, m["venue_key"]) if m.get("venue_key") else None
-    lat = v["lat"] if v else None
-    lon = v["lon"] if v else None
-    price_display = fmt_price_eur(m["price_eur"]) if m["price_eur"] is not None else "–"
-    return build_item(
-        id="movie:" + slug(m["title"]),
-        title=m["title"],
-        store_name=m["store_name"],
-        mall_name=m.get("mall_name"),
-        region=region_for(m["locality"]),
-        category=m["category"],
-        price_kg=m["price_kg"],
-        price_eur=m["price_eur"],
-        source_name=m["source_name"],
-        deal_url=m["deal_url"],
-        store_offers_url=m["store_offers_url"],
-        venue_key=m.get("venue_key"),
-        lat=lat,
-        lon=lon,
-        tags=m.get("tags", []),
-        badge=m.get("badge", "🎟️ Leffa"),
-        date=m.get("date", ""),
-    )
-
-
-def build_movie_item(ev):
-    name = pick(ev.get("name")) or "Elokuvanäytös"
-    desc = strip_html(pick(ev.get("description")))
-    loc = ev.get("location") or {}
-    locality = pick(loc.get("address_locality")) or "Helsinki"
-    street = pick(loc.get("street_address")) or ""
-    pos = loc.get("position") or {}
-    coords = pos.get("coordinates") if isinstance(pos.get("coordinates"), list) else None
-    lon = coords[0] if coords else None
-    lat = coords[1] if coords else None
-
-    text = f"{name} {desc}"
-    price_eur = extract_eur_price(text, max_eur=7.0)
-    if price_eur is None:
-        for off in (ev.get("offers") or []):
-            p = extract_eur_price(pick(off.get("price")) or "", max_eur=7.0)
-            if p is not None:
-                price_eur = p
-                break
-    if price_eur is None:
-        price_eur = 7.0
-
-    start = ev.get("start_time")
-    date_str = ""
-    if start:
-        try:
-            d = datetime.fromisoformat(start.replace("Z", "+00:00"))
-            date_str = d.isoformat()
-        except Exception:
-            date_str = start
-
-    info_url = ev.get("info_url") or ev.get("@id") or ""
-    return build_item(
-        id="movie:" + slug(ev.get("@id") or name),
-        title=name,
-        store_name="Finnkino / Kino",
-        mall_name=None,
-        region=region_for(locality),
-        category="Leffapäivät",
-        price_kg=None,
-        price_eur=price_eur,
-        valid_from=VALID_FROM,
-        valid_until=VALID_UNTIL,
-        source_type="live_verified",
-        source_name="Linked Events (MyHelsinki avoin data)",
-        deal_url=info_url,
-        store_offers_url=info_url,
-        venue_key=None,
-        lat=lat,
-        lon=lon,
-        street=street,
-        locality=locality,
-        tags=["leffa", "elokuva"],
-        badge=f"🎟️ Leffa {fmt_price_eur(price_eur)}",
-        date=date_str or "Tarkista sivuilta",
-    )
-
-
-def fetch_linkedevents_movies():
+def fetch_linkedevents_movies(venues):
+    """Fetch cinema events <= 7 EUR from MyHelsinki Linked Events API."""
     results = []
-    today = datetime.now(timezone.utc).date().isoformat()
+    today_iso = datetime.now(timezone.utc).date().isoformat()
     url = (
         "https://api.hel.fi/linkedevents/v1/event/"
-        f"?language=fi&page_size=100&start={today}&include=location"
+        f"?language=fi&page_size=100&start={today_iso}&include=location"
     )
     pages = 0
     seen = set()
+    today = helsinki_today()
     try:
         while url and pages < 15:
             pages += 1
@@ -841,7 +502,107 @@ def fetch_linkedevents_movies():
                 if key in seen:
                     continue
                 seen.add(key)
-                results.append(build_movie_item(ev))
+
+                name = pick(ev.get("name")) or "Elokuvanäytös"
+                desc = strip_html(pick(ev.get("description")))
+                loc = ev.get("location") or {}
+                locality = pick(loc.get("address_locality")) or "Helsinki"
+                street = pick(loc.get("street_address")) or ""
+                pos = loc.get("position") or {}
+                coords = pos.get("coordinates") if isinstance(pos.get("coordinates"), list) else None
+                lon = coords[0] if coords else None
+                lat = coords[1] if coords else None
+
+                # Resolve venue from coords.json
+                v = None
+                for venue in venues:
+                    if venue.get("street") and venue["street"].lower() in street.lower():
+                        v = venue
+                        break
+                    if venue.get("name") and venue["name"].lower() in name.lower():
+                        v = venue
+                        break
+
+                lat = lat or (v["lat"] if v else None)
+                lon = lon or (v["lon"] if v else None)
+                street = street or (v["street"] if v else "")
+                locality = locality or (v["locality"] if v else "")
+                mall_name = v["mall"] if v and v.get("mall") else None
+
+                # Extract price <= 7 EUR
+                price_eur = extract_eur_price(text, max_eur=7.0)
+                if price_eur is None:
+                    for off in (ev.get("offers") or []):
+                        p = extract_eur_price(pick(off.get("price")) or "", max_eur=7.0)
+                        if p is not None:
+                            price_eur = p
+                            break
+                if price_eur is None or price_eur > 7.0:
+                    continue
+
+                # Parse dates
+                start = ev.get("start_time")
+                end = ev.get("end_time")
+                date_str = ""
+                valid_from = None
+                valid_until = None
+                if start:
+                    try:
+                        d = datetime.fromisoformat(start.replace("Z", "+00:00"))
+                        d_date = d.date()
+                        d_wd = finnish_weekday(d_date)
+                        d_day = str(d_date.day)
+                        d_month = str(d_date.month)
+                        date_str = d_wd + " " + d_day + "." + d_month + " klo " + f"{d.hour:02d}:" + f"{d.minute:02d}"
+                        valid_from = d_date.isoformat()
+                        if end:
+                            try:
+                                ed = datetime.fromisoformat(end.replace("Z", "+00:00"))
+                                valid_until = ed.date().isoformat()
+                            except Exception:
+                                valid_until = valid_from
+                        else:
+                            valid_until = valid_from
+                    except Exception:
+                        date_str = start
+
+                # Filter out past events
+                if valid_until:
+                    try:
+                        vu = datetime.fromisoformat(valid_until).date()
+                        if vu < today:
+                            continue
+                    except Exception:
+                        pass
+
+                region = region_for(locality)
+                info_url = ev.get("info_url") or ev.get("@id") or ""
+                results.append(
+                    build_item(
+                        id="movie:" + slug(ev.get("@id") or name),
+                        title=name,
+                        store_name="Finnkino / Kino",
+                        mall_name=mall_name,
+                        region=region,
+                        category="Leffapäivät",
+                        price_kg=None,
+                        price_eur=price_eur,
+                        valid_from=valid_from,
+                        valid_until=valid_until,
+                        source_type="live_verified",
+                        source_name="Linked Events (MyHelsinki avoin data)",
+                        deal_url=info_url,
+                        store_offers_url=info_url,
+                        street=street,
+                        locality=locality,
+                        venue_key=v["key"] if v else None,
+                        lat=lat,
+                        lon=lon,
+                        tags=["leffa", "elokuva"],
+                        badge="🎟️ Elokuva",
+                        date_str=date_str,
+                    )
+                )
             url = (data.get("meta") or {}).get("next")
     except Exception as exc:
         print(f"[warn] Linked Events fetch failed: {exc}", file=sys.stderr)
@@ -849,36 +610,67 @@ def fetch_linkedevents_movies():
 
 
 def collect_treats(venues):
+    """Build treat items from live sources only. No fakes."""
     items = []
-    # Try live fetchers first (best-effort)
-    live_items = []
     for fetcher in (try_kruoka_treats, try_lidl_treats, try_skaupat_treats):
         try:
-            live_items.extend(fetcher(venues))
+            items.extend(fetcher(venues))
         except Exception as exc:
             print(f"[info] Live fetcher {fetcher.__name__} raised: {exc}", file=sys.stderr)
 
-    if live_items:
-        items.extend(live_items)
-        print(f"[info] Live treat items fetched: {len(live_items)}", file=sys.stderr)
-    else:
-        print("[info] Using curated fallback treat data", file=sys.stderr)
-        for t in FALLBACK_TREATS:
-            items.append(build_fallback_treat(venues, t))
-    return items
+    today = helsinki_today()
+    resolved = []
+    for t in items:
+        v = venue_by_key(venues, t.get("venue_key") or "") if t.get("venue_key") else None
+        if not v:
+            v = venue_by_name(venues, t.get("store_name", ""))
+
+        lat = t.get("lat") or (v["lat"] if v else None)
+        lon = t.get("lon") or (v["lon"] if v else None)
+        street = t.get("street") or (v["street"] if v else "")
+        locality = t.get("locality") or (v["locality"] if v else "")
+        mall_name = t.get("mall_name") or (v.get("mall") if v else None)
+
+        km, walking = distance_from(lat, lon, STATION_LAT, STATION_LON)
+        price_numeric = t.get("price_kg") if t.get("price_kg") is not None else t.get("price_eur")
+
+        # Weekly offer validity: today through today+7 days
+        valid_from = today.isoformat()
+        valid_until = (today + timedelta(days=7)).isoformat()
+        try:
+            vu = datetime.fromisoformat(valid_until).date()
+            if vu < today:
+                continue
+        except Exception:
+            pass
+        end_date = today + timedelta(days=7)
+        end_wd = finnish_weekday(end_date)
+        end_day = str(end_date.day)
+        end_month = str(end_date.month)
+
+        resolved.append({
+            **t,
+            "lat": lat,
+            "lon": lon,
+            "street": street,
+            "locality": locality,
+            "mall_name": mall_name,
+            "station_km": km,
+            "station_walking": walking,
+            "distKm": km,
+            "distWalking": walking,
+            "maps_url": maps_url(street, locality, lat, lon),
+            "valid_from": valid_from,
+            "valid_until": valid_until,
+            "valid": "🗓️ Voimassa " + end_wd + " " + end_day + "." + end_month + " asti (vielä 7 pv)",
+            "price_numeric": price_numeric,
+        })
+    return resolved
 
 
 def collect_movies(venues):
-    items = []
-    live = fetch_linkedevents_movies()
-    if live:
-        items.extend(live)
-        print(f"[info] Live movie items fetched: {len(live)}", file=sys.stderr)
-    else:
-        print("[info] Using fallback movie data", file=sys.stderr)
-        for m in FALLBACK_MOVIES:
-            items.append(build_fallback_movie(venues, m))
-    return items
+    """Build movie items from live Linked Events API only. No fakes."""
+    return fetch_linkedevents_movies(venues)
 
 
 def run():
@@ -889,8 +681,18 @@ def run():
     movies = collect_movies(venues)
 
     events = treats + movies
-    events.sort(key=lambda e: (e["price_numeric"] if e["price_numeric"] is not None else 9999, e["title"]))
+    # Unit-aware sort: separate price_kg and price_eur
+    def sort_key(e):
+        kg = e.get("price_kg")
+        eur = e.get("price_eur")
+        if kg is not None:
+            return (0, kg, e["title"])
+        if eur is not None:
+            return (1, eur, e["title"])
+        return (2, 9999, e["title"])
+    events.sort(key=sort_key)
 
+    today = helsinki_today().isoformat()
     payload = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "nextUpdateAt": next_update_iso(),
@@ -900,9 +702,9 @@ def run():
             "https://www.k-ruoka.fi/tarjoukset",
             "https://www.lidl.fi/tarjoukset",
             "https://www.s-kanava.fi",
-            "Curated grocery & cinema offer data",
         ],
         "total": len(events),
+        "today": today,
         "treats": events,
     }
 
@@ -911,6 +713,7 @@ def run():
         json.dump(payload, f, ensure_ascii=False, indent=2)
         f.write("\n")
     print(f"Herkku snapshot saved: {len(events)} items -> {OUT_PATH}")
+    print(f"  Treats: {len(treats)}, Movies: {len(movies)}")
 
 
 if __name__ == "__main__":
