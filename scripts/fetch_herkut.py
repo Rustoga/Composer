@@ -31,7 +31,8 @@ TREAT_KEYWORDS = [
     "salmiak", "pulla", "leivos", "munkki", "croissant", "jäätelö",
     "viennetta", "keksi", "donitsi", "viineri", "kakku", "paistopiste",
     "kahvi", "glögi", "pipari", "fazer", "marabou", "panda", "malaco",
-    "haribo", "arnolds", "gateau", "kanniston",
+    "haribo", "arnolds", "gateau", "kanniston", "energy", "energiajuoma",
+    "red bull", "battery", "monster", "burn",
 ]
 NON_TREAT_WORDS = [
     "makkara", "maksamakkara", "herkkumaksamakkara", "herkkusieni", "sieni",
