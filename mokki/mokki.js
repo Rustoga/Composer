@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // ---------------------------------------------------------------------------
 // Top-level error trapping: any startup, shader, or unhandled rejection failure
@@ -29,6 +30,7 @@ window.onunhandledrejection = (event) => {
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
+const GLB_URL = '/mokki/Scaniverse%202026-05-31%20145549.glb';
 const DEFAULT_URL = '/mokki/splats.ply';
 const SPLAT_URL = '/mokki/splats.splat';
 const FOV = 60;
@@ -37,14 +39,14 @@ const FAR = 2000;
 const FLY_SPEED = 6;
 const AUTO_SPEED = 0.5;
 
-const LOAD_TIMEOUT_MS = 25000;
-const FETCH_TIMEOUT_MS = 20000;
-const ESTIMATED_TOTAL_MB = 11;
+const LOAD_TIMEOUT_MS = 60000;
+const FETCH_TIMEOUT_MS = 60000;
+const ESTIMATED_TOTAL_MB = 30;
 
 // ---------------------------------------------------------------------------
 // Globals
 // ---------------------------------------------------------------------------
-let scene, camera, renderer, controls, splats;
+let scene, camera, renderer, controls, splats, gltfScene;
 let center = new THREE.Vector3();
 let radius = 10;
 let autoFly = false;
@@ -53,7 +55,7 @@ let autoHeight = 0;
 const keys = {};
 let lastTime = 0;
 
-// Progressive LOD + depth sort state
+// Progressive LOD + depth sort state (splats only)
 let activeCount = 60000;
 let sortIndices = null;
 let viewZBuffer = null;
@@ -62,6 +64,9 @@ let lastCameraPos = null;
 let lastCameraLook = null;
 let frameCount = 0;
 let loadError = '';
+
+// Render mode: 'splat' | 'gltf' | null
+let renderMode = null;
 
 let currentAbortController = null;
 function abortCurrentLoad() {
@@ -145,7 +150,7 @@ function hideError() {
 }
 
 // ---------------------------------------------------------------------------
-// Shaders
+// Shaders (splat renderer)
 // ---------------------------------------------------------------------------
 const vertexShader = `
 attribute float size;
@@ -193,42 +198,89 @@ function start() {
     showError('Engine init failed: ' + (err.message || String(err)));
     return;
   }
-  setProgress(15, '15% — Engine ready, connecting to splats…');
-  const p = loadSplatsUrlWithFallback(
+  setProgress(15, '15% — Engine ready, connecting to assets…');
+  // Try .glb first, then .splat, then .ply
+  loadGlbWithFallback(
     (loaded, total) => {
       const pct = total > 0 ? Math.min(15 + Math.floor((loaded / total) * 75), 89) : 15;
       const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
       const totalMB = total ? (total / (1024 * 1024)).toFixed(2) : '?';
-      setProgress(pct, `${pct}% — Downloading splats… (${loadedMB} / ${totalMB} MB)`);
+      setProgress(pct, `${pct}% — Downloading assets… (${loadedMB} / ${totalMB} MB)`);
     }
   );
-  const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
-  watchdog.then(async (data) => {
+}
+
+function loadGlbWithFallback(onProgress) {
+  // Try .glb first
+  fetchGlb(GLB_URL, onProgress).then((gltf) => {
     currentAbortController = null;
-    setProgress(92, '92% — Parsing & uploading 703k splats to GPU…');
-    // Yield one animation frame so the UI paints the 92% state before heavy GPU upload
-    await new Promise((r) => requestAnimationFrame(r));
+    renderMode = 'gltf';
+    gltfScene = gltf.scene;
+    buildGltf(gltfScene);
+    setProgress(100, '100% — Ready');
+    setState(uiStates.READY);
     lastTime = performance.now();
     animate();
   }).catch((err) => {
-    console.warn('Splat load fell back:', err.message);
+    console.warn('GLB load failed, falling back to splats:', err.message);
     abortCurrentLoad();
-    setState(uiStates.FALLBACK);
-    const data = generateFallback();
-    buildPoints(data);
-    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
-    controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
-    resetView();
-    activeCount = Math.min(60000, data.count);
-    frameCount = 0;
-    lastCameraPos = null;
-    lastCameraLook = null;
-    setProgress(100, '100% — Ready');
-    lastTime = performance.now();
-    animate();
+    loadSplatsUrlWithFallback(onProgress);
   });
 }
 
+function fetchGlb(url, onProgress) {
+  return new Promise((resolve, reject) => {
+    abortCurrentLoad();
+    const controller = new AbortController();
+    currentAbortController = controller;
+    const signal = controller.signal;
+
+    fetch(url, { signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const total = Number(res.headers.get('content-length') || 0);
+        const reader = res.body.getReader();
+        const chunks = [];
+        let loaded = 0;
+        return new Promise((resolveRead, rejectRead) => {
+          function pump() {
+            reader.read().then(({ done, value }) => {
+              if (done) {
+                const buf = new Uint8Array(loaded);
+                let off = 0;
+                for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
+                currentAbortController = null;
+                resolveRead(buf);
+              } else {
+                chunks.push(value);
+                loaded += value.byteLength;
+                if (onProgress) onProgress(loaded, total);
+                pump();
+              }
+            }).catch(rejectRead);
+          }
+          pump();
+        });
+      })
+      .then((buf) => {
+        // Parse GLB with GLTFLoader
+        const loader = new GLTFLoader();
+        loader.parse(buf, '', (gltf) => {
+          resolve(gltf);
+        }, (err) => {
+          reject(err);
+        });
+      })
+      .catch((err) => {
+        currentAbortController = null;
+        reject(err);
+      });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Scene init
+// ---------------------------------------------------------------------------
 function initScene() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x060609);
@@ -239,6 +291,8 @@ function initScene() {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
   container.appendChild(renderer.domElement);
 
   // Hook Three.js r170 shader debug to surface GLSL compile/link errors verbatim
@@ -249,6 +303,15 @@ function initScene() {
     const progLog = gl.getProgramInfoLog(program) || '(none)';
     showError('GLSL shader error:\\nVERTEX: ' + vsLog + '\\nFRAGMENT: ' + fsLog + '\\nPROGRAM: ' + progLog);
   };
+
+  // Lighting for Scaniverse .glb (baked photographic textures)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
+  scene.add(ambientLight);
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x776655, 1.0);
+  scene.add(hemiLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  dirLight.position.set(10, 20, 10);
+  scene.add(dirLight);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -270,18 +333,36 @@ function initScene() {
   btnFlipAxis.addEventListener('click', () => {
     flipUpAxis = !flipUpAxis;
     btnFlipAxis.classList.toggle('active', flipUpAxis);
-    if (!splats) return;
-    const positions = splats.geometry.attributes.position.array;
-    const count = positions.length / 3;
-    for (let i = 0; i < count; i++) {
-      const y = positions[i * 3 + 1];
-      const z = positions[i * 3 + 2];
-      positions[i * 3 + 1] = z;
-      positions[i * 3 + 2] = y;
+    if (renderMode === 'gltf' && gltfScene) {
+      gltfScene.traverse((obj) => {
+        if (obj.isMesh && obj.geometry && obj.geometry.attributes.position) {
+          const pos = obj.geometry.attributes.position.array;
+          for (let i = 0; i < pos.length; i += 3) {
+            const y = pos[i + 1];
+            const z = pos[i + 2];
+            pos[i + 1] = z;
+            pos[i + 2] = y;
+          }
+          obj.geometry.attributes.position.needsUpdate = true;
+          obj.geometry.computeBoundingBox();
+          obj.geometry.computeBoundingSphere();
+        }
+      });
+      gltfScene.updateMatrixWorld();
+      resetView();
+    } else if (renderMode === 'splat' && splats) {
+      const positions = splats.geometry.attributes.position.array;
+      const count = positions.length / 3;
+      for (let i = 0; i < count; i++) {
+        const y = positions[i * 3 + 1];
+        const z = positions[i * 3 + 2];
+        positions[i * 3 + 1] = z;
+        positions[i * 3 + 2] = y;
+      }
+      splats.geometry.attributes.position.needsUpdate = true;
+      splats.geometry.computeBoundingSphere();
+      resetView();
     }
-    splats.geometry.attributes.position.needsUpdate = true;
-    splats.geometry.computeBoundingSphere();
-    resetView();
   });
   btnReset.addEventListener('click', resetView);
   btnReload.addEventListener('click', () => start());
@@ -294,10 +375,26 @@ function initScene() {
     reader.onload = () => {
       const buf = reader.result;
       if (!(buf instanceof ArrayBuffer)) return;
-      loadSplats(buf, null, detectFormat(buf)).catch((err) => {
-        console.error('Load failed:', err);
-        splatCountEl.textContent = 'Error loading file';
-      });
+      const fmt = detectFormat(buf);
+      if (fmt === 'glb' || fmt === 'gltf') {
+        loadGlbFromBuffer(buf).then((gltf) => {
+          renderMode = 'gltf';
+          gltfScene = gltf.scene;
+          buildGltf(gltfScene);
+          setProgress(100, '100% — Ready');
+          setState(uiStates.READY);
+          lastTime = performance.now();
+          animate();
+        }).catch((err) => {
+          console.error('GLB load failed:', err);
+          splatCountEl.textContent = 'Error loading file';
+        });
+      } else {
+        loadSplats(buf, null, fmt).catch((err) => {
+          console.error('Load failed:', err);
+          splatCountEl.textContent = 'Error loading file';
+        });
+      }
     };
     reader.onerror = () => { splatCountEl.textContent = 'Error reading file'; };
     reader.readAsArrayBuffer(file);
@@ -308,6 +405,51 @@ function initScene() {
   });
 }
 
+function loadGlbFromBuffer(buf) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.parse(buf, '', (gltf) => {
+      resolve(gltf);
+    }, (err) => {
+      reject(err);
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// GLTF scene setup
+// ---------------------------------------------------------------------------
+function buildGltf(gltf) {
+  if (gltfScene) {
+    scene.remove(gltfScene);
+  }
+  gltfScene = gltf.scene;
+  scene.add(gltfScene);
+
+  // Center the cabin: compute bounding box, ground at y=0, center horizontally
+  const box = new THREE.Box3().setFromObject(gltfScene);
+  box.getCenter(center);
+  const size = box.getSize(new THREE.Vector3());
+  radius = Math.max(size.x, size.y, size.z) * 0.6;
+  if (radius < 2) radius = 2;
+
+  // Move cabin so ground sits at y=0 and horizontally centered at origin
+  gltfScene.position.set(-center.x, -box.min.y, -center.z);
+  gltfScene.updateMatrixWorld();
+
+  // Recompute center after repositioning
+  const box2 = new THREE.Box3().setFromObject(gltfScene);
+  box2.getCenter(center);
+  const s2 = box2.getSize(new THREE.Vector3());
+  radius = Math.max(s2.x, s2.y, s2.z) * 0.6;
+  if (radius < 2) radius = 2;
+
+  resetView();
+}
+
+// ---------------------------------------------------------------------------
+// Resize
+// ---------------------------------------------------------------------------
 function onResize() {
   if (!camera || !renderer) return;
   camera.aspect = container.clientWidth / container.clientHeight;
@@ -318,14 +460,31 @@ function onResize() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Reset view (works for both splat and gltf modes)
+// ---------------------------------------------------------------------------
 function resetView() {
+  if (renderMode === 'gltf' && gltfScene) {
+    const box = new THREE.Box3().setFromObject(gltfScene);
+    box.getCenter(center);
+    const size = box.getSize(new THREE.Vector3());
+    radius = Math.max(size.x, size.y, size.z) * 0.6;
+    if (radius < 2) radius = 2;
+    // Eye-level camera: ~1.6m above ground, looking at cabin center
+    const eyeLevel = box.min.y + 1.6;
+    const camDist = radius * 1.5;
+    controls.target.copy(center);
+    camera.position.set(center.x, eyeLevel, center.z + camDist);
+    camera.lookAt(center);
+    controls.update();
+    return;
+  }
   if (!splats) return;
   const geom = splats.geometry;
   if (!geom.boundingSphere) geom.computeBoundingSphere();
   const s = geom.boundingSphere;
   center.copy(s.center);
   radius = Math.max(s.radius, 3);
-  // Eye-level camera: ~1.6m above ground, looking directly at cabin center
   const eyeLevel = center.y - radius + 1.6;
   const camDist = radius * 1.4;
   controls.target.copy(center);
@@ -334,6 +493,9 @@ function resetView() {
   controls.update();
 }
 
+// ---------------------------------------------------------------------------
+// Fly controls
+// ---------------------------------------------------------------------------
 function updateFly(dt) {
   if (!controls.enabled || autoFly || !camera) return;
   const move = new THREE.Vector3();
@@ -352,7 +514,7 @@ function updateFly(dt) {
 }
 
 function updateAutoFly(dt) {
-  if (!autoFly || !splats || !camera) return;
+  if (!autoFly || !camera) return;
   autoAngle += AUTO_SPEED * dt;
   const x = center.x + Math.cos(autoAngle) * radius;
   const z = center.z + Math.sin(autoAngle) * radius;
@@ -371,7 +533,6 @@ function updateSortOrder() {
   const camDir = new THREE.Vector3();
   camera.getWorldDirection(camDir);
 
-  // Compute view-Z (distance from camera along camera direction) for each splat
   if (!viewZBuffer || viewZBuffer.length !== count) viewZBuffer = new Float32Array(count);
   const viewZ = viewZBuffer;
   for (let i = 0; i < count; i++) {
@@ -381,7 +542,6 @@ function updateSortOrder() {
     viewZ[i] = dx * camDir.x + dy * camDir.y + dz * camDir.z;
   }
 
-  // Sort indices back-to-front (farther = larger viewZ first)
   if (!sortIndices || sortIndices.length !== count) {
     sortIndices = new Uint32Array(count);
     for (let i = 0; i < count; i++) sortIndices[i] = i;
@@ -402,15 +562,12 @@ function applyProgressiveLOD() {
     updateSortOrder();
     lastCameraPos = camera.position.clone();
     lastCameraLook = camera.getWorldDirection(new THREE.Vector3());
-    // When camera moves, reset progressive ramp to show coarse structure immediately
     activeCount = Math.min(activeCount * 2, totalCount);
   } else if (frameCount % 2 === 0) {
-    // Ramp up active count when idle
     activeCount = Math.min(activeCount + 5000, totalCount);
   }
   frameCount++;
 
-  // Stride-based sampling on sorted indices so first N cover the whole bounding box
   const stride = Math.max(1, Math.ceil(totalCount / activeCount));
   const drawnCount = Math.ceil(totalCount / stride);
   if (!strideIndices || strideIndices.length < drawnCount) {
@@ -422,7 +579,6 @@ function applyProgressiveLOD() {
   splats.geometry.setIndex(strideIndices);
   splats.geometry.setDrawRange(0, drawnCount);
 
-  // Compensate density: fewer splats = bigger splats
   splats.material.uniforms.uPointScale.value = Math.sqrt(totalCount / drawnCount);
 }
 
@@ -456,7 +612,6 @@ function animate(now = 0) {
         return;
       }
     }
-    // Check shader program info log for GLSL compile/link warnings
     if (splats && splats.material && splats.material.program) {
       const log = splats.material.program.log || '';
       if (log && log.length > 0) {
@@ -473,6 +628,7 @@ function animate(now = 0) {
 // ---------------------------------------------------------------------------
 function detectFormat(bytes) {
   const header = new TextDecoder().decode(bytes.subarray(0, Math.min(bytes.length, 4)));
+  if (header === 'glTF') return 'glb';
   return header.startsWith('ply') ? 'ply' : 'splat';
 }
 
@@ -569,7 +725,6 @@ async function loadSplats(input, onProgress, formatHint) {
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
     controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
-    // Initialize progressive LOD state on first load
     activeCount = Math.min(60000, data.count);
     frameCount = 0;
     lastCameraPos = null;
