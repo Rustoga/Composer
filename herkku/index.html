@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Herkut – makeiset, leipomot & leffapäivät</title>
+  <style>
+    :root {
+      --bg: #FFF9FB;
+      --bg-tint: #FFF5F7;
+      --card: #FFFFFF;
+      --card-hover: #FFF2F6;
+      --muted: #8E6B8E;
+      --line: #E3C9DA;
+      --accent: #FF4D8D;
+      --accent-glow: #FF85B2;
+      --mint: #2EC4B6;
+      --lemon: #FFBE0B;
+      --berry: #8338EC;
+      --ink: #3A2A3A;
+      --ok: #2EC4B6;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1000px 600px at 20% 10%, rgba(255,77,141,0.10), transparent 50%),
+        radial-gradient(800px 500px at 80% 80%, rgba(46,196,182,0.08), transparent 50%),
+        var(--bg-tint);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      padding: 24px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    header { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      letter-spacing: -0.02em;
+      color: #FF4D8D;
+      text-shadow: 0 2px 10px rgba(255,77,141,0.25);
+    }
+    .lede { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      margin: 12px 0 14px;
+    }
+    input, select, button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #FFFFFF;
+      color: var(--ink);
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    button { cursor: pointer; }
+    button.toggle.active {
+      background: var(--accent);
+      color: #FFFFFF;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 16px rgba(255,77,141,0.35);
+    }
+    button.refresh { background: var(--berry); border-color: var(--accent-glow); color: #fff; }
+    button.refresh:hover { background: #7a2cb8; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin: 6px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .pill strong { color: var(--ink); }
+    .pill .val { color: var(--accent); font-weight: 700; }
+    .sections { display: grid; gap: 16px; }
+    .region {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,245,247,0.7));
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .region-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(255,77,141,0.12), transparent);
+    }
+    .region-head h2 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 10px;
+      padding: 8px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 18px;
+      background: var(--card);
+      display: grid;
+      gap: 6px;
+      line-height: 1.5;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      position: relative;
+    }
+    .card > * {
+      min-width: 0;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      align-items: center;
+    }
+    .meta-row .badge { white-space: nowrap; }
+    .price-detail {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-glow);
+      box-shadow: 0 8px 24px rgba(255,77,141,0.10);
+    }
+    .title { font-weight: 700; line-height: 1.3; color: var(--ink); font-size: 15px; }
+    .meta { font-size: 12.5px; color: var(--muted); }
+    .free {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(46,196,182,0.55);
+      color: #8DF3E8;
+      background: rgba(46,196,182,0.12);
+      border-radius: 10px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .paid {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(255,190,11,0.55);
+      color: #FFD966;
+      background: rgba(255,190,11,0.12);
+      border-radius: 10px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; }
+    .treat {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(255,77,141,0.55);
+      color: #FFB3D1;
+      background: rgba(255,77,141,0.12);
+      border-radius: 999px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .movie {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(131,56,236,0.55);
+      color: #D8B4FE;
+      background: rgba(131,56,236,0.12);
+      border-radius: 999px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .mall-badge {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(255,190,11,0.55);
+      color: #FFD166;
+      background: rgba(255,190,11,0.15);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .type {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(142,107,142,0.15);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; }
+    .links a {
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      transition: all 0.15s;
+    }
+    .links a:hover { border-color: var(--accent-glow); color: var(--accent); }
+    .station-line { font-size: 11px; color: var(--accent-glow); margin-top: 2px; }
+    .station { color: var(--accent); font-weight: 700; }
+    .empty { padding: 20px; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; background: rgba(255,249,251,0.6); }
+    .helper {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      background: rgba(255,255,255,0.6);
+    }
+    .helper b { color: var(--ink); }
+
+    /* Quick filter pills */
+    .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 14px; }
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+    }
+    .filter-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-glow);
+    }
+    .filter-pill.active .tag { color: #fff; }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .compare-table th {
+      background: var(--card-hover);
+      color: var(--ink);
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .compare-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover { background: rgba(255,77,141,0.04); }
+    .compare-table .price { font-weight: 700; color: var(--lemon); }
+    .compare-table .kg { color: var(--accent); }
+    .compare-table .km { white-space: nowrap; }
+    .compare-table .links a {
+      display: inline-block;
+      margin-right: 6px;
+      font-size: 10.5px;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .compare-table .links a:hover { border-color: var(--accent-glow); color: var(--accent); }
+    .table-caption {
+      margin: 6px 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .filters { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🍬 Herkut Helsingissä</h1>
+      <p class="lede">Edulliset makeiset, irtokarkit ja leipomotuotteet Helsingissä, Espoossa ja Vantaalla – sekä leffapäivät (≤ 7 €) Finnkinolta, Kino Reginalta, Cinema Orionilta, Bio Rexiltä ja Rivieralta. Päivitetään automaattisesti kahdesti päivässä (06:00 ja 19:00).</p>
+    </header>
+
+    <div class="topbar">
+      <input id="search" placeholder="Etsi herkkua, paikkaa tai kauppakeskusta…" />
+      <select id="regionSelect">
+        <option value="ALL">Kaikki alueet</option>
+        <option value="Helsinki">Helsinki</option>
+        <option value="Espoo">Espoo</option>
+        <option value="Vantaa">Vantaa</option>
+        <option value="Muu Suomi">Muu Suomi</option>
+      </select>
+      <button id="refreshNow" class="refresh">Päivitä</button>
+      <button id="viewToggle" class="toggle active">🎴 Korttinäkymä</button>
+      <button id="tableViewToggle" class="toggle">📋 Taulukkonäkymä</button>
+    </div>
+
+    <div class="filters">
+      <button class="filter-pill" data-filter="all">Kaikki</button>
+      <button class="filter-pill" data-filter="irtokarkit">🍬 Irtokarkit</button>
+      <button class="filter-pill" data-filter="leipomo">🥐 Leipomo &amp; Kahvila</button>
+      <button class="filter-pill" data-filter="mall">🏬 Kauppakeskus</button>
+      <button class="filter-pill" data-filter="movie">🎟️ Leffapäivät (≤ 7 €)</button>
+      <button class="filter-pill" data-filter="cheap">💶 Superhalvat (≤ 6 €/kg tai ≤ 5 €)</button>
+      <button class="filter-pill" data-filter="nearest">📍 Lähin asemalta</button>
+    </div>
+
+    <div class="stats">
+      <span class="pill">Yhteensä: <strong class="val" id="totalCount">0</strong></span>
+      <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
+      <span class="pill">Seuraava päivitys: <strong id="nextUpdate">-</strong> (06:00 / 19:00)</span>
+      <span class="pill">Countdown: <strong id="countdown">-</strong></span>
+    </div>
+
+    <div class="table-caption" id="tableCaption">Vertaa herkkuja ja leffalippuja</div>
+    <div class="table-wrap" id="tableWrap" style="display:none">
+      <table class="compare-table" id="compareTable">
+        <thead>
+          <tr>
+            <th>Herkku / Tarjous</th>
+            <th>Paikka / Kauppakeskus</th>
+            <th>Etäisyys asemalta</th>
+            <th>Kävelyaika</th>
+            <th>Hinta (€ / €/kg)</th>
+            <th>Voimassa</th>
+            <th>Linkki</th>
+          </tr>
+        </thead>
+        <tbody id="compareTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="sections" class="sections"></div>
+
+    <div class="helper">
+      <b>Hintoja ja aukioloja voi vaihtua – tarkista aina kaupan tai elokuvateatterin omilta sivuilta ennen käyntiä.</b>
+      Irtokarkkien hinnat normalisoitu €/kg -muotoon vertailua varten. Leffapäivät on suodatettu sisältämään vain ≤ 7 € liput.
+    </div>
+  </div>
+
+  <script>
+    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
+    let snapshot = { treats: [] }
+    let searchTerm = ''
+    let regionFilter = 'ALL'
+    let categoryFilter = 'all'
+    let nearestSort = false
+    let cheapFilter = false
+    let viewMode = 'cards'
+    let refreshing = false
+
+    function sortRegions(keys) {
+      return [...keys].sort((a, b) => {
+        const ai = PRIORITY.indexOf(a)
+        const bi = PRIORITY.indexOf(b)
+        if (ai === -1 && bi === -1) return a.localeCompare(b)
+        if (ai === -1) return 1
+        if (bi === -1) return -1
+        return ai - bi
+      })
+    }
+
+    function normalize(str) {
+      return String(str || '').toLowerCase()
+    }
+
+    function fmtEur(v) {
+      if (v == null) return '–'
+      return v.toFixed(2).replace('.', ',')
+    }
+
+    function filteredTreats(treats) {
+      const q = normalize(searchTerm)
+      return treats.filter((t) => {
+        if (regionFilter !== 'ALL' && t.region !== regionFilter) return false
+
+        if (categoryFilter === 'irtokarkit') {
+          if (!/irtokarkit/.test(t.tags.join(' '))) return false
+        } else if (categoryFilter === 'leipomo') {
+          if (!/leipomo/.test(t.category || '')) return false
+        } else if (categoryFilter === 'mall') {
+          if (!t.mall) return false
+        } else if (categoryFilter === 'movie') {
+          if (!/leffa/.test(t.tags.join(' '))) return false
+        } else if (categoryFilter === 'cheap') {
+          const kg = t.price_kg
+          const eur = t.price_eur
+          if (kg != null && kg > 6) return false
+          if (eur != null && eur > 5) return false
+          if (kg == null && eur == null) return false
+        } else if (categoryFilter === 'nearest') {
+          // handled by sort, not filter
+        }
+
+        if (!q) return true
+        return (
+          normalize(t.title).includes(q) ||
+          normalize(t.place).includes(q) ||
+          normalize(t.mall || '').includes(q) ||
+          normalize(t.street || '').includes(q) ||
+          normalize(t.category || '').includes(q)
+        )
+      })
+    }
+
+    function groupByRegion(treats) {
+      const map = new Map()
+      for (const t of treats) {
+        const r = t.region || 'Muu Suomi'
+        if (!map.has(r)) map.set(r, [])
+        map.get(r).push(t)
+      }
+      return map
+    }
+
+    function priceBadge(t) {
+      if (t.price_kg != null) return `<span class="paid">${fmtEur(t.price_kg)} €/kg</span>`
+      if (t.price_eur != null) return `<span class="paid">${fmtEur(t.price_eur)} €</span>`
+      return '<span class="paid">-</span>'
+    }
+
+    function categoryBadge(t) {
+      if (/leffa/.test(t.tags.join(' '))) return `<span class="movie">${t.badge || '🎟️ Leffa'}</span>`
+      if (/irtokarkit/.test(t.tags.join(' '))) return `<span class="treat">${t.badge || '🍬 Irtokarkit'}</span>`
+      if (/leipomo/.test(t.category || '')) return `<span class="treat">${t.badge || '🥐 Leipomo'}</span>`
+      return `<span class="treat">${t.badge || '🍬 Herkku'}</span>`
+    }
+
+    function mallBadge(t) {
+      if (!t.mall) return ''
+      return `<span class="mall-badge">🏬 ${t.mall}</span>`
+    }
+
+    function stationLabel(t) {
+      if (t.station_km == null) return ''
+      const km = Number(t.station_km).toFixed(1)
+      return `<span class="station">🚉 ${km} km · ${t.station_walking || '–'}</span>`
+    }
+
+    function render() {
+      const treats = filteredTreats(snapshot.treats || [])
+      document.getElementById('totalCount').textContent = String(treats.length)
+      const root = document.getElementById('sections')
+
+      if (!treats.length) {
+        root.innerHTML = '<div class="empty">Ei herkkuja valituilla suodattimilla.</div>'
+        return
+      }
+
+      const grouped = groupByRegion(treats)
+      const regions = sortRegions(Array.from(grouped.keys()))
+
+      root.innerHTML = regions.map((region) => {
+        const items = grouped.get(region) || []
+        items.sort((a, b) => {
+          if (nearestSort) {
+            const aKm = a.station_km == null ? 9999 : a.station_km
+            const bKm = b.station_km == null ? 9999 : b.station_km
+            if (aKm !== bKm) return aKm - bKm
+            return (a.title || '').localeCompare(b.title || '')
+          }
+          const aCheap = (a.price_kg != null && a.price_kg <= 6) || (a.price_eur != null && a.price_eur <= 5)
+          const bCheap = (b.price_kg != null && b.price_kg <= 6) || (b.price_eur != null && b.price_eur <= 5)
+          if (aCheap && !bCheap) return -1
+          if (!aCheap && bCheap) return 1
+          const aKm = a.station_km == null ? 9999 : a.station_km
+          const bKm = b.station_km == null ? 9999 : b.station_km
+          if (aKm !== bKm) return aKm - bKm
+          return (a.title || '').localeCompare(b.title || '')
+        })
+        return `
+          <section class="region">
+            <div class="region-head">
+              <h2>${region}</h2>
+              <span class="meta">${items.length} herkkua</span>
+            </div>
+            <div class="grid">
+              ${items.map((t) => `
+                <article class="card">
+                  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="title">${t.title || 'Nimetön herkku'}</div>
+                      ${categoryBadge(t)}
+                    </div>
+                    ${priceBadge(t)}
+                  </div>
+                  <div class="meta-row">
+                    ${mallBadge(t)}
+                    <span>📍 ${[t.street, t.locality].filter(Boolean).join(', ') || 'Tuntematon osoite'}</span>
+                    ${t.station_km != null ? `<span>🚉 ${Number(t.station_km).toFixed(1)} km · ${t.station_walking}</span>` : ''}
+                  </div>
+                  ${t.valid ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">⏱️ ${t.valid}</div>` : ''}
+                  <div class="links">
+                    ${t.sourceUrl ? `<a href="${t.sourceUrl}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
+                    ${t.mapsUrl ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : ''}
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        `
+      }).join('')
+    }
+
+    function setTimeStats() {
+      const last = snapshot.generatedAt ? new Date(snapshot.generatedAt) : null
+      const next = snapshot.nextUpdateAt ? new Date(snapshot.nextUpdateAt) : null
+      document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
+      document.getElementById('nextUpdate').textContent = next && !Number.isNaN(next) ? next.toLocaleString('fi-FI') : '-'
+
+      if (window._countdownTimer) clearInterval(window._countdownTimer)
+      if (!next || Number.isNaN(next.getTime())) return
+      const tick = () => {
+        const ms = next.getTime() - Date.now()
+        if (ms <= 0) {
+          document.getElementById('countdown').textContent = 'Päivitetään pian'
+          return
+        }
+        const h = Math.floor(ms / (1000 * 60 * 60))
+        const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
+        document.getElementById('countdown').textContent = `${h}h ${m}m`
+      }
+      tick()
+      window._countdownTimer = setInterval(tick, 30000)
+    }
+
+    function renderComparisonTable() {
+      const treats = filteredTreats(snapshot.treats || [])
+      const body = document.getElementById('compareTableBody')
+      const caption = document.getElementById('tableCaption')
+
+      caption.textContent = `Vertaa herkkuja ja leffalippuja (${treats.length} kpl)`
+
+      body.innerHTML = treats.map((t) => {
+        const price = t.price_kg != null
+          ? `<span class="kg">${fmtEur(t.price_kg)} €/kg</span>`
+          : (t.price_eur != null ? `<span class="price">${fmtEur(t.price_eur)} €</span>` : '<span>-</span>')
+        const km = t.station_km != null ? `<span class="km">${Number(t.station_km).toFixed(1)} km</span>` : '-'
+        const walk = t.station_walking || '-'
+        const mall = t.mall || '-'
+        const place = `${t.place || ''}${mall ? ` (${mall})` : ''}`
+        const website = t.sourceUrl
+          ? `<a href="${t.sourceUrl}" target="_blank" rel="noreferrer">Lähde</a>`
+          : '-'
+        const maps = t.mapsUrl
+          ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Kartta</a>`
+          : '-'
+
+        return `
+          <tr>
+            <td><strong>${t.title || 'Nimetön herkku'}</strong><br>${categoryBadge(t)}</td>
+            <td>${place}</td>
+            <td class="km">${km}</td>
+            <td>${walk}</td>
+            <td>${price}</td>
+            <td style="max-width: 160px;">${t.valid || '–'}</td>
+            <td class="links">${website} ${maps}</td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    async function load() {
+      if (refreshing) return
+      refreshing = true
+      const btn = document.getElementById('refreshNow')
+      if (btn) btn.disabled = true
+      try {
+        const res = await fetch('./herkku_snapshot.json?t=' + Date.now(), { cache: 'no-store' })
+        if (!res.ok) throw new Error('HTTP ' + res.status)
+        const data = await res.json()
+        snapshot = Array.isArray(data) ? { treats: data } : data
+        if (!Array.isArray(snapshot.treats)) snapshot.treats = []
+        setTimeStats()
+        try { render() } catch (err) { console.error('render failed:', err) }
+        try { renderComparisonTable() } catch (err) { console.error('renderComparisonTable failed:', err) }
+      } catch (err) {
+        console.error('Herkku data load failed:', err)
+        document.getElementById('sections').innerHTML = '<div class="empty">Herkkujen lataaminen epäonnistui: ' + String(err.message || err) + '</div>'
+      } finally {
+        refreshing = false
+        if (btn) btn.disabled = false
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchTerm = e.target.value || ''
+      render()
+      renderComparisonTable()
+    })
+
+    document.getElementById('regionSelect').addEventListener('change', (e) => {
+      regionFilter = e.target.value
+      render()
+      renderComparisonTable()
+    })
+
+    document.querySelectorAll('.filter-pill').forEach((pill) => {
+      pill.addEventListener('click', (e) => {
+        const f = e.currentTarget.getAttribute('data-filter')
+        categoryFilter = f
+        document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('active'))
+        e.currentTarget.classList.add('active')
+        nearestSort = (f === 'nearest')
+        cheapFilter = (f === 'cheap')
+        render()
+        renderComparisonTable()
+      })
+    })
+
+    document.getElementById('viewToggle').addEventListener('click', () => {
+      viewMode = 'cards'
+      document.getElementById('viewToggle').classList.add('active')
+      document.getElementById('tableViewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = 'none'
+      document.getElementById('tableWrap').style.display = 'none'
+      document.getElementById('sections').style.display = ''
+      render()
+    })
+
+    document.getElementById('tableViewToggle').addEventListener('click', () => {
+      viewMode = 'table'
+      document.getElementById('tableViewToggle').classList.add('active')
+      document.getElementById('viewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = ''
+      document.getElementById('tableWrap').style.display = ''
+      document.getElementById('sections').style.display = 'none'
+      renderComparisonTable()
+    })
+
+    document.getElementById('refreshNow').addEventListener('click', () => {
+      load()
+    })
+
+    load()
+  </script>
+</body>
+</html>

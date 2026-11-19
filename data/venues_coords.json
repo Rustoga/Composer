@@ -1,0 +1,307 @@
+{
+  "station": {
+    "name": "Helsingin rautatieasema",
+    "lat": 60.1719,
+    "lon": 24.9414,
+    "label": "Helsinki station"
+  },
+  "venues": [
+    {
+      "key": "k-citymarket-itakeskus",
+      "name": "K-Citymarket Itäkeskus",
+      "street": "Itäkatu 1-5",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.2160,
+      "lon": 25.0700,
+      "mall": "Itis",
+      "type": "supermarket"
+    },
+    {
+      "key": "prisma-itakeskus",
+      "name": "Prisma Itäkeskus",
+      "street": "Itäkatu 1-5",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.2155,
+      "lon": 25.0647,
+      "mall": "Itis",
+      "type": "supermarket"
+    },
+    {
+      "key": "s-market-hakaniemi",
+      "name": "S-Market Hakaniemi",
+      "street": "Hakaniemenkatu 4",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1760,
+      "lon": 24.9490,
+      "mall": null,
+      "type": "supermarket"
+    },
+    {
+      "key": "k-supermarket-kamppi",
+      "name": "K-Supermarket Kamppi",
+      "street": "Urho Kekkosen katu 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1695,
+      "lon": 24.9374,
+      "mall": "Kamppi",
+      "type": "supermarket"
+    },
+    {
+      "key": "lidl-kamppi",
+      "name": "Lidl Kamppi",
+      "street": "Urho Kekkosen katu 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1695,
+      "lon": 24.9374,
+      "mall": "Kamppi",
+      "type": "supermarket"
+    },
+    {
+      "key": "k-citymarket-tripla",
+      "name": "K-Citymarket Tripla",
+      "street": "Fredikanterassi 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1958,
+      "lon": 24.9347,
+      "mall": "Tripla",
+      "type": "supermarket"
+    },
+    {
+      "key": "prisma-olenus",
+      "name": "Prisma Olari",
+      "street": "Olarinpuisto 6",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.1870,
+      "lon": 24.7620,
+      "mall": null,
+      "type": "supermarket"
+    },
+    {
+      "key": "s-market-tapiola",
+      "name": "S-Market Tapiola",
+      "street": "Kauppayhdistyksenkatu 3",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.1790,
+      "lon": 24.7910,
+      "mall": null,
+      "type": "supermarket"
+    },
+    {
+      "key": "citymarket-iso-omena",
+      "name": "K-Citymarket Iso Omena",
+      "street": "Piispansilta 11",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.1710,
+      "lon": 24.7540,
+      "mall": "Iso Omena",
+      "type": "supermarket"
+    },
+    {
+      "key": "prisma-keskus",
+      "name": "Prisma Keskus (Vantaa)",
+      "street": "Aviapolix 1",
+      "locality": "Vantaa",
+      "region": "Vantaa",
+      "lat": 60.2885,
+      "lon": 25.0496,
+      "mall": null,
+      "type": "supermarket"
+    },
+    {
+      "key": "tripla",
+      "name": "Kauppakeskus Tripla",
+      "street": "Fredikanterassi 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1958,
+      "lon": 24.9347,
+      "mall": "Tripla",
+      "type": "mall"
+    },
+    {
+      "key": "kamppi",
+      "name": "Kauppakeskus Kamppi",
+      "street": "Urho Kekkosen katu 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1695,
+      "lon": 24.9374,
+      "mall": "Kamppi",
+      "type": "mall"
+    },
+    {
+      "key": "redi",
+      "name": "Kauppakeskus Redi",
+      "street": "Hermannin rantatie 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1820,
+      "lon": 24.9636,
+      "mall": "Redi",
+      "type": "mall"
+    },
+    {
+      "key": "forum",
+      "name": "Kauppakeskus Forum",
+      "street": "Mannerheimintie 20",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1691,
+      "lon": 24.9414,
+      "mall": "Forum",
+      "type": "mall"
+    },
+    {
+      "key": "itis",
+      "name": "Kauppakeskus Itis",
+      "street": "Itäkatu 1-5",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.2155,
+      "lon": 25.0647,
+      "mall": "Itis",
+      "type": "mall"
+    },
+    {
+      "key": "iso-omena",
+      "name": "Kauppakeskus Iso Omena",
+      "street": "Piispansilta 11",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.1710,
+      "lon": 24.7540,
+      "mall": "Iso Omena",
+      "type": "mall"
+    },
+    {
+      "key": "sello",
+      "name": "Kauppakeskus Sello",
+      "street": "Kartanonkatu 12",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.2120,
+      "lon": 24.7780,
+      "mall": "Sello",
+      "type": "mall"
+    },
+    {
+      "key": "tennispalatsi",
+      "name": "Finnkino Tennispalatsi",
+      "street": "Eteläinen Rautatiekatu 8",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1654,
+      "lon": 24.9353,
+      "mall": null,
+      "type": "cinema"
+    },
+    {
+      "key": "kinopalatsi",
+      "name": "Finnkino Kinopalatsi",
+      "street": "Kluuvikatu 3",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1702,
+      "lon": 24.9414,
+      "mall": null,
+      "type": "cinema"
+    },
+    {
+      "key": "kino-regina",
+      "name": "Kino Regina (Oodi)",
+      "street": "Töölönlahdenkatu 4",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1705,
+      "lon": 24.9395,
+      "mall": null,
+      "type": "cinema"
+    },
+    {
+      "key": "cinema-orion",
+      "name": "Cinema Orion",
+      "street": "Eerikinkatu 15",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1700,
+      "lon": 24.9455,
+      "mall": null,
+      "type": "cinema"
+    },
+    {
+      "key": "bio-rex-tripla",
+      "name": "Bio Rex Tripla",
+      "street": "Fredikanterassi 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1958,
+      "lon": 24.9347,
+      "mall": "Tripla",
+      "type": "cinema"
+    },
+    {
+      "key": "riviera",
+      "name": "Kino Riviera",
+      "street": "Hermannin rantatie 1",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1769,
+      "lon": 24.9601,
+      "mall": "Redi",
+      "type": "cinema"
+    },
+    {
+      "key": "kino-engel",
+      "name": "Kino Engel",
+      "street": "Pohjoisesplanadi 2",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1679,
+      "lon": 24.9507,
+      "mall": null,
+      "type": "cinema"
+    },
+    {
+      "key": "bio-rex-omena",
+      "name": "Bio Rex Iso Omena",
+      "street": "Piispansilta 11",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.1710,
+      "lon": 24.7540,
+      "mall": "Iso Omena",
+      "type": "cinema"
+    },
+    {
+      "key": "finnkino-sello",
+      "name": "Finnkino Sello",
+      "street": "Kartanonkatu 12",
+      "locality": "Espoo",
+      "region": "Espoo",
+      "lat": 60.2120,
+      "lon": 24.7780,
+      "mall": "Sello",
+      "type": "cinema"
+    },
+    {
+      "key": "finnkino-flamingo",
+      "name": "Finnkino Flamingo",
+      "street": "Uudenmaankatu 1",
+      "locality": "Vantaa",
+      "region": "Vantaa",
+      "lat": 60.2885,
+      "lon": 25.0496,
+      "mall": null,
+      "type": "cinema"
+    }
+  ]
+}

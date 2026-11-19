@@ -1,0 +1,41 @@
+name: Update Herkku snapshot
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # 06:00 and 19:00 Finnish time (EET = UTC+2 in winter: 04:00 / 17:00 UTC)
+    - cron: "0 4,17 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: herkut
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch herkut data
+        run: python3 scripts/fetch_herkut.py
+
+      - name: Commit updated snapshot (if changed)
+        run: |
+          if git diff --quiet -- herkku/herkku_snapshot.json; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add herkku/herkku_snapshot.json
+          git commit -m "chore(herkut): update candy snapshot"
+          git push
