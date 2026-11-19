@@ -75,7 +75,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
     url = "https://resq-club.com" + "/v2/offers"
     items: List[Dict[str, Any]] = []
     try:
-        resp = requests.get(url, params={"lat": 60.1699, "lon": 24.9384, "radius": 15000}, headers=HEADERS, timeout=15, verify=certifi.where())
+        resp = requests.get(url, params={"latitude": 60.1699, "longitude": 24.9384, "radius": 15000}, headers=HEADERS, timeout=15, verify=certifi.where())
         latency = int((time.monotonic() - t0) * 1000)
         if resp.status_code != 200:
             monitor.record("resq_club", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
@@ -239,7 +239,7 @@ def main() -> None:
         "resq_club": fetch_resq_club(monitor, now_hel),
         "myhelsinki_events": fetch_myhelsinki_events(monitor, now_hel),
         "k_ruoka": fetch_supermarket_source("k_ruoka", "K-Ruoka Tarjoukset", "https://www.k-ruoka.fi" + "/artikkelit/k-supermarket/k-supermarket-tarjoukset", "K-Supermarket Lauttasaari (Lauttis)", "Lauttis", "Lauttasaarentie 28, 00200 Helsinki", 60.1589, 24.8825, monitor, now_hel),
-        "lidl": fetch_supermarket_source("lidl", "Lidl Tarjoukset", "https://www.lidl.fi" + "/c/tarjoukset/a10008785", "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
+        "lidl": fetch_supermarket_source("lidl", "Lidl Tarjoukset", "https://www.lidl.fi" + "/h/ruoka-ja-juoma/h10068374", "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
         "s_group": fetch_supermarket_source("s_group", "S-ryhmä Tarjoukset", "https://www.s-kaupat.fi" + "/tarjoukset", "S-Market Lauttasaari", "Lauttasaari", "Lauttasaarentie 16, 00200 Helsinki", 60.1595, 24.8850, monitor, now_hel),
     }
     combined: List[Dict[str, Any]] = []
