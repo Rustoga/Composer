@@ -7,6 +7,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+    </script>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0b0f; color: #eef2ff; font-family: "Inter", sans-serif; }
@@ -29,6 +37,8 @@
       @keyframes spin { to { transform: rotate(360deg); } }
       #splat-count { font-size: 0.8rem; opacity: 0.6; margin-top: 0.25rem; }
       .err-msg { color: #ff6b6b; margin: 0.5rem 0; font-size: 0.85rem; }
+      .progress-bar { width: 260px; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; margin-top: 1rem; }
+      .progress-bar-fill { width: 0%; height: 100%; background: #fff; transition: width 0.15s ease; }
     </style>
 </head>
 <body>
@@ -42,11 +52,15 @@
             <button class="btn" id="btn-autofly">Auto fly</button>
             <button class="btn" id="btn-reset">Reset view</button>
             <button class="btn" id="btn-reload" style="border-color:#ff6b6b;color:#ff6b6b;">Reload</button>
-            <button class="btn" id="btn-file">Open .ply</button>
+            <button class="btn" id="btn-file">Open .splat / .ply</button>
             <input type="file" id="file-input" accept=".ply,.splat" style="display: none;">
         </div>
     </div>
-    <div id="loading"><div class="spinner"></div><div id="loading-text">Loading engine&hellip;</div></div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div id="loading-text">Loading engine&hellip;</div>
+        <div class="progress-bar"><div id="loading-progress" class="progress-bar-fill"></div></div>
+    </div>
     <div id="error"><div class="err-msg" id="error-msg"></div><button class="btn" id="btn-error-retry" style="border-color:#fff;color:#fff;margin-top:0.5rem;">Try again</button></div>
     <div id="timeout-banner" class="timeout-banner">Still loading&hellip; using fallback scene. <button class="btn" id="btn-timeout-retry" style="border-color:#ff6b6b;color:#ff6b6b;font-size:0.7rem;padding:0.2rem 0.5rem;margin-left:0.5rem;">Retry</button></div>
     <script type="module" src="mokki.js"></script>

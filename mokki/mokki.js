@@ -1,21 +1,57 @@
-const CDN_URLS = [
-  'https://esm.sh/three@0.164.1',
-  'https://unpkg.com/three@0.164.1/build/three.module.js',
-  'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js',
-];
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const ORBIT_URLS = [
-  'https://esm.sh/three@0.164.1/addons/controls/OrbitControls.js?dep=three@0.164.1',
-  'https://unpkg.com/three@0.164.1/examples/jsm/controls/OrbitControls.js',
-  'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js',
-];
+// ---------------------------------------------------------------------------
+// Top-level error trapping: any startup, shader, or unhandled rejection failure
+// immediately transitions to the ERROR state with the exact message on screen.
+// ---------------------------------------------------------------------------
+function setErrorFromEvent(msg) {
+  try {
+    showError(msg);
+  } catch (e) {
+    // showError may not be defined yet if this fires before module init
+    console.error('FATAL:', msg);
+  }
+}
+
+window.onerror = (message, source, lineno, colno, error) => {
+  const msg = error ? error.message || String(error) : String(message);
+  setErrorFromEvent('Uncaught error: ' + msg);
+  return true;
+};
+
+window.onunhandledrejection = (event) => {
+  const reason = event.reason || {};
+  const msg = reason.message || reason.error || String(reason);
+  setErrorFromEvent('Unhandled rejection: ' + msg);
+};
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+const DEFAULT_URL = '/mokki/splats.ply';
+const SPLAT_URL = '/mokki/splats.splat';
+const FOV = 60;
+const NEAR = 0.01;
+const FAR = 2000;
+const FLY_SPEED = 6;
+const AUTO_SPEED = 0.5;
 
 const LOAD_TIMEOUT_MS = 25000;
 const FETCH_TIMEOUT_MS = 20000;
+const ESTIMATED_TOTAL_MB = 11;
 
-let THREE = null;
-let OrbitControls = null;
-
+// ---------------------------------------------------------------------------
+// Globals
+// ---------------------------------------------------------------------------
+let scene, camera, renderer, controls, splats;
+let center = new THREE.Vector3();
+let radius = 10;
+let autoFly = false;
+let autoAngle = 0;
+let autoHeight = 0;
+const keys = {};
+let lastTime = 0;
 let loadError = '';
 
 let currentAbortController = null;
@@ -34,59 +70,13 @@ function timeoutPromise(promise, ms, msg) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
-async function tryImport(url) {
-  try {
-    return await timeoutPromise(import(url), 10000, `Import timeout: ${url}`);
-  } catch (e) {
-    return null;
-  }
-}
-
-async function loadEngine() {
-  let threeMod = null;
-  for (const url of CDN_URLS) {
-    threeMod = await tryImport(url);
-    if (threeMod) break;
-  }
-  if (!threeMod) {
-    loadError = 'Failed to load 3D engine from all mirrors. Check your internet connection and retry.';
-    return false;
-  }
-  THREE = threeMod;
-
-  let orbitMod = null;
-  for (const url of ORBIT_URLS) {
-    orbitMod = await tryImport(url);
-    if (orbitMod) break;
-  }
-  if (!orbitMod) {
-    loadError = 'Failed to load camera controls.';
-    return false;
-  }
-  OrbitControls = orbitMod.OrbitControls || orbitMod.default;
-  return true;
-}
-
-const DEFAULT_URL = '/mokki/splats.ply';
-const SPLAT_URL = '/mokki/splats.splat';
-const FOV = 60;
-const NEAR = 0.01;
-const FAR = 2000;
-const FLY_SPEED = 6;
-const AUTO_SPEED = 0.5;
-
-let scene, camera, renderer, controls, splats;
-let center = new THREE.Vector3();
-let radius = 10;
-let autoFly = false;
-let autoAngle = 0;
-let autoHeight = 0;
-const keys = {};
-let lastTime = 0;
-
+// ---------------------------------------------------------------------------
+// DOM references
+// ---------------------------------------------------------------------------
 const container = document.getElementById('canvas-container');
 const loading = document.getElementById('loading');
 const loadingText = document.getElementById('loading-text');
+const loadingProgress = document.getElementById('loading-progress');
 const errorEl = document.getElementById('error');
 const errorMsg = document.getElementById('error-msg');
 const splatCountEl = document.getElementById('splat-count');
@@ -107,6 +97,12 @@ const uiStates = {
   READY: 'READY',
 };
 
+function setProgress(pct, text) {
+  if (loadingProgress) loadingProgress.style.width = pct + '%';
+  if (loadingText) loadingText.textContent = text;
+  if (controlHintEl) controlHintEl.textContent = text.replace(/^\d+% — /, '');
+}
+
 function setState(state) {
   loading.classList.remove('visible');
   errorEl.classList.remove('visible');
@@ -121,7 +117,6 @@ function setState(state) {
       break;
     case uiStates.FALLBACK:
       timeoutBanner.classList.add('visible');
-      controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
       break;
     case uiStates.READY:
     default:
@@ -129,6 +124,19 @@ function setState(state) {
   }
 }
 
+function showError(msg) {
+  loadError = msg;
+  if (errorMsg) errorMsg.textContent = msg;
+  setState(uiStates.ERROR);
+}
+
+function hideError() {
+  errorEl.classList.remove('visible');
+}
+
+// ---------------------------------------------------------------------------
+// Shaders
+// ---------------------------------------------------------------------------
 const vertexShader = `
 attribute vec3 position;
 attribute vec3 color;
@@ -160,29 +168,47 @@ void main() {
 }
 `;
 
-function showError(msg) {
-  loadError = msg;
-  errorMsg.textContent = msg;
-  setState(uiStates.ERROR);
-}
-
-function hideError() {
-  errorEl.classList.remove('visible');
-}
-
+// ---------------------------------------------------------------------------
+// Start
+// ---------------------------------------------------------------------------
 function start() {
   hideError();
   abortCurrentLoad();
   setState(uiStates.LOADING);
-  loadingText.textContent = 'Loading engine&hellip;';
-  loadEngine().then((ok) => {
-    if (!ok) {
-      showError(loadError || 'Engine load failed.');
-      return;
-    }
+  setProgress(0, '0% — Initializing engine&hellip;');
+  try {
     initScene();
+  } catch (err) {
+    showError('Engine init failed: ' + (err.message || String(err)));
+    return;
+  }
+  setProgress(15, '15% — Engine ready, connecting to splats&hellip;');
+  const p = loadSplatsUrlWithFallback(
+    (loaded, total) => {
+      const pct = total > 0 ? Math.min(15 + Math.floor((loaded / total) * 75), 89) : 15;
+      const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
+      const totalMB = total ? (total / (1024 * 1024)).toFixed(2) : '?';
+      setProgress(pct, `${pct}% — Downloading splats… (${loadedMB} / ${totalMB} MB)`);
+    }
+  );
+  const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
+  watchdog.then((data) => {
+    currentAbortController = null;
+    setProgress(92, '92% — Parsing & uploading 703k splats to GPU&hellip;');
+    lastTime = performance.now();
+    animate();
   }).catch((err) => {
-    showError('Engine load crashed: ' + (err.message || String(err)));
+    console.warn('Splat load fell back:', err.message);
+    abortCurrentLoad();
+    setState(uiStates.FALLBACK);
+    const data = generateFallback();
+    buildPoints(data);
+    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
+    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    resetView();
+    setProgress(100, '100% — Ready');
+    lastTime = performance.now();
+    animate();
   });
 }
 
@@ -236,31 +262,6 @@ function initScene() {
   btnTimeoutRetry.addEventListener('click', () => {
     timeoutBanner.classList.remove('visible');
     start();
-  });
-
-  const p = loadSplatsUrlWithFallback(
-    (loaded, total) => {
-      const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
-      const totalMB = total ? (total / (1024 * 1024)).toFixed(2) : '?';
-      loadingText.textContent = `Loading splats… ${loadedMB} / ${totalMB} MB`;
-    }
-  );
-  const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
-  watchdog.then((data) => {
-    currentAbortController = null;
-    lastTime = performance.now();
-    animate();
-  }).catch((err) => {
-    console.warn('Splat load fell back:', err.message);
-    abortCurrentLoad();
-    setState(uiStates.FALLBACK);
-    const data = generateFallback();
-    buildPoints(data);
-    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
-    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
-    resetView();
-    lastTime = performance.now();
-    animate();
   });
 }
 
@@ -324,18 +325,15 @@ function animate(now = 0) {
   renderer.render(scene, camera);
 }
 
+// ---------------------------------------------------------------------------
+// Format detection + parsers
+// ---------------------------------------------------------------------------
 function detectFormat(bytes) {
-  // PLY files start with ASCII "ply"; .splat is raw binary with no magic header
   const header = new TextDecoder().decode(bytes.subarray(0, Math.min(bytes.length, 4)));
   return header.startsWith('ply') ? 'ply' : 'splat';
 }
 
 function parseSplat(arrayBuffer) {
-  // Zero-copy O(n) parse over 32-byte-per-splat .splat format:
-  //   0-11:  float32[3] position
-  //   12-23: float32[3] scale
-  //   24-27: uint8[4]   RGBA color
-  //   28-31: uint8[4]   rotation quaternion (uint8 mapped [-1,1]->[0,255])
   const bytes = new Uint8Array(arrayBuffer);
   const count = Math.floor(bytes.length / 32);
   if (count === 0 || bytes.length % 32 !== 0) return null;
@@ -349,13 +347,13 @@ function parseSplat(arrayBuffer) {
   const u8 = new Uint8Array(arrayBuffer);
 
   for (let i = 0; i < count; i++) {
-    const base = i * 8;      // 32 bytes / 4 = 8 floats per splat
-    const cbase = i * 32 + 24; // color starts at byte 24 of each splat
+    const base = i * 8;
+    const cbase = i * 32 + 24;
     const pi = i * 3;
 
-    positions[pi] = f32[base];       // x
-    positions[pi + 1] = f32[base + 1]; // y
-    positions[pi + 2] = f32[base + 2]; // z
+    positions[pi] = f32[base];
+    positions[pi + 1] = f32[base + 1];
+    positions[pi + 2] = f32[base + 2];
 
     const sx = f32[base + 3];
     const sy = f32[base + 4];
@@ -366,14 +364,13 @@ function parseSplat(arrayBuffer) {
     colors[pi + 1] = u8[cbase + 1] / 255;
     colors[pi + 2] = u8[cbase + 2] / 255;
 
-    opacities[i] = u8[cbase + 3] / 255; // alpha -> opacity
+    opacities[i] = u8[cbase + 3] / 255;
   }
 
   return { count, positions, colors, sizes, opacities };
 }
 
 async function loadSplatsUrlWithFallback(onProgress) {
-  // Try .splat first; fall back to .ply on 404
   try {
     return await loadSplats(SPLAT_URL, onProgress, 'splat');
   } catch (e) {
@@ -429,6 +426,7 @@ async function loadSplats(input, onProgress, formatHint) {
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
     controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
     resetView();
+    setProgress(100, '100% — Ready');
     setState(uiStates.READY);
     return data;
   } catch (e) {
@@ -656,11 +654,5 @@ function generateFallback() {
   }
   return { count, positions, colors, sizes, opacities };
 }
-
-window.addEventListener('error', (e) => {
-  if (!THREE) {
-    showError('Engine failed to load. ' + (e.message || 'Unknown error'));
-  }
-});
 
 start();
