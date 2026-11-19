@@ -1,14 +1,59 @@
 {
-  "generatedAt": "2026-11-19T19:02:58.801488+00:00",
-  "nextUpdateAt": "2026-11-20T03:00:00+00:00",
-  "updateSchedule": "Twice daily at 06:00 and 19:00 (Europe/Helsinki)",
-  "sources": [
-    "https://api.hel.fi/linkedevents/v1/event/",
-    "https://www.k-ruoka.fi/tarjoukset",
-    "https://www.lidl.fi/tarjoukset",
-    "https://www.s-kanava.fi"
-  ],
-  "total": 0,
-  "today": "2026-11-19",
+  "generatedAt": "2026-11-19T21:50:11.250056+02:00",
+  "nextUpdateAt": "2026-11-20T06:00:00+02:00",
+  "timezone": "Europe/Helsinki",
+  "totalCount": 0,
+  "diagnostics": {
+    "ok_sources": 3,
+    "total_sources": 5,
+    "needs_attention": [],
+    "sources": {
+      "resq_club": {
+        "status": "error",
+        "items_found": 0,
+        "latency_ms": 1749,
+        "http_status": null,
+        "error_reason": "Expecting value: line 1 column 1 (char 0)",
+        "consecutive_failures": 1,
+        "checked_at": "2026-11-19T21:50:12.999791+02:00"
+      },
+      "myhelsinki_events": {
+        "status": "error",
+        "items_found": 0,
+        "latency_ms": 571,
+        "http_status": null,
+        "error_reason": "Expecting value: line 1 column 1 (char 0)",
+        "consecutive_failures": 1,
+        "checked_at": "2026-11-19T21:50:13.572791+02:00"
+      },
+      "k_ruoka": {
+        "status": "empty",
+        "items_found": 0,
+        "latency_ms": 5348,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T21:50:18.923448+02:00"
+      },
+      "lidl": {
+        "status": "empty",
+        "items_found": 0,
+        "latency_ms": 4494,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T21:50:23.418212+02:00"
+      },
+      "s_group": {
+        "status": "ok",
+        "items_found": 17,
+        "latency_ms": 4526,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T21:50:27.946587+02:00"
+      }
+    }
+  },
   "treats": []
 }

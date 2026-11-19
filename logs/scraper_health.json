@@ -1,0 +1,52 @@
+{
+  "ok_sources": 3,
+  "total_sources": 5,
+  "needs_attention": [],
+  "sources": {
+    "resq_club": {
+      "status": "error",
+      "items_found": 0,
+      "latency_ms": 1749,
+      "http_status": null,
+      "error_reason": "Expecting value: line 1 column 1 (char 0)",
+      "consecutive_failures": 1,
+      "checked_at": "2026-11-19T21:50:12.999791+02:00"
+    },
+    "myhelsinki_events": {
+      "status": "error",
+      "items_found": 0,
+      "latency_ms": 571,
+      "http_status": null,
+      "error_reason": "Expecting value: line 1 column 1 (char 0)",
+      "consecutive_failures": 1,
+      "checked_at": "2026-11-19T21:50:13.572791+02:00"
+    },
+    "k_ruoka": {
+      "status": "empty",
+      "items_found": 0,
+      "latency_ms": 5348,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T21:50:18.923448+02:00"
+    },
+    "lidl": {
+      "status": "empty",
+      "items_found": 0,
+      "latency_ms": 4494,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T21:50:23.418212+02:00"
+    },
+    "s_group": {
+      "status": "ok",
+      "items_found": 17,
+      "latency_ms": 4526,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T21:50:27.946587+02:00"
+    }
+  }
+}
