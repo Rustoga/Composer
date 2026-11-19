@@ -11,47 +11,47 @@
     "resq_club": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 489,
-      "http_status": 400,
-      "error_reason": "HTTP 400",
-      "consecutive_failures": 5,
-      "checked_at": "2026-11-19T22:19:03.454549+02:00"
+      "latency_ms": 53,
+      "http_status": null,
+      "error_reason": "HTTPSConnectionPool(host='api.resq-club.com', port=443): Max retries exceeded with url: /v2/offers?neLat=60.35&neLng=25.25&swLat=60.1&swLng=24.6 (Caused by NameResolutionError(\"HTT",
+      "consecutive_failures": 6,
+      "checked_at": "2026-11-19T22:25:53.489339+02:00"
     },
     "myhelsinki_events": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 1038,
+      "latency_ms": 628,
       "http_status": null,
       "error_reason": "Expecting value: line 1 column 1 (char 0)",
-      "consecutive_failures": 5,
-      "checked_at": "2026-11-19T22:19:04.494232+02:00"
+      "consecutive_failures": 6,
+      "checked_at": "2026-11-19T22:25:54.117842+02:00"
     },
     "k_ruoka": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 3502,
+      "latency_ms": 3199,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 2,
-      "checked_at": "2026-11-19T22:19:07.998607+02:00"
+      "consecutive_failures": 3,
+      "checked_at": "2026-11-19T22:25:57.318114+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 5493,
+      "latency_ms": 4536,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T22:19:13.492444+02:00"
+      "checked_at": "2026-11-19T22:26:01.855396+02:00"
     },
     "s_group": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 3834,
+      "latency_ms": 3545,
       "http_status": 404,
       "error_reason": "HTTP 404",
-      "consecutive_failures": 3,
-      "checked_at": "2026-11-19T22:19:17.326585+02:00"
+      "consecutive_failures": 4,
+      "checked_at": "2026-11-19T22:26:05.400565+02:00"
     }
   }
 }
