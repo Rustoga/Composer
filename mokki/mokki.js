@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 // ---------------------------------------------------------------------------
 // Top-level error trapping: any startup, shader, or unhandled rejection failure
@@ -265,10 +267,19 @@ function fetchGlb(url, onProgress) {
       .then((buf) => {
         // Parse GLB with GLTFLoader
         const loader = new GLTFLoader();
+
+        // Wire DRACOLoader for KHR_draco_mesh_compression
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+        loader.setDRACOLoader(dracoLoader);
+
+        // Wire MeshoptDecoder for EXT_meshopt_compression
+        loader.setMeshoptDecoder(MeshoptDecoder);
+
         loader.parse(buf, '', (gltf) => {
           resolve(gltf);
         }, (err) => {
-          reject(err);
+          reject(new Error('GLTFLoader parse failed: ' + (err.message || String(err))));
         });
       })
       .catch((err) => {
@@ -291,6 +302,7 @@ function initScene() {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setClearColor(0x1a222d, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
   container.appendChild(renderer.domElement);
@@ -439,22 +451,21 @@ function buildGltf(gltf) {
     }
   });
 
-  // Update world matrices and compute exact bounding box
+  // Update world matrices and compute initial bounding box
   gltf.scene.updateMatrixWorld(true);
-  const box = new THREE.Box3().setFromObject(gltf.scene);
-  const size = box.getSize(new THREE.Vector3());
-  const center3 = box.getCenter(new THREE.Vector3());
+  const box1 = new THREE.Box3().setFromObject(gltf.scene);
+  const size1 = box1.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size1.x, size1.y, size1.z);
 
-  // Re-center so geometric center sits at (0, 0, 0)
-  gltf.scene.position.sub(center3);
+  // Step 1: Apply uniform scale FIRST (before centering)
+  const s = maxDim > 0 ? 20 / maxDim : 1;
+  gltf.scene.scale.setScalar(s);
   gltf.scene.updateMatrixWorld(true);
 
-  // Normalize scale so maxDim === 20 units
+  // Step 2: Recompute box after scaling, then subtract center
   const box2 = new THREE.Box3().setFromObject(gltf.scene);
-  const s2 = box2.getSize(new THREE.Vector3());
-  const maxDim = Math.max(s2.x, s2.y, s2.z);
-  const scale = maxDim > 0 ? 20 / maxDim : 1;
-  gltf.scene.scale.setScalar(scale);
+  const center2 = box2.getCenter(new THREE.Vector3());
+  gltf.scene.position.sub(center2);
   gltf.scene.updateMatrixWorld(true);
 
   // Recompute final box for camera framing
