@@ -10,14 +10,25 @@ const ORBIT_URLS = [
   'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js',
 ];
 
+const LOAD_TIMEOUT_MS = 25000;
+const FETCH_TIMEOUT_MS = 20000;
+
 let THREE = null;
 let OrbitControls = null;
 
 let loadError = '';
 
+function timeoutPromise(promise, ms, msg) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(msg || 'timeout')), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 async function tryImport(url) {
   try {
-    return await import(url);
+    return await timeoutPromise(import(url), 10000, `Import timeout: ${url}`);
   } catch (e) {
     return null;
   }
@@ -66,6 +77,7 @@ let lastTime = 0;
 
 const container = document.getElementById('canvas-container');
 const loading = document.getElementById('loading');
+const loadingText = document.getElementById('loading-text');
 const errorEl = document.getElementById('error');
 const errorMsg = document.getElementById('error-msg');
 const splatCountEl = document.getElementById('splat-count');
@@ -76,6 +88,8 @@ const btnReload = document.getElementById('btn-reload');
 const btnErrorRetry = document.getElementById('btn-error-retry');
 const btnFile = document.getElementById('btn-file');
 const fileInput = document.getElementById('file-input');
+const timeoutBanner = document.getElementById('timeout-banner');
+const btnTimeoutRetry = document.getElementById('btn-timeout-retry');
 
 const vertexShader = `
 attribute vec3 position;
@@ -119,15 +133,19 @@ function hideError() {
   errorEl.classList.remove('visible');
 }
 
-async function start() {
+function start() {
   hideError();
   loading.classList.remove('hidden');
-  const ok = await loadEngine();
-  if (!ok) {
-    showError(loadError || 'Engine load failed.');
-    return;
-  }
-  initScene();
+  loadingText.textContent = 'Loading engine&hellip;';
+  loadEngine().then((ok) => {
+    if (!ok) {
+      showError(loadError || 'Engine load failed.');
+      return;
+    }
+    initScene();
+  }).catch((err) => {
+    showError('Engine load crashed: ' + (err.message || String(err)));
+  });
 }
 
 function initScene() {
@@ -178,12 +196,25 @@ function initScene() {
     reader.onerror = () => { splatCountEl.textContent = 'Error reading file'; };
     reader.readAsArrayBuffer(file);
   });
+  btnTimeoutRetry.addEventListener('click', () => {
+    timeoutBanner.classList.remove('visible');
+    start();
+  });
 
-  loadSplats(DEFAULT_URL).then(() => {
+  const t0 = performance.now();
+  const p = loadSplats(DEFAULT_URL);
+  const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
+  watchdog.then(() => {
     lastTime = performance.now();
     animate();
   }).catch((err) => {
-    console.warn('Auto load failed, using fallback:', err);
+    console.warn('Splat load fell back:', err.message);
+    timeoutBanner.classList.add('visible');
+    const data = generateFallback();
+    buildPoints(data);
+    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
+    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    resetView();
     lastTime = performance.now();
     animate();
   });
@@ -255,7 +286,7 @@ async function loadSplats(input) {
     if (input instanceof ArrayBuffer) {
       buf = new Uint8Array(input);
     } else {
-      const res = await fetch(input);
+      const res = await timeoutPromise(fetch(input), FETCH_TIMEOUT_MS, `Fetch timeout: ${input}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       buf = new Uint8Array(await res.arrayBuffer());
     }
@@ -268,12 +299,7 @@ async function loadSplats(input) {
     return data;
   } catch (e) {
     console.warn('PLY load failed:', e);
-    const data = generateFallback();
-    buildPoints(data);
-    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
-    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
-    resetView();
-    return data;
+    throw e;
   }
 }
 
@@ -333,28 +359,34 @@ function parsePly(input) {
   if (!vertex) return null;
   const count = vertex.count;
 
-  const idx = {};
+  const propReaders = {};
   let stride = 0;
   for (const pr of vertex.props) {
     if (pr.list) continue;
-    idx[pr.name] = stride;
+    propReaders[pr.name] = { offset: stride, type: pr.type };
     stride += typeSize[pr.type] || 1;
   }
+
+  const readProp = (dv, base, little, name) => {
+    const r = propReaders[name];
+    if (!r) return NaN;
+    return readerMap[r.type](dv, base + r.offset, little);
+  };
 
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const opacities = new Float32Array(count);
 
-  const hasR = idx['red'] !== undefined;
-  const hasG = idx['green'] !== undefined;
-  const hasB = idx['blue'] !== undefined;
-  const hasFdc = idx['f_dc_0'] !== undefined;
-  const hasOpacity = idx['opacity'] !== undefined;
-  const hasScale = idx['scale_0'] !== undefined;
+  const hasR = !!propReaders['red'];
+  const hasG = !!propReaders['green'];
+  const hasB = !!propReaders['blue'];
+  const hasFdc = !!propReaders['f_dc_0'];
+  const hasOpacity = !!propReaders['opacity'];
+  const hasScale = !!propReaders['scale_0'];
 
   if (format === 'ascii') {
-    const get = (vals, name) => { const o = idx[name]; return o === undefined ? NaN : parseFloat(vals[o]); };
+    const get = (vals, name) => { const o = propReaders[name]; return o === undefined ? NaN : parseFloat(vals[o.offset]); };
     let written = 0;
     let li = 0;
     while (li < lines.length && written < count) {
@@ -394,24 +426,25 @@ function parsePly(input) {
   let byteOff = 0;
   while (written < count && byteOff + stride <= totalBytes) {
     const base = byteOff;
-    const readProp = (name) => { const o = idx[name]; if (o === undefined) return NaN; const pr = vertex.props.find((p) => p.name === name); return readerMap[pr.type](dv, base + o, little); };
-    const x = readProp('x'), y = readProp('y'), z = readProp('z');
+    const x = readProp(dv, base, little, 'x');
+    const y = readProp(dv, base, little, 'y');
+    const z = readProp(dv, base, little, 'z');
     if (!isFinite(x) || !isFinite(y) || !isFinite(z)) { byteOff += stride; continue; }
     const pi = written * 3;
     positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
     if (hasR && hasG && hasB) {
-      colors[pi] = Math.max(0, Math.min(1, readProp('red') / 255));
-      colors[pi + 1] = Math.max(0, Math.min(1, readProp('green') / 255));
-      colors[pi + 2] = Math.max(0, Math.min(1, readProp('blue') / 255));
+      colors[pi] = Math.max(0, Math.min(1, readProp(dv, base, little, 'red') / 255));
+      colors[pi + 1] = Math.max(0, Math.min(1, readProp(dv, base, little, 'green') / 255));
+      colors[pi + 2] = Math.max(0, Math.min(1, readProp(dv, base, little, 'blue') / 255));
     } else if (hasFdc) {
-      colors[pi] = 0.5 + readProp('f_dc_0');
-      colors[pi + 1] = 0.5 + readProp('f_dc_1');
-      colors[pi + 2] = 0.5 + readProp('f_dc_2');
+      colors[pi] = 0.5 + readProp(dv, base, little, 'f_dc_0');
+      colors[pi + 1] = 0.5 + readProp(dv, base, little, 'f_dc_1');
+      colors[pi + 2] = 0.5 + readProp(dv, base, little, 'f_dc_2');
     } else {
       colors[pi] = 0.7; colors[pi + 1] = 0.8; colors[pi + 2] = 1.0;
     }
-    sizes[written] = hasScale ? Math.max(0.02, (readProp('scale_0') + readProp('scale_1') + readProp('scale_2')) / 3) : 0.1;
-    opacities[written] = hasOpacity ? readProp('opacity') : 0.9;
+    sizes[written] = hasScale ? Math.max(0.02, (readProp(dv, base, little, 'scale_0') + readProp(dv, base, little, 'scale_1') + readProp(dv, base, little, 'scale_2')) / 3) : 0.1;
+    opacities[written] = hasOpacity ? readProp(dv, base, little, 'opacity') : 0.9;
     byteOff += stride;
     written++;
   }

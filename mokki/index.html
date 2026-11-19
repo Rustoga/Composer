@@ -27,6 +27,8 @@
       @keyframes spin { to { transform: rotate(360deg); } }
       #splat-count { font-size: 0.8rem; opacity: 0.6; margin-top: 0.25rem; }
       .err-msg { color: #ff6b6b; margin: 0.5rem 0; font-size: 0.85rem; }
+      .timeout-banner { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); color: #ff6b6b; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; display: none; pointer-events: auto; }
+      .timeout-banner.visible { display: block; }
     </style>
 </head>
 <body>
@@ -44,8 +46,9 @@
             <input type="file" id="file-input" accept=".ply" style="display: none;">
         </div>
     </div>
-    <div id="loading"><div class="spinner"></div><div>Loading engine&hellip;</div></div>
+    <div id="loading"><div class="spinner"></div><div id="loading-text">Loading engine&hellip;</div></div>
     <div id="error"><div class="err-msg" id="error-msg"></div><button class="btn" id="btn-error-retry" style="border-color:#fff;color:#fff;margin-top:0.5rem;">Try again</button></div>
+    <div id="timeout-banner" class="timeout-banner">Still loading&hellip; using fallback scene. <button class="btn" id="btn-timeout-retry" style="border-color:#ff6b6b;color:#ff6b6b;font-size:0.7rem;padding:0.2rem 0.5rem;margin-left:0.5rem;">Retry</button></div>
     <script type="module" src="mokki.js"></script>
 </body>
 </html>
