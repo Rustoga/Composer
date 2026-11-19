@@ -107,7 +107,7 @@ function setState(state) {
   loading.classList.remove('visible');
   errorEl.classList.remove('visible');
   timeoutBanner.classList.remove('visible');
-  controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+  controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
   switch (state) {
     case uiStates.LOADING:
       loading.classList.add('visible');
@@ -175,14 +175,14 @@ function start() {
   hideError();
   abortCurrentLoad();
   setState(uiStates.LOADING);
-  setProgress(0, '0% — Initializing engine&hellip;');
+  setProgress(0, '0% — Initializing engine…');
   try {
     initScene();
   } catch (err) {
     showError('Engine init failed: ' + (err.message || String(err)));
     return;
   }
-  setProgress(15, '15% — Engine ready, connecting to splats&hellip;');
+  setProgress(15, '15% — Engine ready, connecting to splats…');
   const p = loadSplatsUrlWithFallback(
     (loaded, total) => {
       const pct = total > 0 ? Math.min(15 + Math.floor((loaded / total) * 75), 89) : 15;
@@ -192,9 +192,11 @@ function start() {
     }
   );
   const watchdog = timeoutPromise(p, LOAD_TIMEOUT_MS, 'Splat load timeout');
-  watchdog.then((data) => {
+  watchdog.then(async (data) => {
     currentAbortController = null;
-    setProgress(92, '92% — Parsing & uploading 703k splats to GPU&hellip;');
+    setProgress(92, '92% — Parsing & uploading 703k splats to GPU…');
+    // Yield one animation frame so the UI paints the 92% state before heavy GPU upload
+    await new Promise((r) => requestAnimationFrame(r));
     lastTime = performance.now();
     animate();
   }).catch((err) => {
@@ -204,7 +206,7 @@ function start() {
     const data = generateFallback();
     buildPoints(data);
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()} (fallback)`;
-    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
     setProgress(100, '100% — Ready');
     lastTime = performance.now();
@@ -313,6 +315,8 @@ function updateAutoFly(dt) {
   controls.update();
 }
 
+let _firstRenderDone = false;
+
 function animate(now = 0) {
   requestAnimationFrame(animate);
   if (!renderer || !scene || !camera) return;
@@ -322,7 +326,32 @@ function animate(now = 0) {
   updateFly(dt);
   updateAutoFly(dt);
   if (!autoFly && controls) controls.update();
-  renderer.render(scene, camera);
+  try {
+    renderer.render(scene, camera);
+  } catch (err) {
+    showError('WebGL render failed: ' + (err.message || String(err)));
+    return;
+  }
+  if (!_firstRenderDone) {
+    _firstRenderDone = true;
+    const gl = renderer.getContext();
+    if (gl) {
+      const err = gl.getError();
+      if (err !== gl.NO_ERROR) {
+        showError('WebGL error after first render: 0x' + err.toString(16));
+        return;
+      }
+    }
+    // Check shader program info log for GLSL compile/link warnings
+    if (splats && splats.material && splats.material.program) {
+      const log = splats.material.program.log || '';
+      if (log && log.length > 0) {
+        console.warn('Shader program log:', log);
+      }
+    }
+    setProgress(100, '100% — Ready');
+    setState(uiStates.READY);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -424,7 +453,7 @@ async function loadSplats(input, onProgress, formatHint) {
     if (!data || data.count === 0) throw new Error('empty splat data');
     buildPoints(data);
     splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
-    controlHintEl.textContent = 'Drag to look &bull; Pinch to zoom &bull; WASD to fly &bull; ';
+    controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
     setProgress(100, '100% — Ready');
     setState(uiStates.READY);
