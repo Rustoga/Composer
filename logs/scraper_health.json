@@ -1,57 +1,63 @@
 {
-  "ok_sources": 1,
-  "total_sources": 5,
+  "ok_sources": 4,
+  "total_sources": 6,
   "needs_attention": [
-    "resq_club",
-    "myhelsinki_events",
-    "k_ruoka",
-    "s_group"
+    "resq_club"
   ],
   "sources": {
     "resq_club": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 78,
-      "http_status": null,
-      "error_reason": "HTTPSConnectionPool(host='api.resq-club.com', port=443): Max retries exceeded with url: /api/v2/offers?neLat=60.35&neLng=25.25&swLat=60.1&swLng=24.6 (Caused by NameResolutionError(",
-      "consecutive_failures": 8,
-      "checked_at": "2026-11-19T22:44:48.937145+02:00"
+      "latency_ms": 971,
+      "http_status": 404,
+      "error_reason": "HTTP 404",
+      "consecutive_failures": 9,
+      "checked_at": "2026-11-19T22:56:29.136952+02:00"
     },
     "myhelsinki_events": {
+      "status": "ok",
+      "items_found": 5,
+      "latency_ms": 351,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T22:56:29.495204+02:00"
+    },
+    "finnkino_movies": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 714,
-      "http_status": null,
-      "error_reason": "Expecting value: line 1 column 1 (char 0)",
-      "consecutive_failures": 8,
-      "checked_at": "2026-11-19T22:44:49.651771+02:00"
+      "latency_ms": 401,
+      "http_status": 404,
+      "error_reason": "HTTP 404",
+      "consecutive_failures": 1,
+      "checked_at": "2026-11-19T22:56:29.897889+02:00"
     },
     "k_ruoka": {
-      "status": "blocked",
-      "items_found": 0,
-      "latency_ms": 3701,
-      "http_status": 403,
-      "error_reason": "HTTP 403",
-      "consecutive_failures": 5,
-      "checked_at": "2026-11-19T22:44:53.354140+02:00"
+      "status": "ok",
+      "items_found": 8,
+      "latency_ms": 3821,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T22:56:33.722008+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 5128,
+      "latency_ms": 4052,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T22:44:58.483079+02:00"
+      "checked_at": "2026-11-19T22:56:37.774303+02:00"
     },
     "s_group": {
-      "status": "error",
-      "items_found": 0,
-      "latency_ms": 3546,
-      "http_status": 404,
-      "error_reason": "HTTP 404",
-      "consecutive_failures": 6,
-      "checked_at": "2026-11-19T22:45:02.029759+02:00"
+      "status": "ok",
+      "items_found": 3,
+      "latency_ms": 2870,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-19T22:56:40.645346+02:00"
     }
   }
 }
