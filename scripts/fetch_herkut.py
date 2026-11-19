@@ -75,7 +75,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
     url = "https://resq-club.com" + "/v2/offers"
     items: List[Dict[str, Any]] = []
     try:
-        resp = requests.get(url, params={"latitude": 60.1699, "longitude": 24.9384, "radius": 15000}, headers=HEADERS, timeout=15, verify=certifi.where())
+        resp = requests.get(url, params={"neLat": 60.35, "neLng": 25.25, "swLat": 60.10, "swLng": 24.60}, headers=HEADERS, timeout=15, verify=certifi.where())
         latency = int((time.monotonic() - t0) * 1000)
         if resp.status_code != 200:
             monitor.record("resq_club", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
