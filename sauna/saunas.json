@@ -114,7 +114,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Olavinlinnantie 6. City of Helsinki swimming hall, sauna included.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "helsinki-kontulan-uimahalli",
@@ -156,7 +157,8 @@
       "priceSource": "https://www.urheiluhallit.fi/hinnasto/uinti/",
       "hoursSource": "https://www.urheiluhallit.fi/aukioloajat/kontula/",
       "bookingSource": "",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "helsinki-kotiharjun-sauna",
@@ -208,7 +210,8 @@
       "lastVerified": "2026-11-19T16:06:59.633Z",
       "verificationStatus": "PASS",
       "notes": "Harjutorinkatu 1. Verified: kotiharjunsauna.fi. Price is 16€ adults (was incorrectly 11€).",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–la 17–20 · Rauhallista arkisin avausajankohtana"
     },
     {
       "id": "helsinki-kulttuurisauna",
@@ -260,7 +263,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Hakaniemenranta 17 (not Hernesaarenranta 4 which is Löyly). Wood-heated public sauna, sea swimming.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–la 17–20 · Rauhallista arkisin avausajankohtana"
     },
     {
       "id": "kuopio-kuopion-uimahalli",
@@ -370,7 +374,8 @@
       "priceSource": "https://lauttasaarenyhteiskoulu.fi/uimahalli/",
       "hoursSource": "https://lauttasaarenyhteiskoulu.fi/uimahalli/",
       "bookingSource": "",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "helsinki-l-yly",
@@ -412,7 +417,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Hernesaarenranta 4. Design sauna restaurant. Public sauna 29€/2h.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–su 16–20 · Rauhallista arkiaamuisin"
     },
     {
       "id": "jyv-skyl-lutakko",
@@ -632,7 +638,8 @@
       "priceSource": "https://liikunta.hel.fi/fi/pages/hinnasto/",
       "hoursSource": "https://liikunta.hel.fi/fi/paikat/tprek%3A40774",
       "bookingSource": "",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "tampere-rajaportin-sauna",
@@ -813,7 +820,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Hämeentie 63 (not Hermannin rantatie 1). Traditional public sauna, separate men/women sections.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–la 17–20 · Rauhallista arkisin avausajankohtana"
     },
     {
       "id": "helsinki-sompasauna",
@@ -845,7 +853,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Kansanpuistonpolku 5. Free donation-based sauna, self-service, no staff.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–la 18–22 · Rauhallista arkipäivisin"
     },
     {
       "id": "tampere-tampereen-uimahalli",
@@ -989,7 +998,8 @@
       "priceSource": "https://www.urheiluhallit.fi/hinnasto/uinti/",
       "hoursSource": "https://www.urheiluhallit.fi/aukioloajat/toolo/",
       "bookingSource": "",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "helsinki-urheilupuiston-uimahalli",
@@ -1066,21 +1076,22 @@
       "priceSource": "https://www.urheiluhallit.fi/hinnasto/uinti/",
       "hoursSource": "https://www.urheiluhallit.fi/aukioloajat/vuosaari/",
       "bookingSource": "",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "helsinki-yrj-nkadun-uimahalli-helsingin-uimala",
       "title": "Yrjönkadun uimahalli (Helsingin Uimala)",
       "date": "",
       "location": "Helsinki",
-      "street": "Yrjönkatu 23",
+      "street": "Yrjönkatu 21 b",
       "region": "Helsinki",
       "category": "uimahallin sauna",
       "source": "Curated public facility data (Helsinki/Tampere saunas)",
-      "sourceUrl": "https://www.hel.fi/fi/kulttuuri-ja-vapaa-aika/liikunta/yrjonkadun-uimahalli/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Yrj%C3%B6nkatu%2023%2C%2000120%20Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?to=Yrj%C3%B6nkatu%2023%2C%20Helsinki",
-      "reittiopasUrlFromStation": "https://www.reittiopas.fi/?from=Helsingin%20rautatieasema&to=Yrj%C3%B6nkatu%2023%2C%20Helsinki",
+      "sourceUrl": "https://www.hel.fi/fi/kulttuuri-ja-vapaa-aika/liikunta/yrjonkadun-uimahalli",
+      "mapsUrl": "https://google.com",
+      "reittiopasUrl": "https://reittiopas.fi",
+      "reittiopasUrlFromStation": "https://reittiopas.fi",
       "shortDesc": "uimahallin sauna - naisten/miehen uintipäivät, kesällä suljettu",
       "audienceTag": "",
       "isFree": false,
@@ -1101,14 +1112,15 @@
         ],
         "note": "2. kerros kertakäynti 20 € / 15 € alennus. Sisältää uinti, 1. krs saunat, lukittava pukukaappi."
       },
-      "rating": 3.8,
-      "priceSource": "https://www.hel.fi/fi/kulttuuri-ja-vapaa-aika/liikunta/yrjonkadun-uimahalli/hinnasto/",
-      "hoursSource": "https://www.hel.fi/fi/kulttuuri-ja-vapaa-aika/liikunta/yrjonkadun-uimahalli/aukioloajat-ja-yhteystiedot/",
+      "rating": 4.6,
+      "priceSource": "https://liikunta.hel.fi/fi/paikat/tprek:41102",
+      "hoursSource": "https://www.hel.fi/fi/kulttuuri-ja-vapaa-aika/liikunta/yrjonkadun-uimahalli/aukioloajat-ja-yhteystiedot",
       "bookingSource": "",
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Yrjönkatu 23. Gender-specific swimming days, sauna included. Closed in summer.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     },
     {
       "id": "turku-jarvela",
@@ -2211,7 +2223,8 @@
       "lastVerified": "2026-11-19T16:03:31.185Z",
       "verificationStatus": "PASS",
       "notes": "Katajanokanlaituri 2 A. Merikylpylä with saunas. Public.",
-      "flags": []
+      "flags": [],
+      "busyHours": "Vilkkainta pe–su 16–20 · Rauhallista arkiaamuisin"
     },
     {
       "id": "suomensaunat-herrainpaivien-sauna",
@@ -2278,7 +2291,8 @@
       "hoursSource": "https://uusisauna.fi/",
       "bookingSource": "",
       "notes": "Välimerenkatu 10, Jätkäsaari. Verified: uusisauna.fi. Price 18€ adults.",
-      "id": "helsinki-uusi-sauna"
+      "id": "helsinki-uusi-sauna",
+      "busyHours": "Vilkkainta pe–la 17–20 · Rauhallista arkisin avausajankohtana"
     },
     {
       "title": "Lonnan sauna",
@@ -2470,7 +2484,8 @@
       "hoursSource": "https://liikunta.hel.fi/fi/paikat/tprek:41536",
       "bookingSource": "",
       "notes": "Somerikkopolku 6, Jakomäki. Verified: liikunta.hel.fi. Price 6€ adults.",
-      "id": "helsinki-jakomaen-uimahalli"
+      "id": "helsinki-jakomaen-uimahalli",
+      "busyHours": "Vilkkainta arkisin 16–19 · Rauhallista aamupäivisin 9–14"
     }
   ],
   "verification": {

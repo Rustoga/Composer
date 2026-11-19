@@ -111,19 +111,25 @@
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 11px;
+      gap: 1.25rem;
       padding: 12px;
     }
     .card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 11px;
+      padding: 22px;
       background: var(--card);
       display: grid;
-      gap: 7px;
+      gap: 1.25rem;
       min-height: 250px;
+      line-height: 1.55;
       transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
       position: relative;
+    }
+    .card > * {
+      min-width: 0;
+      overflow-wrap: break-word;
+      word-break: normal;
     }
     .card::before {
       content: '';
@@ -206,6 +212,18 @@
       width: fit-content;
       text-transform: uppercase;
     }
+    .busy {
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(245,158,11,0.55);
+      color: #fbbf24;
+      background: rgba(245,158,11,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+      display: inline-block;
+    }
     .rating {
       font-size: 10px;
       letter-spacing: 0.05em;
@@ -242,7 +260,7 @@
     }
     .star.filled { color: #fbbf24; text-shadow: 0 0 6px rgba(251,191,36,0.6); }
     .star:hover { color: #f59e0b; }
-    .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; }
     .links a {
       text-decoration: none;
       color: #f0e6da;
@@ -434,7 +452,6 @@
   </style>
 </head>
 <body>
-  <div class="steam"></div>
   <div class="wrap">
     <div class="steam"></div>
     <header>
@@ -455,6 +472,8 @@
       <button id="uimahalliToggle" class="toggle">Uimahallit</button>
       <button id="nearestToggle" class="toggle">📍 Lähin asemalta</button>
       <button id="budgetToggle" class="toggle">💶 Edulliset &amp; ilmaiset (≤ 15 €)</button>
+      <button id="viewToggle" class="toggle active">🎴 Korttinäkymä</button>
+      <button id="tableViewToggle" class="toggle">📋 Taulukkonäkymä</button>
     </div>
 
     <div class="stats">
@@ -463,7 +482,7 @@
     </div>
 
     <div class="table-caption" id="tableCaption">Vertaa Helsingin julkisia saunoja</div>
-    <div class="table-wrap">
+    <div class="table-wrap" id="tableWrap" style="display:none">
       <table class="compare-table" id="compareTable">
         <thead>
           <tr>
@@ -496,6 +515,7 @@
 let uimahalliFilter = true
 let nearestSort = false
 let budgetFilter = false
+let viewMode = 'cards'
 let refreshing = false
     let userRatings = {}
 
@@ -638,6 +658,7 @@ let refreshing = false
                     ${e.varaus ? '<span class="varaus">🔒 Varaus / Reservation</span>' : ''}
                     ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
                     ${e.nature ? '<span class="nature">🌲 Luontopuisto / Nature park</span>' : ''}
+                    ${e.busyHours ? `<span class="busy" title="${e.busyHours}">📊 ${e.busyHours.split(" · ")[0]}</span>` : ''}
                   </div>
                   <div class="title">${e.title || 'Nimetön sauna'}</div>
                   <div class="stars" data-id="${e.id}">
@@ -757,6 +778,26 @@ let refreshing = false
       budgetFilter = !budgetFilter
       e.currentTarget.classList.toggle('active', budgetFilter)
       render()
+    })
+
+    document.getElementById('viewToggle').addEventListener('click', () => {
+      viewMode = 'cards'
+      document.getElementById('viewToggle').classList.add('active')
+      document.getElementById('tableViewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = 'none'
+      document.getElementById('tableWrap').style.display = 'none'
+      document.getElementById('sections').style.display = ''
+      render()
+    })
+
+    document.getElementById('tableViewToggle').addEventListener('click', () => {
+      viewMode = 'table'
+      document.getElementById('tableViewToggle').classList.add('active')
+      document.getElementById('viewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = ''
+      document.getElementById('tableWrap').style.display = ''
+      document.getElementById('sections').style.display = 'none'
+      renderComparisonTable()
     })
 
     document.getElementById('refreshNow').addEventListener('click', () => {
