@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T23:17:12.814839+02:00",
+  "generatedAt": "2026-11-19T23:20:45.040316+02:00",
   "nextUpdateAt": "2026-11-20T06:00:00+02:00",
   "updateSchedule": [
     "06:00",
@@ -12,57 +12,57 @@
     "sources": {
       "resq_club": {
         "status": "ok",
-        "items_found": 9,
-        "latency_ms": 5100,
+        "items_found": 10,
+        "latency_ms": 4919,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:17.916840+02:00"
+        "checked_at": "2026-11-19T23:20:49.962597+02:00"
       },
       "myhelsinki_events": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 322,
+        "latency_ms": 347,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:18.245481+02:00"
+        "checked_at": "2026-11-19T23:20:50.317653+02:00"
       },
       "finnkino_movies": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 3243,
+        "latency_ms": 3013,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 5,
-        "checked_at": "2026-11-19T23:17:21.489955+02:00"
+        "consecutive_failures": 8,
+        "checked_at": "2026-11-19T23:20:53.332509+02:00"
       },
       "k_ruoka": {
         "status": "ok",
-        "items_found": 3,
-        "latency_ms": 4172,
+        "items_found": 4,
+        "latency_ms": 3768,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:25.665416+02:00"
+        "checked_at": "2026-11-19T23:20:57.104925+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 3928,
+        "latency_ms": 3547,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:29.593890+02:00"
+        "checked_at": "2026-11-19T23:21:00.652657+02:00"
       },
       "s_group": {
         "status": "ok",
-        "items_found": 2,
-        "latency_ms": 2823,
+        "items_found": 1,
+        "latency_ms": 2864,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:35.775268+02:00"
+        "checked_at": "2026-11-19T23:21:06.784460+02:00"
       }
     }
   },
@@ -75,57 +75,57 @@
     "sources": {
       "resq_club": {
         "status": "ok",
-        "items_found": 9,
-        "latency_ms": 5100,
+        "items_found": 10,
+        "latency_ms": 4919,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:17.916840+02:00"
+        "checked_at": "2026-11-19T23:20:49.962597+02:00"
       },
       "myhelsinki_events": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 322,
+        "latency_ms": 347,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:18.245481+02:00"
+        "checked_at": "2026-11-19T23:20:50.317653+02:00"
       },
       "finnkino_movies": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 3243,
+        "latency_ms": 3013,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 5,
-        "checked_at": "2026-11-19T23:17:21.489955+02:00"
+        "consecutive_failures": 8,
+        "checked_at": "2026-11-19T23:20:53.332509+02:00"
       },
       "k_ruoka": {
         "status": "ok",
-        "items_found": 3,
-        "latency_ms": 4172,
+        "items_found": 4,
+        "latency_ms": 3768,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:25.665416+02:00"
+        "checked_at": "2026-11-19T23:20:57.104925+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 3928,
+        "latency_ms": 3547,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:29.593890+02:00"
+        "checked_at": "2026-11-19T23:21:00.652657+02:00"
       },
       "s_group": {
         "status": "ok",
-        "items_found": 2,
-        "latency_ms": 2823,
+        "items_found": 1,
+        "latency_ms": 2864,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T23:17:35.775268+02:00"
+        "checked_at": "2026-11-19T23:21:06.784460+02:00"
       }
     }
   },
@@ -154,7 +154,7 @@
       "deal_url": "https://resq-club.com/app/offers/17240586",
       "store_offers_url": "https://resq-club.com/app/offers/17240586",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_78c4f0c0623a",
@@ -180,7 +180,7 @@
       "deal_url": "https://resq-club.com/app/offers/17250332",
       "store_offers_url": "https://resq-club.com/app/offers/17250332",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_48988352cc3d",
@@ -206,7 +206,7 @@
       "deal_url": "https://resq-club.com/app/offers/17241276",
       "store_offers_url": "https://resq-club.com/app/offers/17241276",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_d25e835e9901",
@@ -232,7 +232,33 @@
       "deal_url": "https://resq-club.com/app/offers/17250561",
       "store_offers_url": "https://resq-club.com/app/offers/17250561",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
+    },
+    {
+      "id": "resq_eda499cd88b6",
+      "title": "Mustikka cupcake – ABC Piihovi Salo",
+      "store_name": "ABC Piihovi Salo",
+      "mall_name": "",
+      "address": "ABC Piihovi Salo",
+      "region": "Helsinki",
+      "category": "leipomo",
+      "price_eur": 1.0,
+      "price_kg": null,
+      "normal_price_eur": 4.2,
+      "discount_pct": 76,
+      "deal_tier": "huippudiili",
+      "price_display": "1,00 €",
+      "valid_from": "2026-11-19",
+      "valid_until": "2026-11-19",
+      "custom_time_label": "Nouto tänään (ResQ)",
+      "lat": 60.1699,
+      "lon": 24.9384,
+      "source_type": "live_verified",
+      "source_name": "ResQ Club",
+      "deal_url": "https://resq-club.com/app/offers/17241078",
+      "store_offers_url": "https://resq-club.com/app/offers/17241078",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_89fbe0a7f34b",
@@ -258,7 +284,7 @@
       "deal_url": "https://resq-club.com/app/offers/17241065",
       "store_offers_url": "https://resq-club.com/app/offers/17241065",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_7142c986bb4a",
@@ -284,7 +310,7 @@
       "deal_url": "https://resq-club.com/app/offers/17240252",
       "store_offers_url": "https://resq-club.com/app/offers/17240252",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_8ae340081f48",
@@ -310,7 +336,7 @@
       "deal_url": "https://resq-club.com/app/offers/17244515",
       "store_offers_url": "https://resq-club.com/app/offers/17244515",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "resq_38447dfdac8b",
@@ -336,22 +362,22 @@
       "deal_url": "https://resq-club.com/app/offers/17244514",
       "store_offers_url": "https://resq-club.com/app/offers/17244514",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
-      "id": "resq_230297282e24",
-      "title": "4 × Stratos-patukka 35 g – St1 Helsinki Käpylä",
+      "id": "resq_06b1aa1e6452",
+      "title": "4 × KEX choklad - Cloetta 60 g – St1 Helsinki Käpylä",
       "store_name": "St1 Helsinki Käpylä",
       "mall_name": "",
       "address": "St1 Helsinki Käpylä",
       "region": "Helsinki",
-      "category": "suklaa",
-      "price_eur": 1.0,
+      "category": "irtokarkki",
+      "price_eur": 1.05,
       "price_kg": null,
-      "normal_price_eur": 3.8,
-      "discount_pct": 74,
+      "normal_price_eur": 3.2,
+      "discount_pct": 67,
       "deal_tier": "huippudiili",
-      "price_display": "1,00 €",
+      "price_display": "1,05 €",
       "valid_from": "2026-11-19",
       "valid_until": "2026-11-19",
       "custom_time_label": "Nouto tänään (ResQ)",
@@ -359,10 +385,10 @@
       "lon": 24.9384,
       "source_type": "live_verified",
       "source_name": "ResQ Club",
-      "deal_url": "https://resq-club.com/app/offers/17240579",
-      "store_offers_url": "https://resq-club.com/app/offers/17240579",
+      "deal_url": "https://resq-club.com/app/offers/17240578",
+      "store_offers_url": "https://resq-club.com/app/offers/17240578",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "k_ruoka_4aa85d18e291",
@@ -388,7 +414,33 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
+    },
+    {
+      "id": "k_ruoka_a4f18931904c",
+      "title": "Elonen Sacherleivos tai Limoncello leivos 2 kpl/170 g",
+      "store_name": "K-Supermarket Lauttasaari (Lauttis)",
+      "mall_name": "Lauttis",
+      "address": "Lauttasaarentie 28, 00200 Helsinki",
+      "region": "Helsinki",
+      "category": "leipomo",
+      "price_eur": 4.0,
+      "normal_price_eur": 4.2,
+      "discount_pct": 5,
+      "deal_tier": "hyva_tarjous",
+      "price_kg": null,
+      "price_display": "4,00 €",
+      "valid_from": "2026-11-19",
+      "valid_until": "2026-11-22",
+      "custom_time_label": null,
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "source_type": "live_verified",
+      "source_name": "K-Ruoka Tarjoukset",
+      "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "k_ruoka_0697c2e3e8a4",
@@ -414,7 +466,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "k_ruoka_a50f595424b6",
@@ -440,33 +492,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
-    },
-    {
-      "id": "s_group_003e5c89adea",
-      "title": "Saarioinen Jauhelihapizza 200g",
-      "store_name": "S-market Lauttasaari",
-      "mall_name": "Lauttasaari",
-      "address": "Lauttasaarentie 23, 00200 Helsinki",
-      "region": "Helsinki",
-      "category": "pizza",
-      "price_eur": 1.35,
-      "normal_price_eur": 4.2,
-      "discount_pct": 68,
-      "deal_tier": "huippudiili",
-      "price_kg": null,
-      "price_display": "1,35 €",
-      "valid_from": "2026-11-19",
-      "valid_until": "2026-11-22",
-      "custom_time_label": null,
-      "lat": 60.1594,
-      "lon": 24.8832,
-      "source_type": "live_verified",
-      "source_name": "S-ryhmä Tarjoukset",
-      "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
-      "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
-      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     },
     {
       "id": "s_group_0723146f4ba0",
@@ -492,7 +518,7 @@
       "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-19T23:17:12.814839+02:00"
+      "verified_at": "2026-11-19T23:20:45.040316+02:00"
     }
   ]
 }

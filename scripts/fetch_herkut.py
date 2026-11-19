@@ -90,26 +90,35 @@ def infer_region(text: str) -> str:
         return "Vantaa"
     return "Helsinki"
 
-HARD_EXCLUDE = [
-    "ruisleipä", "paahtoleipä", "kauraleipä", "sämpylä", "patonki", "näkkileipä",
-    "rieska", "leipä", "kaurajuoma", "kauramaito", "barista", "maito", "piimä",
-    "jugurtti", "jogurtti", "rahka", "juusto", "voi", "margariini", "kahvi",
-    "suodatinjauhatus", "tee", "klementiini", "banaani", "omena", "kurkku",
-    "tomaatti", "herkkusieni", "makkara", "kinkku", "broileri", "lohi",
+EXCLUDE_KEYWORDS = [
+    "ruisleipä", "paahtoleipä", "kauraleipä", "moniviljaleipä", "sämpylä", "patonki",
+    "näkkileipä", "rieska", "ruispala", "jälkiuuni", "vehnäjauho", "hiiva",
+    "kaurajuoma", "kauramaito", "barista", "soijajuoma", "mantelijuoma", "maito",
+    "kevytmaito", "rasvaton", "piimä", "jugurtti", "jogurtti", "rahka", "raejuusto",
+    "juusto", "edam", "oltermanni", "voi", "margariini", "levite", "suodatinjauhatus",
+    "kahvipapu", "juhla mokka", "presidentti", "kultakatriina", "klementiini",
+    "mandariini", "appelsiini", "banaani", "omena", "kurkku", "tomaatti", "salaatti",
+    "peruna", "porkkana", "sipuli", "herkkusieni", "sieni", "makkara",
+    "maksamakkara", "kinkku", "leikkele", "broileri", "kana", "jauheliha", "lohi",
+    "kirjolohi", "tonnikala", "kananmuna", "puuro", "hiutale", "makaroni", "spagetti",
+    "riisi", "koiran", "kissan", "kissanhiekka", "vaippa", "pesuaine", "huuhteluaine",
+    "shampoo", "saippua", "hammastahna", "wc-paperi", "talouspaperi", "paistinpannu",
+    "kattila", "keitto", "soppa", "pinaatti",
 ]
+
 CATEGORY_KEYWORDS = {
-    "irtokarkki": ["irtokark", "karkki", "makeis", "marmeladi", "lakrits", "salmiak", "fazer", "malaco", "haribo", "panda", "tutti frutti", "remix", "pantteri", "aakkoset"],
-    "suklaa": ["suklaa", "konvehti", "suklaalevy", "patukka", "keksi", "domino", "jaffa", "oreo", "marabou", "geisha", "dumle", "kinder", "twix", "snickers", "daim"],
-    "leipomo": ["korvapuusti", "pulla", "kanelipulla", "voisilmäpulla", "croissant", "kroissantti", "mantelikroissantti", "almond croissant", "leivos", "munkki", "berliininmunkki", "donitsi", "viineri", "kakku", "mutakakku", "juustokakku", "tuulihattu", "runeberg", "laskiaispulla", "paistopiste", "gateau", "arnolds", "kanniston"],
-    "pizza": ["pizza", "kiviuunipizza", "pannupizza", "calzone", "nachot", "sipsi", "popcorn"],
-    "jäätelö": ["jäätelö", "viennetta", "puikko", "tuutti", "ben & jerry", "häagen", "pingviini", "aino", "classic"],
-    "energy": ["energiajuoma", "battery", "red bull", "monster", "nocco", "ed ", "teho", "celsius", "prime"],
-    "leffa": ["elokuva", "leffa", "kino", "cinema", "näytös", "superpäivä", "leffapäivä", "päivänäytös"],
+    "irtokarkki": ["irtokark", "irtomakeis", "makeis", "karkki", "karkkipussi", "marmeladi", "lakrits", "salmiak", "toffee", "fudge", "vaahtokark", "hedelmäaakkos", "tutti frutti", "remix", "pantteri", "aakkoset", "hyvää makumaasta", "ärräbox", "karkkiboksi", "pihlaja", "omar", "dumle", "candy", "pick and mix", "pick & mix", "sweets", "gummies", "licorice", "liquorice", "fazer", "malaco", "haribo", "panda", "cloetta", "brunberg", "halva"],
+    "suklaa": ["suklaa", "suklaalevy", "suklaapatukka", "konvehti", "suklaarasia", "keksi", "täytekeksi", "suklaakeksi", "vohveli", "pipari", "piparkakku", "chocolate", "praline", "truffle", "brownie", "cookie", "biscuit", "wafer", "marabou", "geisha", "karl fazer", "kinder", "twix", "snickers", "mars", "bounty", "daim", "oreo", "domino", "jaffa", "ritter sport", "lindt", "toblerone"],
+    "leipomo": ["korvapuusti", "pulla", "kanelipulla", "voisilmäpulla", "kardemummapulla", "rahkapulla", "vaniljapulla", "croissant", "kroissantti", "mantelikroissantti", "suklaakroissantti", "leivos", "munkki", "hillomunkki", "berliininmunkki", "donitsi", "viineri", "kakku", "mutakakku", "juustokakku", "porkkanakakku", "tuulihattu", "marenki", "runeberg", "laskiaispulla", "banaanileipä", "paistopiste", "konditoria", "leipomo", "hävikki", "yllätyskassi", "almond croissant", "pain au chocolat", "cinnamon bun", "cardamom bun", "pastry", "pastries", "bakery", "donut", "doughnut", "muffin", "cupcake", "scone", "tart", "cake", "surplus bag", "magic bag", "gateau", "arnolds", "kanniston", "robert's coffee", "espresso house", "fazer café", "picnic", "waynes", "backers"],
+    "pizza": ["pizza", "kiviuunipizza", "pannupizza", "uunipizza", "pakastepizza", "pizzapala", "calzone", "sipsi", "perunalastu", "juustonaksu", "popcorn", "nachot", "hampurilainen", "burgeri", "hodari", "ranskalaiset", "slice", "crisps", "chips", "nachos", "burger", "hot dog", "fries", "grandiosa", "dr. oetker", "ristorante", "casa di mama", "apetit", "kotipizza", "pizzarium", "pringles", "estrella", "taffel"],
+    "jäätelö": ["jäätelö", "jäätelöpaketti", "jäätelöpuikko", "tuutti", "jäätelökakku", "sorbetti", "gelato", "pehmis", "ice cream", "sundae", "viennetta", "ben & jerry", "häagen-dazs", "pingviini", "aino", "classic", "magnum", "solero", "twister", "3 kaveria", "kolmen kaverin"],
+    "energy": ["energiajuoma", "energy drink", "battery", "red bull", "monster", "nocco", "ed ", "teho", "celsius", "prime", "burn", "cult", "mad-croc"],
+    "leffa": ["elokuva", "leffa", "leffapäivä", "superpäivä", "päivänäytös", "senioribio", "vauvakino", "näytös", "ensi-ilta", "elokuvateatteri", "ulkoilmaelokuva", "ilmaisnäytös", "leffalippu", "cinema", "movie", "film", "screening", "matinee", "film festival", "finnkino", "tennispalatsi", "kinopalatsi", "itis", "omena", "sello", "kino regina", "orion", "riviera", "bio rex", "korjaamo kino", "engel", "maxim"],
 }
 
 def classify_category(text: str) -> Optional[str]:
     low = (text or "").lower()
-    for w in HARD_EXCLUDE:
+    for w in EXCLUDE_KEYWORDS:
         if w in low:
             if w == "leipä" and ("banaanileipä" in low or "rusinaleipä" in low):
                 continue
@@ -120,9 +129,10 @@ def classify_category(text: str) -> Optional[str]:
     return None
 
 def extract_normal_price(text: str) -> Optional[float]:
-    m = re.search(r"norm\.?\s*(\d+[,.]\d{1,2})\s*€", text or "", re.IGNORECASE)
-    if m:
-        return float(m.group(1).replace(",", "."))
+    for pat in [r"norm\.?\s*(\d+[,.]\d{1,2})\s*€", r"normaalihinta\s*(\d+[,.]\d{1,2})\s*€", r"ovh\s*(\d+[,.]\d{1,2})\s*€", r"30\s*pv\s*alin[^\d]*(\d+[,.]\d{1,2})\s*€"]:
+        m = re.search(pat, text or "", re.IGNORECASE)
+        if m:
+            return float(m.group(1).replace(",", "."))
     return None
 
 def benchmark_for(category: str, price_eur: float, price_kg: Optional[float]) -> float:
@@ -203,6 +213,8 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 continue
             oname = re.sub(r"<[^>]+>", "", name_m.group(1)).strip()
             vname = re.sub(r"<[^>]+>", "", prov_m.group(1)).strip() if prov_m else "ResQ-kumppani"
+            if any(w in (oname + " " + vname).lower() for w in EXCLUDE_KEYWORDS) and not (("banaanileipä" in (oname+vname).lower()) or ("rusinaleipä" in (oname+vname).lower())):
+                continue
             cat = classify_category(oname)
             if cat is None:
                 continue
@@ -266,7 +278,12 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
             if not title:
                 continue
             blob = f"{title} {desc}".lower()
-            cat = classify_category(blob)
+            if any(w in blob for w in EXCLUDE_KEYWORDS) and not (("banaanileipä" in blob) or ("rusinaleipä" in blob)):
+                # still allow if title itself has treat? exclude wins
+                pass
+            if any(w in blob for w in EXCLUDE_KEYWORDS) and not (("banaanileipä" in blob) or ("rusinaleipä" in blob)):
+                continue
+            cat = classify_category(title)
             if cat is None:
                 continue
             offers = ev.get("offers") or []
@@ -451,7 +468,13 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
             title = extract_title(i)
             tlow = title.lower()
             ctx_low = ctx_txt.lower()
-            cat = classify_category(f"{title} {ctx_txt}")
+            if any(w in ctx_low or w in tlow for w in EXCLUDE_KEYWORDS):
+                # leipä exception
+                if not ("banaanileipä" in ctx_low or "rusinaleipä" in ctx_low):
+                    pass
+            if any(w in ctx_low or w in tlow for w in EXCLUDE_KEYWORDS) and not (("banaanileipä" in ctx_low or "banaanileipä" in tlow) or ("rusinaleipä" in ctx_low or "rusinaleipä" in tlow)):
+                continue
+            cat = classify_category(title)
             if cat is None:
                 continue
             normal = extract_normal_price(ctx_txt) or extract_normal_price(title) or benchmark_for(cat, price, None)
@@ -546,7 +569,7 @@ def main() -> None:
         if float(it.get("price_eur") or 99) > 7.0:
             continue
         blob = str(it.get("title") or "").lower()
-        if any(w in blob for w in HARD_EXCLUDE):
+        if any(w in blob for w in EXCLUDE_KEYWORDS):
             continue
         if not is_valid_deep_url(it.get("deal_url") or ""):
             continue

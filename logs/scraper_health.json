@@ -7,57 +7,57 @@
   "sources": {
     "resq_club": {
       "status": "ok",
-      "items_found": 9,
-      "latency_ms": 5100,
+      "items_found": 10,
+      "latency_ms": 4919,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:17:17.916840+02:00"
+      "checked_at": "2026-11-19T23:20:49.962597+02:00"
     },
     "myhelsinki_events": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 322,
+      "latency_ms": 347,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:17:18.245481+02:00"
+      "checked_at": "2026-11-19T23:20:50.317653+02:00"
     },
     "finnkino_movies": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 3243,
+      "latency_ms": 3013,
       "http_status": 404,
       "error_reason": "HTTP 404",
-      "consecutive_failures": 5,
-      "checked_at": "2026-11-19T23:17:21.489955+02:00"
+      "consecutive_failures": 8,
+      "checked_at": "2026-11-19T23:20:53.332509+02:00"
     },
     "k_ruoka": {
       "status": "ok",
-      "items_found": 3,
-      "latency_ms": 4172,
+      "items_found": 4,
+      "latency_ms": 3768,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:17:25.665416+02:00"
+      "checked_at": "2026-11-19T23:20:57.104925+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 3928,
+      "latency_ms": 3547,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:17:29.593890+02:00"
+      "checked_at": "2026-11-19T23:21:00.652657+02:00"
     },
     "s_group": {
       "status": "ok",
-      "items_found": 2,
-      "latency_ms": 2823,
+      "items_found": 1,
+      "latency_ms": 2864,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:17:35.775268+02:00"
+      "checked_at": "2026-11-19T23:21:06.784460+02:00"
     }
   }
 }
