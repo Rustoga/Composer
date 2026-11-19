@@ -373,11 +373,70 @@
       .topbar { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
     }
+
+    .steam {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 120px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.7;
+    }
+    .steam::before, .steam::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.18), transparent 70%);
+      filter: blur(24px);
+      animation: steam 12s linear infinite;
+    }
+    .steam::after { left: 45%; animation-duration: 16s; animation-delay: -5s; opacity: 0.9; width: 220px; height: 220px; }
+    .steam::before { left: 8%; animation-duration: 10s; animation-delay: -2s; }
+    @keyframes steam {
+      0% { transform: translateY(160px) scale(0.3); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-180px) scale(1.4); opacity: 0; }
+    }
+    .card:hover::after {
+      content: '';
+      position: absolute;
+      top: -14px; right: -14px;
+      width: 70px; height: 70px;
+      background: radial-gradient(circle, rgba(245,158,11,0.4), transparent 70%);
+      border-radius: 50%;
+      filter: blur(10px);
+      animation: smokePuff 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .card:hover::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(245,158,11,0.25);
+      animation: fireGlow 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes smokePuff {
+      0% { transform: translate(0, 0) scale(0.15); opacity: 0; }
+      35% { opacity: 1; }
+      100% { transform: translate(-30px, -45px) scale(2.5); opacity: 0; }
+    }
+    @keyframes fireGlow {
+      0% { opacity: 0.9; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
   </style>
 </head>
 <body>
   <div class="steam"></div>
   <div class="wrap">
+    <div class="steam"></div>
     <header>
       <h1>♨ Saunat Helsingissä</h1>
       <p class="lede">Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
@@ -394,6 +453,8 @@
       </select>
       <button id="refreshNow" class="refresh">Päivitä</button>
       <button id="uimahalliToggle" class="toggle">Uimahallit</button>
+      <button id="nearestToggle" class="toggle">📍 Lähin asemalta</button>
+      <button id="budgetToggle" class="toggle">💶 Edulliset &amp; ilmaiset (≤ 15 €)</button>
     </div>
 
     <div class="stats">
@@ -432,8 +493,10 @@
     let snapshot = { events: [] }
     let searchTerm = ''
     let regionFilter = 'ALL'
-    let uimahalliFilter = true
-    let refreshing = false
+let uimahalliFilter = true
+let nearestSort = false
+let budgetFilter = false
+let refreshing = false
     let userRatings = {}
 
     try {
@@ -461,6 +524,11 @@
       return events.filter((e) => {
         if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
         if (!uimahalliFilter && /uimahalli/.test(normalize(e.category || ''))) return false
+        if (budgetFilter) {
+          const isFree = e.isFree === true || e.isFree === 1
+          const price = e.priceAdult != null ? e.priceAdult : (e.priceDetails?.items?.[0]?.adult ?? null)
+          if (!isFree && (price == null || price > 15)) return false
+        }
         if (!q) return true
         return (
           normalize(e.title).includes(q) ||
@@ -498,8 +566,8 @@
     }
 
     function ratingLabel(e) {
-      if (e.rating == null) return ''
-      return `<span class="rating" title="Googlen arvio">${Number(e.rating).toFixed(1)}/5</span>`
+      if (typeof e.rating !== 'number') return ''
+      return `<span class="rating" title="Googlen arvio ${e.rating}/5">⭐ ${e.rating}</span>`
     }
 
     function userRatingLabel(e) {
@@ -536,8 +604,14 @@
       const regions = sortRegions(Array.from(grouped.keys()))
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
-        // Free saunas first, then by distance from Helsinki rautatieasema, then by name
+        // Sort: nearest station first, then free first, then distance, then name
         items.sort((a, b) => {
+          if (nearestSort) {
+            const aKm = a.stationKm == null ? 9999 : a.stationKm
+            const bKm = b.stationKm == null ? 9999 : b.stationKm
+            if (aKm !== bKm) return aKm - bKm
+            return (a.title || '').localeCompare(b.title || '')
+          }
           const aFree = a.isFree === true || a.isFree === 1
           const bFree = b.isFree === true || b.isFree === 1
           if (aFree && !bFree) return -1
@@ -575,7 +649,7 @@
                   <div class="meta">🏷️ ${e.category || 'Yleinen'}</div>
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
-                    <a href="${e.mapsUrl}" target="_blank" rel="noreferrer">Google Maps</a>
+                    ${e.mapsUrl ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : (e.title ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title + ' ' + (e.street||'') + ' ' + e.location)}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : '')}
                   </div>
                 </article>
               `).join('')}
@@ -616,7 +690,7 @@
 
         return `
           <tr>
-            <td><strong>${e.title || 'Nimetön sauna'}</strong></td>
+            <td><strong>${e.title || 'Nimetön sauna'}</strong>${typeof e.rating === 'number' ? ` <span class="rating">⭐ ${e.rating}</span>` : ''}</td>
             <td>${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</td>
             <td class="km">${km}</td>
             <td>${walk}</td>
@@ -670,6 +744,18 @@
     document.getElementById('uimahalliToggle').addEventListener('click', (e) => {
       uimahalliFilter = !uimahalliFilter
       e.currentTarget.classList.toggle('active', uimahalliFilter)
+      render()
+    })
+
+    document.getElementById('nearestToggle').addEventListener('click', (e) => {
+      nearestSort = !nearestSort
+      e.currentTarget.classList.toggle('active', nearestSort)
+      render()
+    })
+
+    document.getElementById('budgetToggle').addEventListener('click', (e) => {
+      budgetFilter = !budgetFilter
+      e.currentTarget.classList.toggle('active', budgetFilter)
       render()
     })
 
