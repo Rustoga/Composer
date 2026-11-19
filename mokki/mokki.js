@@ -248,43 +248,62 @@ function fetchGlb(url, onProgress) {
         const reader = res.body.getReader();
         const chunks = [];
         let loaded = 0;
-    return new Promise((resolveRead, rejectRead) => {
-      function pump() {
-        reader.read().then(({ done, value }) => {
-          if (done) {
-            const buf = new Uint8Array(loaded);
-            let off = 0;
-            for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
-            // Detect Git LFS pointer file (GitHub Pages may serve pointer instead of binary)
-            const header = new TextDecoder().decode(buf.subarray(0, Math.min(buf.length, 64)));
-            if (header.startsWith('version https://git-lfs')) {
-              const mediaUrl = 'https://media.githubusercontent.com/media/Rustoga/Composer/main/mokki/cabin.glb';
-              fetch(mediaUrl).then((res2) => {
-                if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
-                return res2.arrayBuffer();
-              }).then((buf2) => {
-                currentAbortController = null;
-                resolveRead(new Uint8Array(buf2));
-              }).catch(rejectRead);
-            } else {
-              currentAbortController = null;
-              resolveRead(buf);
-            }
-          } else {
-            chunks.push(value);
-            loaded += value.byteLength;
-            if (onProgress) onProgress(loaded, total);
-            pump();
+        return new Promise((resolveRead, rejectRead) => {
+          function pump() {
+            reader.read().then(({ done, value }) => {
+              if (done) {
+                const buf = new Uint8Array(loaded);
+                let off = 0;
+                for (const c of chunks) { buf.set(c, off); off += c.byteLength; }
+                // Detect Git LFS pointer file (GitHub Pages may serve pointer instead of binary)
+                const header = new TextDecoder().decode(buf.subarray(0, Math.min(buf.length, 64)));
+                if (header.startsWith('version https://git-lfs')) {
+                  const mediaUrl = 'https://media.githubusercontent.com/media/Rustoga/Composer/main/mokki/cabin.glb';
+                  fetch(mediaUrl).then((res2) => {
+                    if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+                    return res2.arrayBuffer();
+                  }).then((buf2) => {
+                    currentAbortController = null;
+                    // Ensure we pass a proper ArrayBuffer, not Uint8Array
+                    const ab = buf2 instanceof ArrayBuffer ? buf2 : buf2.buffer.slice(buf2.byteOffset, buf2.byteOffset + buf2.byteLength);
+                    const dv = new DataView(ab);
+                    const magic = dv.getUint32(0, true);
+                    if (magic !== 0x46546C67) { // "glTF"
+                      const first16 = Array.from(new Uint8Array(ab.slice(0, 16))).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+                      rejectRead(new Error('GLTFLoader: bad magic 0x' + magic.toString(16) + ', first 16 bytes: ' + first16));
+                    } else {
+                      resolveRead(ab);
+                    }
+                  }).catch(rejectRead);
+                } else {
+                  currentAbortController = null;
+                  // Convert Uint8Array to proper ArrayBuffer (no shared backing)
+                  const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+                  const dv = new DataView(ab);
+                  const magic = dv.getUint32(0, true);
+                  if (magic !== 0x46546C67) { // "glTF"
+                    const first16 = Array.from(new Uint8Array(ab.slice(0, 16))).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+                    rejectRead(new Error('GLTFLoader: bad magic 0x' + magic.toString(16) + ', first 16 bytes: ' + first16));
+                  } else {
+                    resolveRead(ab);
+                  }
+                }
+              } else {
+                chunks.push(value);
+                loaded += value.byteLength;
+                if (onProgress) onProgress(loaded, total);
+                pump();
+              }
+            }).catch(rejectRead);
           }
-        }).catch(rejectRead);
-      }
-      pump();
-    });
+          pump();
+        });
       })
-      .then((buf) => {
+      .then((ab) => {
         // Parse GLB with GLTFLoader (uncompressed glTF 2.0 — no extensions)
+        // CRITICAL: loader.parse expects an ArrayBuffer, NOT Uint8Array
         const loader = new GLTFLoader();
-        loader.parse(buf, '', (gltf) => {
+        loader.parse(ab, '', (gltf) => {
           resolve(gltf);
         }, (err) => {
           reject(new Error('GLTFLoader parse failed: ' + (err.message || String(err))));
