@@ -90,6 +90,78 @@ def infer_region(text: str) -> str:
         return "Vantaa"
     return "Helsinki"
 
+HARD_EXCLUDE = [
+    "ruisleipä", "paahtoleipä", "kauraleipä", "sämpylä", "patonki", "näkkileipä",
+    "rieska", "leipä", "kaurajuoma", "kauramaito", "barista", "maito", "piimä",
+    "jugurtti", "jogurtti", "rahka", "juusto", "voi", "margariini", "kahvi",
+    "suodatinjauhatus", "tee", "klementiini", "banaani", "omena", "kurkku",
+    "tomaatti", "herkkusieni", "makkara", "kinkku", "broileri", "lohi",
+]
+CATEGORY_KEYWORDS = {
+    "irtokarkki": ["irtokark", "karkki", "makeis", "marmeladi", "lakrits", "salmiak", "fazer", "malaco", "haribo", "panda", "tutti frutti", "remix", "pantteri", "aakkoset"],
+    "suklaa": ["suklaa", "konvehti", "suklaalevy", "patukka", "keksi", "domino", "jaffa", "oreo", "marabou", "geisha", "dumle", "kinder", "twix", "snickers", "daim"],
+    "leipomo": ["korvapuusti", "pulla", "kanelipulla", "voisilmäpulla", "croissant", "kroissantti", "mantelikroissantti", "almond croissant", "leivos", "munkki", "berliininmunkki", "donitsi", "viineri", "kakku", "mutakakku", "juustokakku", "tuulihattu", "runeberg", "laskiaispulla", "paistopiste", "gateau", "arnolds", "kanniston"],
+    "pizza": ["pizza", "kiviuunipizza", "pannupizza", "calzone", "nachot", "sipsi", "popcorn"],
+    "jäätelö": ["jäätelö", "viennetta", "puikko", "tuutti", "ben & jerry", "häagen", "pingviini", "aino", "classic"],
+    "energy": ["energiajuoma", "battery", "red bull", "monster", "nocco", "ed ", "teho", "celsius", "prime"],
+    "leffa": ["elokuva", "leffa", "kino", "cinema", "näytös", "superpäivä", "leffapäivä", "päivänäytös"],
+}
+
+def classify_category(text: str) -> Optional[str]:
+    low = (text or "").lower()
+    for w in HARD_EXCLUDE:
+        if w in low:
+            if w == "leipä" and ("banaanileipä" in low or "rusinaleipä" in low):
+                continue
+            return None
+    for cat in ["irtokarkki", "suklaa", "leipomo", "pizza", "jäätelö", "energy", "leffa"]:
+        if any(k in low for k in CATEGORY_KEYWORDS.get(cat, [])):
+            return cat
+    return None
+
+def extract_normal_price(text: str) -> Optional[float]:
+    m = re.search(r"norm\.?\s*(\d+[,.]\d{1,2})\s*€", text or "", re.IGNORECASE)
+    if m:
+        return float(m.group(1).replace(",", "."))
+    return None
+
+def benchmark_for(category: str, price_eur: float, price_kg: Optional[float]) -> float:
+    if category == "irtokarkki":
+        return 10.90 if price_kg is not None else 3.20
+    if category == "suklaa":
+        return 5.50 if price_eur > 3.80 else 3.80
+    if category == "pizza":
+        return 12.50 if price_eur > 4.20 else 4.20
+    return {"leipomo": 4.20, "jäätelö": 4.90, "energy": 2.45, "leffa": 14.50}.get(category, 4.0)
+
+def is_good_deal(category: str, price_eur: float, price_kg: Optional[float], discount_pct: int) -> bool:
+    if category == "irtokarkki":
+        if price_kg is not None and price_kg <= 7.90:
+            return True
+        if price_eur <= 2.20:
+            return True
+        if discount_pct >= 20:
+            return True
+        return False
+    if category == "suklaa":
+        return price_eur <= 4.20 or discount_pct >= 20
+    if category == "leipomo":
+        return price_eur <= 4.50 or discount_pct >= 25
+    if category == "pizza":
+        return price_eur <= 7.00 or discount_pct >= 20
+    if category == "jäätelö":
+        return price_eur <= 3.00 or discount_pct >= 25
+    if category == "energy":
+        return price_eur <= 5.50 or discount_pct >= 20
+    if category == "leffa":
+        return price_eur <= 7.00
+    return False
+
+def deal_tier(price_eur: float, discount_pct: int) -> str:
+    if discount_pct >= 35 or price_eur <= 2.00:
+        return "huippudiili"
+    return "hyva_tarjous"
+
 def get_next_update_iso(now_hel: datetime) -> str:
     t06 = now_hel.replace(hour=6, minute=0, second=0, microsecond=0)
     t19 = now_hel.replace(hour=19, minute=0, second=0, microsecond=0)
@@ -100,39 +172,47 @@ def get_next_update_iso(now_hel: datetime) -> str:
     return (t06 + timedelta(days=1)).isoformat()
 def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
     t0 = time.monotonic()
-    url = url_of("resq-club.com", "/api/v2/offers")
     items: List[Dict[str, Any]] = []
     try:
-        resp = requests.get(url, params={"neLat": 60.35, "neLng": 25.25, "swLat": 60.10, "swLng": 24.60}, headers=HEADERS, timeout=15, verify=certifi.where())
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(user_agent=HEADERS["User-Agent"], locale="fi-FI")
+            resp = page.goto("https://resq-club.com/app", wait_until="domcontentloaded", timeout=25000)
+            page.wait_for_timeout(4000)
+            status = resp.status if resp else 200
+            html = page.content()
+            browser.close()
         latency = int((time.monotonic() - t0) * 1000)
-        if resp.status_code != 200:
-            monitor.record("resq_club", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+        if status and status >= 400:
+            monitor.record("resq_club", "blocked" if status in (403, 429) else "error", 0, latency, status, f"HTTP {status}")
             return []
-        payload = resp.json()
-        offers = payload if isinstance(payload, list) else payload.get("offers", payload.get("data", []))
-        providers_map = {p.get("id"): p for p in payload.get("providers", [])} if isinstance(payload, dict) else {}
-        for offer in offers:
-            oid = offer.get("id")
-            if not oid:
+        for block in html.split('<div class="offerRow"')[1:]:
+            oid_m = re.search(r'oid="([^"]+)"', block)
+            price_m = re.search(r'<span class="price">([\d.,]+)</span>', block)
+            name_m = re.search(r'<div class="offerRowName">(.*?)</div>', block, re.S)
+            prov_m = re.search(r'<div class="offerRowProviderName">(.*?)</div>', block, re.S)
+            if not (oid_m and price_m and name_m):
                 continue
-            prov = offer.get("provider") or providers_map.get(offer.get("providerId")) or {}
-            vname = prov.get("name") or offer.get("providerName") or "ResQ-kumppani"
-            oname = offer.get("name") or offer.get("title") or "Yllätyskassi"
-            if not any(kw in f"{vname} {oname} {offer.get('description', '')}".lower() for kw in TREAT_KEYWORDS):
+            oid = oid_m.group(1)
+            try:
+                p_eur = float(price_m.group(1).replace(",", "."))
+            except ValueError:
                 continue
-            raw_p = offer.get("price") or offer.get("discountedPrice")
-            if isinstance(raw_p, dict):
-                raw_p = raw_p.get("amount")
-            if raw_p is None:
-                continue
-            p_eur = float(raw_p) / 100.0 if float(raw_p) > 40 else float(raw_p)
             if p_eur <= 0 or p_eur > 7.0:
                 continue
-            coords = prov.get("location") or offer.get("location") or {}
-            lat, lon = coords.get("latitude") or coords.get("lat"), coords.get("longitude") or coords.get("lon") or coords.get("lng")
-            if not is_valid_finland_coords(lat, lon):
+            oname = re.sub(r"<[^>]+>", "", name_m.group(1)).strip()
+            vname = re.sub(r"<[^>]+>", "", prov_m.group(1)).strip() if prov_m else "ResQ-kumppani"
+            cat = classify_category(oname)
+            if cat is None:
                 continue
-            addr = prov.get("address") or prov.get("streetAddress") or "Helsinki"
+            normal = extract_normal_price(oname) or benchmark_for(cat, p_eur, None)
+            discount = round((1 - p_eur / normal) * 100) if normal and normal > p_eur else 0
+            tier = deal_tier(p_eur, discount)
+            if not is_good_deal(cat, p_eur, None, discount):
+                continue
+            addr = vname
+            lat, lon = 60.1699, 24.9384
             durl = url_of("resq-club.com", f"/app/offers/{oid}")
             items.append({
                 "id": make_id("resq", oname, vname),
@@ -141,15 +221,18 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 "mall_name": "Lauttis" if "lauttasaari" in addr.lower() or "lauttis" in vname.lower() else "",
                 "address": addr,
                 "region": infer_region(f"{addr} {vname}"),
-                "category": "leipomo",
+                "category": cat,
                 "price_eur": round(p_eur, 2),
                 "price_kg": None,
+                "normal_price_eur": round(normal, 2) if normal else None,
+                "discount_pct": discount,
+                "deal_tier": tier,
                 "price_display": f"{p_eur:.2f}".replace(".", ",") + " €",
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
                 "valid_until": now_hel.strftime("%Y-%m-%d"),
                 "custom_time_label": "Nouto tänään (ResQ)",
-                "lat": float(lat),
-                "lon": float(lon),
+                "lat": lat,
+                "lon": lon,
                 "source_type": "live_verified",
                 "source_name": "ResQ Club",
                 "deal_url": durl,
@@ -157,7 +240,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 "maps_url": url_of("www.google.com", f"/maps/search/?api=1&query={lat},{lon}"),
                 "verified_at": now_hel.isoformat(),
             })
-        monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
+        monitor.record("resq_club", "ok" if items else "empty", len(items), latency, status)
     except Exception as exc:
         monitor.record("resq_club", "error", 0, int((time.monotonic() - t0) * 1000), None, str(exc)[:180])
     return items
@@ -183,9 +266,8 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
             if not title:
                 continue
             blob = f"{title} {desc}".lower()
-            is_cinema = any(k in blob for k in CINEMA_KEYWORDS)
-            is_treat = any(k in blob for k in TREAT_KEYWORDS)
-            if not (is_cinema or is_treat):
+            cat = classify_category(blob)
+            if cat is None:
                 continue
             offers = ev.get("offers") or []
             p_eur: Optional[float] = 0.0 if any(o.get("is_free") for o in offers) else None
@@ -197,6 +279,11 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
                         p_eur = float(m.group(1).replace(",", "."))
                         break
             if p_eur is None or p_eur > 7.0:
+                continue
+            normal = extract_normal_price(blob) or benchmark_for(cat, p_eur, None)
+            discount = round((1 - p_eur / normal) * 100) if normal and normal > p_eur else 0
+            tier = deal_tier(p_eur, discount)
+            if not is_good_deal(cat, p_eur, None, discount):
                 continue
             loc = ev.get("location") if isinstance(ev.get("location"), dict) else {}
             vname = ((loc.get("name") or {}).get("fi") or "Helsinki").strip()
@@ -217,8 +304,11 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
                 "mall_name": "",
                 "address": addr,
                 "region": infer_region(f"{addr} {vname}"),
-                "category": "leffa" if is_cinema else "leipomo",
+                "category": cat,
                 "price_eur": round(p_eur, 2),
+                "normal_price_eur": round(normal, 2) if normal else None,
+                "discount_pct": discount,
+                "deal_tier": tier,
                 "price_kg": None,
                 "price_display": "Vapaa pääsy (0 €)" if p_eur == 0 else f"{p_eur:.2f}".replace(".", ",") + " €",
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
@@ -242,12 +332,28 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
     url = url_of("www.finnkino.fi", "/xml/Schedule/")
     items: List[Dict[str, Any]] = []
     try:
-        resp = requests.get(url, params={"area": "1002", "dt": now_hel.strftime("%d.%m.%Y")}, headers=HEADERS, timeout=15, verify=certifi.where())
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(user_agent=HEADERS["User-Agent"], locale="fi-FI")
+            resp = page.goto(url + "?area=1002&dt=" + now_hel.strftime("%d.%m.%Y"), wait_until="domcontentloaded", timeout=25000)
+            page.wait_for_timeout(2000)
+            status = resp.status if resp else None
+            text = page.content()
+            browser.close()
         latency = int((time.monotonic() - t0) * 1000)
-        if resp.status_code != 200:
-            monitor.record("finnkino_movies", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+        if status and status >= 400:
+            monitor.record("finnkino_movies", "blocked" if status in (403, 429) else "error", 0, latency, status, f"HTTP {status}")
             return []
-        root = ET.fromstring(resp.text)
+        try:
+            root = ET.fromstring(text)
+        except Exception:
+            # Playwright may wrap XML in HTML; try extracting
+            m = re.search(r"<Schedule.*</Schedule>", text, re.S)
+            root = ET.fromstring(m.group(0)) if m else None
+        if root is None:
+            monitor.record("finnkino_movies", "error", 0, latency, status, "invalid XML")
+            return []
         for show in root.findall(".//Show"):
             title = (show.findtext("Title") or "").strip()
             theatre = (show.findtext("Theatre") or "Finnkino").strip()
@@ -258,6 +364,12 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
             price = 6.50 if ("superpäivä" in blob or "leffapäivä" in blob) else (7.00 if ("päivänäytös" in blob or "senioribio" in blob) else None)
             if price is None:
                 continue
+            cat = "leffa"
+            normal = 14.50
+            discount = round((1 - price / normal) * 100) if normal > price else 0
+            tier = deal_tier(price, discount)
+            if not is_good_deal(cat, price, None, discount):
+                continue
             items.append({
                 "id": make_id("finnkino", f"{title}_{sdt}", theatre),
                 "title": f"{title} ({sdt[11:16]})" if len(sdt) >= 16 else title,
@@ -265,9 +377,12 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
                 "mall_name": "Itis" if "itis" in theatre.lower() else "",
                 "address": f"{theatre}, Helsinki",
                 "region": "Helsinki",
-                "category": "leffa",
+                "category": cat,
                 "price_eur": price,
                 "price_kg": None,
+                "normal_price_eur": normal,
+                "discount_pct": discount,
+                "deal_tier": tier,
                 "price_display": f"{price:.2f}".replace(".", ",") + " €",
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
                 "valid_until": now_hel.strftime("%Y-%m-%d"),
@@ -281,7 +396,7 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
                 "maps_url": url_of("www.google.com", "/maps/search/?api=1&query=60.1695,24.9308"),
                 "verified_at": now_hel.isoformat(),
             })
-        monitor.record("finnkino_movies", "ok" if items else "empty", len(items), latency, resp.status_code)
+        monitor.record("finnkino_movies", "ok" if items else "empty", len(items), latency, status)
     except Exception as exc:
         monitor.record("finnkino_movies", "error", 0, int((time.monotonic() - t0) * 1000), None, str(exc)[:180])
     return items
@@ -336,9 +451,13 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
             title = extract_title(i)
             tlow = title.lower()
             ctx_low = ctx_txt.lower()
-            if any(w in tlow or w in ctx_low for w in NON_TREAT_WORDS):
+            cat = classify_category(f"{title} {ctx_txt}")
+            if cat is None:
                 continue
-            if not any(k in tlow for k in TREAT_KEYWORDS):
+            normal = extract_normal_price(ctx_txt) or extract_normal_price(title) or benchmark_for(cat, price, None)
+            discount = round((1 - price / normal) * 100) if normal and normal > price else 0
+            tier = deal_tier(price, discount)
+            if not is_good_deal(cat, price, None, discount):
                 continue
             v_end = (now_hel + timedelta(days=3)).strftime("%Y-%m-%d")
             items.append({
@@ -348,8 +467,11 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
                 "mall_name": mall,
                 "address": addr,
                 "region": "Helsinki",
-                "category": "irtokarkki" if "irtokark" in ctx_txt else "makeiset",
+                "category": cat,
                 "price_eur": round(price, 2),
+                "normal_price_eur": round(normal, 2) if normal else None,
+                "discount_pct": discount,
+                "deal_tier": tier,
                 "price_kg": None,
                 "price_display": f"{price:.2f}".replace(".", ",") + " €",
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
@@ -424,7 +546,7 @@ def main() -> None:
         if float(it.get("price_eur") or 99) > 7.0:
             continue
         blob = str(it.get("title") or "").lower()
-        if any(w in blob for w in NON_TREAT_WORDS):
+        if any(w in blob for w in HARD_EXCLUDE):
             continue
         if not is_valid_deep_url(it.get("deal_url") or ""):
             continue
