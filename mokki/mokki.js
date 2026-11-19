@@ -226,6 +226,15 @@ function initScene() {
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 
+  // Hook Three.js r170 shader debug to surface GLSL compile/link errors verbatim
+  renderer.debug.checkShaderErrors = true;
+  renderer.debug.onShaderError = (gl, program, glVertexShader, glFragmentShader) => {
+    const vsLog = gl.getShaderInfoLog(glVertexShader) || '(none)';
+    const fsLog = gl.getShaderInfoLog(glFragmentShader) || '(none)';
+    const progLog = gl.getProgramInfoLog(program) || '(none)';
+    showError('GLSL shader error:\\nVERTEX: ' + vsLog + '\\nFRAGMENT: ' + fsLog + '\\nPROGRAM: ' + progLog);
+  };
+
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
