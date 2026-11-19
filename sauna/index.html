@@ -141,6 +141,28 @@
     .meta-row .badge {
       white-space: nowrap;
     }
+    .badge.seasonal {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(245,158,11,0.55);
+      color: #fbbf24;
+      background: rgba(245,158,11,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .badge.open-badge {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(34,197,94,0.55);
+      color: #bbf7d0;
+      background: rgba(34,197,94,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
     .price-detail {
       font-size: 10px;
       color: var(--muted);
@@ -304,6 +326,40 @@
       background: rgba(26,14,8,0.35);
     }
     .helper b { color: #f0e6da; }
+
+    /* Unified cross-page navigation */
+    .sitenav {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 14px;
+      flex-wrap: wrap;
+    }
+    .navpill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--muted);
+      background: var(--card);
+      transition: all 0.15s;
+    }
+    .navpill:hover { border-color: var(--accent-glow); color: var(--accent); }
+    .navpill.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 14px rgba(217,119,6,0.45);
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .sitenav { justify-content: center; }
+    }
 
     /* Comparison table */
     .table-wrap {
@@ -471,6 +527,11 @@
 </head>
 <body>
   <div class="wrap">
+    <nav class="sitenav">
+      <a href="../lokki/" class="navpill">🕊️ Tapahtumat</a>
+      <a href="./" class="navpill active">♨ Saunat</a>
+      <a href="../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+    </nav>
     <div class="steam"></div>
     <header>
       <h1>♨ Saunat Helsingissä</h1>
@@ -490,6 +551,7 @@
       <button id="uimahalliToggle" class="toggle">Uimahallit</button>
       <button id="nearestToggle" class="toggle">📍 Lähin asemalta</button>
       <button id="budgetToggle" class="toggle">💶 Edulliset &amp; ilmaiset (≤ 15 €)</button>
+      <button id="openTodayToggle" class="toggle">🟢 Avoinna tänään</button>
       <button id="viewToggle" class="toggle active">🎴 Korttinäkymä</button>
       <button id="tableViewToggle" class="toggle">📋 Taulukkonäkymä</button>
     </div>
@@ -534,6 +596,7 @@ let uimahalliFilter = true
 let nearestSort = false
 let budgetFilter = false
 let viewMode = 'cards'
+let openTodayFilter = false
 let refreshing = false
     let userRatings = {}
 
@@ -557,6 +620,28 @@ let refreshing = false
       return String(str || '').toLowerCase()
     }
 
+    function isOpenToday(e) {
+      const oh = e.openingHours || ''
+      if (!oh || oh.includes('Tarkista') || oh.includes('vahvistamatta')) return true
+      if (/joka päivä/.test(oh)) return true
+      const now = new Date()
+      const helsinkiTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Helsinki' }))
+      const fiWeekdays = ['Su', 'Ma', 'Ti', 'Ke', 'To', 'Pe', 'La']
+      const todayFi = fiWeekdays[helsinkiTime.getDay()]
+      // Closed today?
+      const closedToday = new RegExp(todayFi + '\\s*suljettu', 'i').test(oh)
+      if (closedToday) return false
+      // Open today if weekday mentioned
+      if (new RegExp(todayFi).test(oh)) return true
+      // If no weekday info at all, assume open
+      return true
+    }
+
+    function isSeasonalSummer(e) {
+      const text = ((e.openingHours || '') + ' ' + (e.shortDesc || '') + ' ' + (e.notes || '')).toLowerCase()
+      return /touko.?syyskuu|kesäkausi|kesäsauna|summer/.test(text)
+    }
+
     function filteredEvents(events) {
       const q = normalize(searchTerm)
       return events.filter((e) => {
@@ -567,6 +652,7 @@ let refreshing = false
           const price = e.priceAdult != null ? e.priceAdult : (e.priceDetails?.items?.[0]?.adult ?? null)
           if (!isFree && (price == null || price > 15)) return false
         }
+        if (openTodayFilter && !isOpenToday(e)) return false
         if (!q) return true
         return (
           normalize(e.title).includes(q) ||
@@ -590,6 +676,7 @@ let refreshing = false
 
     function priceLabel(e) {
       if (e.isFree) return '<span class="free">Ilmainen</span>'
+      if (e.price && /^\d/.test(e.price)) return `<span class="paid">${e.price}</span>`
       if (e.priceDetails && e.priceDetails.items && e.priceDetails.items.length) {
         const first = e.priceDetails.items[0]
         const amount = first.adult != null ? first.adult : '-'
@@ -692,6 +779,8 @@ let refreshing = false
                   </div>
                   ${e.shortDesc ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">🕒 ${e.shortDesc}</div>` : ''}
                   ${priceDetailsLabel(e)}
+                  ${isSeasonalSummer(e) ? `<span class="badge seasonal" title="Kesäsauna, avoinna vain touko–syyskuussa">☀️ Kesäsauna (touko–syyskuu)</span>` : ''}
+                  ${openTodayFilter ? `<span class="badge open-badge" title="Avoinna tänään">✓ Auki</span>` : ''}
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
                     ${e.mapsUrl && !/^https?:\/\/(www\.)?google\.com(\/|$)/.test(e.mapsUrl) ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : (e.title ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title + ' ' + (e.street||'') + ' ' + e.location)}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : '')}
@@ -724,7 +813,8 @@ let refreshing = false
 
       body.innerHTML = helsinki.map((e) => {
         const price = e.isFree ? '<span class="free">Ilmainen</span>' :
-          (e.priceAdult != null ? `<span class="price">${e.priceAdult} €</span>` : '<span>-</span>')
+          (e.price && /^\d/.test(e.price) ? `<span class="price">${e.price}</span>` :
+           (e.priceAdult != null ? `<span class="price">${e.priceAdult} €</span>` : '<span>-</span>'))
         const km = e.stationKm != null ? `<span class="km">${Number(e.stationKm).toFixed(1)} km</span>` : '-'
         const walk = e.stationWalking || '-'
         const booking = e.varaus ? 'Vain varauksella' : 'Ei varausta'
@@ -801,6 +891,12 @@ let refreshing = false
     document.getElementById('budgetToggle').addEventListener('click', (e) => {
       budgetFilter = !budgetFilter
       e.currentTarget.classList.toggle('active', budgetFilter)
+      render()
+    })
+
+    document.getElementById('openTodayToggle').addEventListener('click', (e) => {
+      openTodayFilter = !openTodayFilter
+      e.currentTarget.classList.toggle('active', openTodayFilter)
       render()
     })
 

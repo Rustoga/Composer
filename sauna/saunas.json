@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-11-19T18:30:00.000Z",
-  "total": 68,
+  "total": 64,
   "sources": [
     "Curated Helsinki/Tampere sauna facility data"
   ],
@@ -722,42 +722,6 @@
       "notes": "",
       "flags": [
         "unverified"
-      ]
-    },
-    {
-      "id": "helsinki-sauna-azure",
-      "title": "Sauna Azure",
-      "date": "",
-      "location": "Helsinki",
-      "street": "Katajanokanlaituri 4",
-      "region": "Helsinki",
-      "category": "tilaussauna",
-      "source": "Curated public facility data (Helsinki/Tampere saunas)",
-      "sourceUrl": "https://www.sokoshotels.fi/en/hotels/helsinki/solo-sokos-hotel-pier-4/sauna",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Katajanokanlaituri%204%2C%2000160%20Helsinki",
-      "reittiopasUrl": "https://www.reittiopas.fi/?from=Lauttasaari%20M&to=Katajanokanlaituri%206%2C%20Helsinki",
-      "reittiopasUrlFromStation": "https://www.reittiopas.fi/?from=Helsingin%20rautatieasema&to=Katajanokanlaituri%206%2C%20Helsinki",
-      "shortDesc": "hotellisauna Solo Sokos Hotel Pier 4 - vain hotellivieraille, ilmainen hotellivieraille",
-      "audienceTag": "",
-      "isFree": true,
-      "priceAdult": null,
-      "openingHours": "Ma–Pe 17:00–21:00, La–Su 8:00–10:00 (vain hotellivieraille)",
-      "saunaType": "tilaussauna, hotellisauna",
-      "sauna": true,
-      "stationKm": 1.224,
-      "stationWalking": "15 min",
-      "priceDetails": null,
-      "rating": null,
-      "varaus": true,
-      "priceSource": "https://www.sokoshotels.fi/en/hotels/helsinki/solo-sokos-hotel-pier-4/sauna",
-      "hoursSource": "https://www.sokoshotels.fi/en/hotels/helsinki/solo-sokos-hotel-pier-4/sauna",
-      "bookingSource": "",
-      "lastVerified": "2026-11-19T16:03:31.185Z",
-      "verificationStatus": "PASS",
-      "notes": "Katajanokanlaituri 4. Hotel guest sauna only, not public. Free for hotel guests.",
-      "flags": [
-        "appointmentOnly",
-        "hotelOnly"
       ]
     },
     {
@@ -1604,40 +1568,6 @@
       ]
     },
     {
-      "id": "espoo-bodom-bar-sauna",
-      "title": "Bodom Bar & Sauna",
-      "date": "",
-      "location": "Espoo",
-      "street": "Niittykumpu",
-      "region": "Espoo",
-      "category": "hotellisauna",
-      "source": "Visit Espoo - Espoon saunat",
-      "sourceUrl": "https://www.bodombar.com/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Bodom+Bar+%26+Sauna+Espoo",
-      "reittiopasUrl": "",
-      "reittiopasUrlFromStation": "",
-      "shortDesc": "baari-sauna-museo konsepti, miesten ja naisten saunavuorot",
-      "audienceTag": "",
-      "isFree": false,
-      "priceAdult": null,
-      "openingHours": "Päivittäin saunavuorot, tarkista sivuilta",
-      "saunaType": "baari-sauna-museo",
-      "sauna": true,
-      "stationKm": null,
-      "stationWalking": null,
-      "priceDetails": null,
-      "rating": 4,
-      "lastVerified": "2026-11-19T16:03:31.185Z",
-      "verificationStatus": "UNVERIFIED",
-      "priceSource": "",
-      "hoursSource": "",
-      "bookingSource": "",
-      "notes": "",
-      "flags": [
-        "unverified"
-      ]
-    },
-    {
       "id": "vantaa-kuusijarvi-saunat",
       "title": "Kuusijärvi Saunat",
       "date": "",
@@ -1771,41 +1701,6 @@
       "notes": "",
       "flags": [
         "unverified"
-      ]
-    },
-    {
-      "id": "suomensaunat-herrankukkaro",
-      "title": "Herrankukkaro",
-      "date": "",
-      "location": "Rymättylä",
-      "street": "",
-      "region": "Muu Suomi",
-      "category": "tilaussauna",
-      "source": "Suomen Saunat - saunahakemisto",
-      "sourceUrl": "https://www.herrankukkaro.fi/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Herrankukkaro%20Rym%C3%A4ttyl%C3%A4%20Naantali",
-      "reittiopasUrl": "",
-      "reittiopasUrlFromStation": "",
-      "shortDesc": "saunatilat ja majoitus Rymättylässä, Naantali - varaus vaaditaan",
-      "audienceTag": "",
-      "isFree": false,
-      "priceAdult": null,
-      "openingHours": "Tarkista sivuilta",
-      "saunaType": "tilaussauna, rantasauna, kokoustila",
-      "sauna": true,
-      "stationKm": null,
-      "stationWalking": null,
-      "varaus": true,
-      "priceDetails": null,
-      "rating": 4.5,
-      "lastVerified": "2026-11-19T16:11:36.554Z",
-      "verificationStatus": "UNVERIFIED",
-      "priceSource": "",
-      "hoursSource": "",
-      "bookingSource": "",
-      "notes": "www.herrankukkaro.fi. Location: Rymättylä, Naantali. Region: Muu Suomi.",
-      "flags": [
-        "appointmentOnly"
       ]
     },
     {
@@ -2219,7 +2114,7 @@
         "label": "Kertalippu (2 h)",
         "items": [
           {
-            "days": "arkisin (ma–pe klo 14 asti)",
+            "days": "arkisin (ma–to & pe klo 14 asti)",
             "adult": 19,
             "reduced": null
           },
@@ -2229,7 +2124,7 @@
             "reduced": null
           }
         ],
-        "note": "Opisk./eläk./tyött./varusm. 14 € / 18 € · Lapset 3–12 v 11 € / 14 € · Alle 2 v. maksutta"
+        "note": "Alennusryhmät 14 € / 18 € · Lapset 3–12 v 11 € / 14 €"
       },
       "rating": 4.2,
       "priceSource": "https://www.allaspool.fi/altaat-ja-saunat/#liput",
@@ -2239,42 +2134,8 @@
       "verificationStatus": "PASS",
       "notes": "Katajanokanlaituri 2 A. Merikylpylä with saunas. Public.",
       "flags": [],
-      "busyHours": "Vilkkainta pe–su 16–20 · Rauhallista arkiaamuisin"
-    },
-    {
-      "id": "suomensaunat-herrainpaivien-sauna",
-      "title": "Herrainpäivien Sauna",
-      "date": "",
-      "location": "Pori",
-      "street": "Kesätie 14",
-      "region": "Muu Suomi",
-      "category": "tilaussauna",
-      "source": "Curated public facility data (Helsinki/Tampere saunas)",
-      "sourceUrl": "https://www.herrainpaivat.fi/",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Kes%C3%A4tie%2014%2C%2028840%20Pori",
-      "reittiopasUrl": "",
-      "reittiopasUrlFromStation": "",
-      "shortDesc": "rantasauna ja kokoustila Pori Yyterissä - varaus vaaditaan",
-      "audienceTag": "",
-      "isFree": false,
-      "priceAdult": null,
-      "openingHours": "Ajanvarauksella",
-      "saunaType": "tilaussauna, ohjattu saunaelämys",
-      "sauna": true,
-      "stationKm": null,
-      "stationWalking": null,
-      "varaus": true,
-      "priceDetails": null,
-      "rating": 4,
-      "priceSource": "",
-      "hoursSource": "",
-      "bookingSource": "",
-      "lastVerified": "2026-11-19T16:11:36.554Z",
-      "verificationStatus": "UNVERIFIED",
-      "notes": "www.herrainpaivat.fi. Location: Kesätie 14, 28840 Pori (Yyteri). Region: Muu Suomi.",
-      "flags": [
-        "appointmentOnly"
-      ]
+      "busyHours": "Vilkkainta pe–su 16–20 · Rauhallista arkiaamuisin",
+      "price": "19 € / 24 €"
     },
     {
       "title": "Uusi Sauna",
