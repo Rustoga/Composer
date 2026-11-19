@@ -227,9 +227,10 @@ function loadGlbWithFallback(onProgress) {
     lastTime = performance.now();
     animate();
   }).catch((err) => {
-    console.warn('GLB load failed, falling back to splats:', err.message);
+    // DO NOT silently fall back — show the exact error
     abortCurrentLoad();
-    loadSplatsUrlWithFallback(onProgress);
+    setState(uiStates.ERROR);
+    showError('GLB load failed: ' + (err.message || String(err)));
   });
 }
 
@@ -432,31 +433,51 @@ function buildGltf(gltf) {
   gltfScene = gltf.scene;
   scene.add(gltfScene);
 
-  // Normalize materials: double-sided so interior/exterior walls never vanish
+  // Normalize materials: MeshBasicMaterial for guaranteed visibility
+  // (Scaniverse baked lighting into textures/vertex colors; MeshStandardMaterial
+  // renders pitch-black without an HDR environment map)
   let meshCount = 0;
+  let triCount = 0;
   gltfScene.traverse((child) => {
     if (child.isMesh) {
       meshCount++;
       child.frustumCulled = false;
+
+      // Count triangles from index buffer or attribute count
+      const geo = child.geometry;
+      if (geo.index) {
+        triCount += geo.index.count / 3;
+      } else if (geo.attributes.position) {
+        triCount += geo.attributes.position.count / 3;
+      }
+
+      // Replace material with MeshBasicMaterial for crisp, unlit rendering
       if (child.material) {
-        child.material.side = THREE.DoubleSide;
+        const oldMat = child.material;
+        child.material = new THREE.MeshBasicMaterial({
+          map: oldMat.map || null,
+          vertexColors: (geo.attributes.color) ? true : false,
+          side: THREE.DoubleSide,
+        });
         child.material.needsUpdate = true;
       }
     }
   });
 
-  // Update world matrices and compute initial bounding box
+  // Update world matrices and compute bounding box
   gltf.scene.updateMatrixWorld(true);
+
+  // Step 1: Compute raw box and max dimension
   const box1 = new THREE.Box3().setFromObject(gltf.scene);
   const size1 = box1.getSize(new THREE.Vector3());
   const maxDim = Math.max(size1.x, size1.y, size1.z);
 
-  // Step 1: Apply uniform scale FIRST (before centering)
+  // Step 2: Apply uniform scale FIRST (before centering)
   const s = maxDim > 0 ? 20 / maxDim : 1;
   gltf.scene.scale.setScalar(s);
   gltf.scene.updateMatrixWorld(true);
 
-  // Step 2: Recompute box after scaling, then subtract center
+  // Step 3: Recompute box after scaling, then subtract center
   const box2 = new THREE.Box3().setFromObject(gltf.scene);
   const center2 = box2.getCenter(new THREE.Vector3());
   gltf.scene.position.sub(center2);
@@ -469,9 +490,15 @@ function buildGltf(gltf) {
   radius = Math.max(size3.x, size3.y, size3.z) * 0.6;
   if (radius < 2) radius = 2;
 
-  // Status: confirm mesh loaded with count and dimensions
-  if (splatCountEl) splatCountEl.textContent = `Splats: ${meshCount} meshes · size=${size3.toArray().map((n) => n.toFixed(2))}`;
-  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+  // Add a subtle ground grid at the bottom of the bounding box
+  const grid = new THREE.GridHelper(30, 30, 0x334455, 0x223344);
+  grid.position.y = box3.min.y;
+  scene.add(grid);
+
+  // Status: mesh count, triangle count, bounding box dimensions
+  const dims = size3.toArray().map((n) => n.toFixed(2));
+  if (splatCountEl) splatCountEl.textContent = `GLB: ${meshCount} mesh${meshCount !== 1 ? 'es' : ''}, ${Math.round(triCount)} tris, box=[${dims.join(', ')}]`;
+  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • GLB loaded ✓';
 
   resetView();
 }
@@ -494,11 +521,15 @@ function onResize() {
 // ---------------------------------------------------------------------------
 function resetView() {
   if (renderMode === 'gltf' && gltfScene) {
-    // Guaranteed framing: target exact center, elevated 3/4 establishing angle
+    // Guaranteed framing using bounding sphere
+    const box = new THREE.Box3().setFromObject(gltfScene);
+    const sphere = new THREE.Sphere();
+    box.getBoundingSphere(sphere);
     controls.target.set(0, 0, 0);
-    camera.position.set(12, 6, 12);
-    camera.near = 0.05;
-    camera.far = 500;
+    const r = Math.max(sphere.radius, 1);
+    camera.position.set(0, r * 0.4, r * 1.8);
+    camera.near = r * 0.005;
+    camera.far = r * 50;
     camera.updateProjectionMatrix();
     camera.lookAt(0, 0, 0);
     controls.update();
