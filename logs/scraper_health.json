@@ -1,52 +1,55 @@
 {
-  "ok_sources": 3,
+  "ok_sources": 2,
   "total_sources": 5,
-  "needs_attention": [],
+  "needs_attention": [
+    "resq_club",
+    "myhelsinki_events"
+  ],
   "sources": {
     "resq_club": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 1749,
+      "latency_ms": 3842,
       "http_status": null,
       "error_reason": "Expecting value: line 1 column 1 (char 0)",
-      "consecutive_failures": 1,
-      "checked_at": "2026-11-19T21:50:12.999791+02:00"
+      "consecutive_failures": 2,
+      "checked_at": "2026-11-19T22:00:06.129204+02:00"
     },
     "myhelsinki_events": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 571,
+      "latency_ms": 804,
       "http_status": null,
       "error_reason": "Expecting value: line 1 column 1 (char 0)",
-      "consecutive_failures": 1,
-      "checked_at": "2026-11-19T21:50:13.572791+02:00"
+      "consecutive_failures": 2,
+      "checked_at": "2026-11-19T22:00:06.935772+02:00"
     },
     "k_ruoka": {
-      "status": "empty",
+      "status": "blocked",
       "items_found": 0,
-      "latency_ms": 5348,
-      "http_status": 200,
-      "error_reason": null,
-      "consecutive_failures": 0,
-      "checked_at": "2026-11-19T21:50:18.923448+02:00"
+      "latency_ms": 3624,
+      "http_status": 403,
+      "error_reason": "HTTP 403",
+      "consecutive_failures": 1,
+      "checked_at": "2026-11-19T22:00:10.561806+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 4494,
+      "latency_ms": 4881,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T21:50:23.418212+02:00"
+      "checked_at": "2026-11-19T22:00:15.443821+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 17,
-      "latency_ms": 4526,
+      "latency_ms": 4002,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T21:50:27.946587+02:00"
+      "checked_at": "2026-11-19T22:00:19.447755+02:00"
     }
   }
 }
