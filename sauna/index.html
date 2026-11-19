@@ -635,7 +635,7 @@
       const btn = document.getElementById('refreshNow')
       if (btn) btn.disabled = true
       try {
-        const res = await fetch('./saunas.json?t=' + Date.now(), { cache: 'no-store' })
+        const res = await fetch('/sauna/saunas.json?t=' + Date.now(), { cache: 'no-store' })
         if (!res.ok) throw new Error('HTTP ' + res.status)
         const data = await res.json()
         snapshot = Array.isArray(data) ? { events: data } : data
