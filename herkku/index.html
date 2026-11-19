@@ -437,6 +437,7 @@
       <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
       <span class="pill">Seuraava päivitys: <strong id="nextUpdate">-</strong> (06:00 / 19:00)</span>
       <span class="pill">Countdown: <strong id="countdown">-</strong></span>
+      <span id="loadStatus" class="pill" style="color:#ef4444;display:none"></span>
     </div>
 
     <div class="table-caption" id="tableCaption">Vertaa herkkuja ja leffalippuja</div>
@@ -676,7 +677,7 @@
                   <div class="links">
                     ${t.deal_url ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
                     ${t.store_offers_url ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>` : ''}
-                    ${t.mapsUrl ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Kartta</a>` : ''}
+                    ${t.maps_url ? `<a href="${t.maps_url}" target="_blank" rel="noreferrer">📍 Kartta</a>` : ''}
                   </div>
                 </article>
               `).join('')}
@@ -755,8 +756,8 @@
         const store = t.store_offers_url
           ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>`
           : '-'
-        const maps = t.mapsUrl
-          ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Kartta</a>`
+        const maps = t.maps_url
+          ? `<a href="${t.maps_url}" target="_blank" rel="noreferrer">📍 Kartta</a>`
           : '-'
 
         return `
@@ -777,11 +778,25 @@
       if (refreshing) return
       refreshing = true
       const btn = document.getElementById('refreshNow')
+      const status = document.getElementById('loadStatus')
       if (btn) btn.disabled = true
+      if (status) { status.style.display = 'none'; status.textContent = '' }
+      const urls = ['./herkku_snapshot.json', '/herkku/herkku_snapshot.json']
+      let lastErr = null
       try {
-        const res = await fetch('./herkku_snapshot.json?t=' + Date.now(), { cache: 'no-store' })
-        if (!res.ok) throw new Error('HTTP ' + res.status)
-        const data = await res.json()
+        let data = null
+        for (const u of urls) {
+          try {
+            const res = await fetch(u + '?t=' + Date.now(), { cache: 'no-store' })
+            if (!res.ok) throw new Error('HTTP ' + res.status)
+            data = await res.json()
+            break
+          } catch (e) {
+            lastErr = e
+            continue
+          }
+        }
+        if (!data) throw lastErr || new Error('All fetch URLs failed')
         snapshot = Array.isArray(data) ? { treats: data } : data
         if (!Array.isArray(snapshot.treats)) snapshot.treats = []
         setTimeStats()
@@ -789,7 +804,10 @@
         try { renderComparisonTable() } catch (err) { console.error('renderComparisonTable failed:', err) }
       } catch (err) {
         console.error('Herkku data load failed:', err)
-        document.getElementById('sections').innerHTML = '<div class="empty">Herkkujen lataaminen epäonnistui: ' + String(err.message || err) + '</div>'
+        const msg = 'Herkkujen lataaminen epäonnistui: ' + String(err.message || err)
+        const root = document.getElementById('sections')
+        if (root) root.innerHTML = '<div class="empty">' + msg + '</div>'
+        if (status) { status.textContent = msg; status.style.display = 'inline-flex' }
       } finally {
         refreshing = false
         if (btn) btn.disabled = false
