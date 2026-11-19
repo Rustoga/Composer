@@ -3,53 +3,54 @@
   "total_sources": 5,
   "needs_attention": [
     "resq_club",
-    "myhelsinki_events"
+    "myhelsinki_events",
+    "s_group"
   ],
   "sources": {
     "resq_club": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 395,
+      "latency_ms": 342,
       "http_status": 400,
       "error_reason": "HTTP 400",
-      "consecutive_failures": 3,
-      "checked_at": "2026-11-19T22:08:05.768926+02:00"
+      "consecutive_failures": 4,
+      "checked_at": "2026-11-19T22:13:19.139664+02:00"
     },
     "myhelsinki_events": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 790,
+      "latency_ms": 598,
       "http_status": null,
       "error_reason": "Expecting value: line 1 column 1 (char 0)",
-      "consecutive_failures": 3,
-      "checked_at": "2026-11-19T22:08:06.559899+02:00"
+      "consecutive_failures": 4,
+      "checked_at": "2026-11-19T22:13:19.739023+02:00"
     },
     "k_ruoka": {
-      "status": "ok",
-      "items_found": 1,
-      "latency_ms": 5142,
+      "status": "blocked",
+      "items_found": 0,
+      "latency_ms": 3261,
+      "http_status": 403,
+      "error_reason": "HTTP 403",
+      "consecutive_failures": 1,
+      "checked_at": "2026-11-19T22:13:23.001743+02:00"
+    },
+    "lidl": {
+      "status": "empty",
+      "items_found": 0,
+      "latency_ms": 4527,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T22:08:11.704707+02:00"
-    },
-    "lidl": {
-      "status": "error",
-      "items_found": 0,
-      "latency_ms": 4224,
-      "http_status": 404,
-      "error_reason": "HTTP 404",
-      "consecutive_failures": 1,
-      "checked_at": "2026-11-19T22:08:15.929277+02:00"
+      "checked_at": "2026-11-19T22:13:27.529850+02:00"
     },
     "s_group": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 3782,
+      "latency_ms": 3565,
       "http_status": 404,
       "error_reason": "HTTP 404",
-      "consecutive_failures": 1,
-      "checked_at": "2026-11-19T22:08:19.711968+02:00"
+      "consecutive_failures": 2,
+      "checked_at": "2026-11-19T22:13:31.095242+02:00"
     }
   }
 }
