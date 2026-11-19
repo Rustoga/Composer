@@ -254,11 +254,13 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
 "maps_url": f"google.com{lat},{lon}",
 "verified_at": now_hel.isoformat(),
 })
-monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
-except Exception as exc:
-latency = int((time.monotonic() - t0) * 1000)
-monitor.record("resq_club", "error", 0, latency, None, str(exc)[:180])
-return items
+        monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
+    except Exception as exc:
+        latency = int((time.monotonic() - t0) * 1000)
+        monitor.record("resq_club", "error", 0, latency, None, str(exc)[:180])
+
+    return items
+
 def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
 t0 = time.monotonic()
 url = "hel.fi"
