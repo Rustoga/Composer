@@ -147,7 +147,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 "source_name": "ResQ Club",
                 "deal_url": durl,
                 "store_offers_url": durl,
-                "maps_url": url_of("://google.com", f"/maps/search/?api=1&query={lat},{lon}"),
+                "maps_url": url_of("www.google.com", f"/maps/search/?api=1&query={lat},{lon}"),
                 "verified_at": now_hel.isoformat(),
             })
         monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
@@ -168,7 +168,7 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
         )
         latency = int((time.monotonic() - t0) * 1000)
         if resp.status_code != 200:
-            monitor.record("myhelsinki_events", "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+            monitor.record("myhelsinki_events", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
             return []
         for ev in resp.json().get("data", []):
             title = ((ev.get("name") or {}).get("fi") or (ev.get("name") or {}).get("en") or "").strip()
@@ -195,7 +195,10 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
             vname = ((loc.get("name") or {}).get("fi") or "Helsinki").strip()
             addr = ((loc.get("street_address") or {}).get("fi") or "Helsinki").strip()
             coords = (loc.get("position") or {}).get("coordinates") or [24.9384, 60.1699]
-            lon, lat = float(coords[0]), float(coords[1])
+            try:
+                lon, lat = float(coords[0]), float(coords[1])
+            except (TypeError, ValueError, IndexError):
+                lon, lat = 24.9384, 60.1699
             if not is_valid_finland_coords(lat, lon):
                 lat, lon = 60.1699, 24.9384
             end_s = (ev.get("end_time") or ev.get("start_time") or now_hel.isoformat())[:10]
@@ -220,7 +223,7 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
                 "source_name": "MyHelsinki Linked Events",
                 "deal_url": durl,
                 "store_offers_url": durl,
-                "maps_url": url_of("://google.com", f"/maps/search/?api=1&query={lat},{lon}"),
+                "maps_url": url_of("www.google.com", f"/maps/search/?api=1&query={lat},{lon}"),
                 "verified_at": now_hel.isoformat(),
             })
         monitor.record("myhelsinki_events", "ok" if items else "empty", len(items), latency, resp.status_code)
@@ -235,7 +238,7 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
         resp = requests.get(url, params={"area": "1002", "dt": now_hel.strftime("%d.%m.%Y")}, headers=HEADERS, timeout=15, verify=certifi.where())
         latency = int((time.monotonic() - t0) * 1000)
         if resp.status_code != 200:
-            monitor.record("finnkino_movies", "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
+            monitor.record("finnkino_movies", "blocked" if resp.status_code in (403, 429) else "error", 0, latency, resp.status_code, f"HTTP {resp.status_code}")
             return []
         root = ET.fromstring(resp.text)
         for show in root.findall(".//Show"):
@@ -268,7 +271,7 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
                 "source_name": "Finnkino Aikataulu",
                 "deal_url": surl if is_valid_deep_url(surl) else url_of("www.finnkino.fi", "/ohjelmisto"),
                 "store_offers_url": url_of("www.finnkino.fi", "/ohjelmisto"),
-                "maps_url": url_of("://google.com", "/maps/search/?api=1&query=60.1695,24.9308"),
+                "maps_url": url_of("www.google.com", "/maps/search/?api=1&query=60.1695,24.9308"),
                 "verified_at": now_hel.isoformat(),
             })
         monitor.record("finnkino_movies", "ok" if items else "empty", len(items), latency, resp.status_code)
@@ -328,7 +331,7 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
                 "source_name": source_name,
                 "deal_url": deep_url,
                 "store_offers_url": deep_url,
-                "maps_url": url_of("://google.com", f"/maps/search/?api=1&query={lat},{lon}"),
+                "maps_url": url_of("www.google.com", f"/maps/search/?api=1&query={lat},{lon}"),
                 "verified_at": now_hel.isoformat(),
             })
         monitor.record(source_key, "ok" if items else "empty", len(items), latency, status)
@@ -338,7 +341,8 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
-    parser.parse_args()
+    parser.add_argument("--self-check", action="store_true")
+    args = parser.parse_args()
 
     now_hel = datetime.now(TZ_HEL)
     today_str = now_hel.strftime("%Y-%m-%d")
@@ -359,7 +363,7 @@ def main() -> None:
         "finnkino_movies": fetch_finnkino_movies(monitor, now_hel),
         "k_ruoka": fetch_supermarket("k_ruoka", "K-Ruoka Tarjoukset", u_kruoka, u_kruoka, "K-Supermarket Lauttasaari (Lauttis)", "Lauttis", "Lauttasaarentie 28, 00200 Helsinki", 60.1589, 24.8825, monitor, now_hel),
         "lidl": fetch_supermarket("lidl", "Lidl Tarjoukset", u_lidl, u_lidl, "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
-        "s_group": fetch_supermarket("s_group", "S-ryhmä Tarjoukset", u_skaupat, u_skaupat + "#tarjoukset", "S-market Lauttasaari", "Lauttasaari", "Lauttasaarentie 23, 00200 Helsinki", 60.1594, 24.8832, monitor, now_hel),
+        "s_group": fetch_supermarket("s_group", "S-ryhmä Tarjoukset", u_skaupat, "https://www.s-kaupat.fi/#tarjoukset", "S-market Lauttasaari", "Lauttasaari", "Lauttasaarentie 23, 00200 Helsinki", 60.1594, 24.8832, monitor, now_hel),
     }
 
     labels = {
@@ -403,8 +407,11 @@ def main() -> None:
         "sourceHealth": {"okSources": diag["ok_sources"], "totalSources": diag["total_sources"], "sources": diag["sources"]},
         "treats": valid,
     }
-    SNAPSHOT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
-    HEALTH_LOG_PATH.write_text(json.dumps(diag, ensure_ascii=False, indent=2), encoding="utf-8")
+    if not getattr(args, "dry_run", False):
+        SNAPSHOT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+        HEALTH_LOG_PATH.write_text(json.dumps(diag, ensure_ascii=False, indent=2), encoding="utf-8")
+    else:
+        print("DRY RUN: no files written")
     print(f"Done: {len(valid)} verified items ({diag['ok_sources']}/{diag['total_sources']} sources OK)")
 
 if __name__ == "__main__":
