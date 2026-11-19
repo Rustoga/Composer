@@ -124,19 +124,19 @@ function setProgress(pct, text) {
 }
 
 function setState(state) {
-  loading.classList.remove('visible');
-  errorEl.classList.remove('visible');
-  timeoutBanner.classList.remove('visible');
-  controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+  if (loading) loading.classList.remove('visible');
+  if (errorEl) errorEl.classList.remove('visible');
+  if (timeoutBanner) timeoutBanner.classList.remove('visible');
+  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
   switch (state) {
     case uiStates.LOADING:
-      loading.classList.add('visible');
+      if (loading) loading.classList.add('visible');
       break;
     case uiStates.ERROR:
-      errorEl.classList.add('visible');
+      if (errorEl) errorEl.classList.add('visible');
       break;
     case uiStates.FALLBACK:
-      timeoutBanner.classList.add('visible');
+      if (timeoutBanner) timeoutBanner.classList.add('visible');
       break;
     case uiStates.READY:
     default:
@@ -151,7 +151,7 @@ function showError(msg) {
 }
 
 function hideError() {
-  errorEl.classList.remove('visible');
+  if (errorEl) errorEl.classList.remove('visible');
 }
 
 // ---------------------------------------------------------------------------
@@ -332,13 +332,13 @@ function initScene() {
 
   btnAutoFly.addEventListener('click', () => {
     autoFly = !autoFly;
-    btnAutoFly.classList.toggle('active', autoFly);
+    if (btnAutoFly) btnAutoFly.classList.toggle('active', autoFly);
     controls.enabled = !autoFly;
   });
   let flipUpAxis = false;
   btnFlipAxis.addEventListener('click', () => {
     flipUpAxis = !flipUpAxis;
-    btnFlipAxis.classList.toggle('active', flipUpAxis);
+    if (btnFlipAxis) btnFlipAxis.classList.toggle('active', flipUpAxis);
     if (renderMode === 'gltf' && gltfScene) {
       gltfScene.traverse((obj) => {
         if (obj.isMesh && obj.geometry && obj.geometry.attributes.position) {
@@ -371,10 +371,10 @@ function initScene() {
     }
   });
   btnReset.addEventListener('click', resetView);
-  btnReload.addEventListener('click', () => start());
-  btnErrorRetry.addEventListener('click', () => start());
-  btnFile.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
+  if (btnReload) btnReload.addEventListener('click', () => start());
+  if (btnErrorRetry) btnErrorRetry.addEventListener('click', () => start());
+  if (btnFile) btnFile.addEventListener('click', () => fileInput.click());
+  if (fileInput) fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -393,20 +393,20 @@ function initScene() {
           animate();
         }).catch((err) => {
           console.error('GLB load failed:', err);
-          splatCountEl.textContent = 'Error loading file';
+          if (splatCountEl) splatCountEl.textContent = 'Error loading file';
         });
       } else {
         loadSplats(buf, null, fmt).catch((err) => {
           console.error('Load failed:', err);
-          splatCountEl.textContent = 'Error loading file';
+          if (splatCountEl) splatCountEl.textContent = 'Error loading file';
         });
       }
     };
-    reader.onerror = () => { splatCountEl.textContent = 'Error reading file'; };
+    reader.onerror = () => { if (splatCountEl) splatCountEl.textContent = 'Error reading file'; };
     reader.readAsArrayBuffer(file);
   });
-  btnTimeoutRetry.addEventListener('click', () => {
-    timeoutBanner.classList.remove('visible');
+  if (btnTimeoutRetry) btnTimeoutRetry.addEventListener('click', () => {
+    if (timeoutBanner) timeoutBanner.classList.remove('visible');
     start();
   });
 }
@@ -470,8 +470,8 @@ function buildGltf(gltf) {
   if (radius < 2) radius = 2;
 
   // Status: confirm mesh loaded with count and dimensions
-  splatCountEl.textContent = `Splats: ${meshCount} meshes · size=${size3.toArray().map((n) => n.toFixed(2))}`;
-  controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+  if (splatCountEl) splatCountEl.textContent = `Splats: ${meshCount} meshes · size=${size3.toArray().map((n) => n.toFixed(2))}`;
+  if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
 
   resetView();
 }
@@ -747,8 +747,8 @@ async function loadSplats(input, onProgress, formatHint) {
     }
     if (!data || data.count === 0) throw new Error('empty splat data');
     buildPoints(data);
-    splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
-    controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
+    if (splatCountEl) splatCountEl.textContent = `Splats: ${data.count.toLocaleString()}`;
+    if (controlHintEl) controlHintEl.textContent = 'Drag to look • Pinch to zoom • WASD to fly • ';
     resetView();
     activeCount = Math.min(60000, data.count);
     frameCount = 0;
