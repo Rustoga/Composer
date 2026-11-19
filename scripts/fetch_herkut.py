@@ -72,7 +72,7 @@ def get_next_update_iso(now_hel: datetime) -> str:
 
 def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
     t0 = time.monotonic()
-    url = "https://resq-club.com"
+    url = "https://resq-club.com" + "/v2/offers"
     items: List[Dict[str, Any]] = []
     try:
         resp = requests.get(url, params={"lat": 60.1699, "lon": 24.9384, "radius": 15000}, headers=HEADERS, timeout=15, verify=certifi.where())
@@ -238,9 +238,9 @@ def main() -> None:
     results = {
         "resq_club": fetch_resq_club(monitor, now_hel),
         "myhelsinki_events": fetch_myhelsinki_events(monitor, now_hel),
-        "k_ruoka": fetch_supermarket_source("k_ruoka", "K-Ruoka Tarjoukset", "https://k-ruoka.fi", "K-Supermarket Lauttasaari (Lauttis)", "Lauttis", "Lauttasaarentie 28, 00200 Helsinki", 60.1589, 24.8825, monitor, now_hel),
-        "lidl": fetch_supermarket_source("lidl", "Lidl Tarjoukset", "https://lidl.fi", "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
-        "s_group": fetch_supermarket_source("s_group", "S-ryhmä Tarjoukset", "https://s-kaupat.fi", "S-Market Lauttasaari", "Lauttasaari", "Lauttasaarentie 16, 00200 Helsinki", 60.1595, 24.8850, monitor, now_hel),
+        "k_ruoka": fetch_supermarket_source("k_ruoka", "K-Ruoka Tarjoukset", "https://www.k-ruoka.fi" + "/artikkelit/k-supermarket/k-supermarket-tarjoukset", "K-Supermarket Lauttasaari (Lauttis)", "Lauttis", "Lauttasaarentie 28, 00200 Helsinki", 60.1589, 24.8825, monitor, now_hel),
+        "lidl": fetch_supermarket_source("lidl", "Lidl Tarjoukset", "https://www.lidl.fi" + "/c/tarjoukset/a10008785", "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
+        "s_group": fetch_supermarket_source("s_group", "S-ryhmä Tarjoukset", "https://www.s-kaupat.fi" + "/tarjoukset", "S-Market Lauttasaari", "Lauttasaari", "Lauttasaarentie 16, 00200 Helsinki", 60.1595, 24.8850, monitor, now_hel),
     }
     combined: List[Dict[str, Any]] = []
     name_map = {"resq_club": "ResQ Club", "myhelsinki_events": "MyHelsinki Linked Events", "k_ruoka": "K-Ruoka Tarjoukset", "lidl": "Lidl Tarjoukset", "s_group": "S-ryhmä Tarjoukset"}
