@@ -385,7 +385,7 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
             normal = 14.50
             discount = round((1 - price / normal) * 100) if normal > price else 0
             tier = deal_tier(price, discount)
-            if not is_good_deal(cat, price, None, discount):
+            if not is_good_deal(cat, price, price_kg, discount):
                 continue
             items.append({
                 "id": make_id("finnkino", f"{title}_{sdt}", theatre),
@@ -400,7 +400,7 @@ def fetch_finnkino_movies(monitor: SourceHealthMonitor, now_hel: datetime) -> Li
                 "normal_price_eur": normal,
                 "discount_pct": discount,
                 "deal_tier": tier,
-                "price_display": f"{price:.2f}".replace(".", ",") + " €",
+                "price_display": (f"{price:.2f}".replace(".", ",") + " €/kg") if unit_label == "€/kg" else (f"{price:.2f}".replace(".", ",") + " €"),
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
                 "valid_until": now_hel.strftime("%Y-%m-%d"),
                 "custom_time_label": f"Näytös tänään klo {sdt[11:16]}" if len(sdt) >= 16 else "Tänään",
@@ -458,11 +458,42 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
                 return cand
             return lines[idx].strip()
         for i, ln in enumerate(lines):
-            m = re.search(r"(\d{1,2})[,.](\d{2})\s*€", ln)
-            if not m:
+            low_ln = ln.lower()
+            if any(b in low_ln for b in ["vertailuhinta", "norm."]):
                 continue
-            price = float(f"{m.group(1)}.{m.group(2)}")
-            if price <= 0.15 or price > 7.0:
+            price = None
+            price_kg = None
+            unit_label = "€"
+            mm = re.search(r"(\d+)\s*kpl\s*(\d+[,.]\d{2})\s*€", low_ln)
+            if mm:
+                count = int(mm.group(1))
+                try:
+                    total = float(mm.group(2).replace(",", "."))
+                except ValueError:
+                    total = 0.0
+                per_item = (total / count) if count > 0 else total
+                if per_item <= 7.0:
+                    price = per_item
+                    unit_label = "€/kpl"
+            mk = re.search(r"(\d{1,2})[,.](\d{2})\s*€\s*/\s*kg", low_ln)
+            if mk and price is None:
+                val = float(f"{mk.group(1)}.{mk.group(2)}")
+                price = val
+                price_kg = val
+                unit_label = "€/kg"
+            if price is None:
+                mp = re.search(r"(\d{1,2})[,.](\d{2})\s*€", ln)
+                if not mp:
+                    continue
+                price = float(f"{mp.group(1)}.{mp.group(2)}")
+                mc = re.search(r"(\d{1,2})[,.](\d{2})\s*€\s*/\s*kg", ln)
+                if mc:
+                    price_kg = float(f"{mc.group(1)}.{mc.group(2)}")
+            if price is None:
+                continue
+            if price <= 0.15:
+                continue
+            if price > 7.0 and not (unit_label == "€/kg" and price <= 7.90):
                 continue
             ctx_txt = " ".join(lines[max(0, i - 2): min(len(lines), i + 3)]).lower()
             title = extract_title(i)
@@ -477,10 +508,10 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
             cat = classify_category(title)
             if cat is None:
                 continue
-            normal = extract_normal_price(ctx_txt) or extract_normal_price(title) or benchmark_for(cat, price, None)
+            normal = extract_normal_price(ctx_txt) or extract_normal_price(title) or benchmark_for(cat, price, price_kg)
             discount = round((1 - price / normal) * 100) if normal and normal > price else 0
             tier = deal_tier(price, discount)
-            if not is_good_deal(cat, price, None, discount):
+            if not is_good_deal(cat, price, price_kg, discount):
                 continue
             v_end = (now_hel + timedelta(days=3)).strftime("%Y-%m-%d")
             items.append({
@@ -496,7 +527,7 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
                 "discount_pct": discount,
                 "deal_tier": tier,
                 "price_kg": None,
-                "price_display": f"{price:.2f}".replace(".", ",") + " €",
+                "price_display": (f"{price:.2f}".replace(".", ",") + " €/kg") if unit_label == "€/kg" else (f"{price:.2f}".replace(".", ",") + " €"),
                 "valid_from": now_hel.strftime("%Y-%m-%d"),
                 "valid_until": v_end,
                 "custom_time_label": None,

@@ -8,56 +8,56 @@
     "resq_club": {
       "status": "ok",
       "items_found": 10,
-      "latency_ms": 4919,
+      "latency_ms": 5678,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:20:49.962597+02:00"
+      "checked_at": "2026-11-19T23:22:35.207397+02:00"
     },
     "myhelsinki_events": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 347,
+      "latency_ms": 349,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:20:50.317653+02:00"
+      "checked_at": "2026-11-19T23:22:35.563010+02:00"
     },
     "finnkino_movies": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 3013,
+      "latency_ms": 3315,
       "http_status": 404,
       "error_reason": "HTTP 404",
-      "consecutive_failures": 8,
-      "checked_at": "2026-11-19T23:20:53.332509+02:00"
+      "consecutive_failures": 9,
+      "checked_at": "2026-11-19T23:22:38.879848+02:00"
     },
     "k_ruoka": {
       "status": "ok",
       "items_found": 4,
-      "latency_ms": 3768,
+      "latency_ms": 4082,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:20:57.104925+02:00"
+      "checked_at": "2026-11-19T23:22:42.968341+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 3547,
+      "latency_ms": 3674,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:21:00.652657+02:00"
+      "checked_at": "2026-11-19T23:22:46.642701+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 1,
-      "latency_ms": 2864,
+      "latency_ms": 2812,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-19T23:21:06.784460+02:00"
+      "checked_at": "2026-11-19T23:22:52.564721+02:00"
     }
   }
 }
