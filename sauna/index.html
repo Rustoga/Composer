@@ -640,11 +640,16 @@
         const data = await res.json()
         snapshot = Array.isArray(data) ? { events: data } : data
         if (!Array.isArray(snapshot.events)) snapshot.events = []
+        // Update counter immediately, before render (so it never stays at 0 on partial failure)
+        const tc = document.getElementById('totalCount')
+        if (tc) tc.textContent = String(snapshot.events.length)
         setTimeStats()
-        render()
-        renderComparisonTable()
+        try { render() } catch (err) { console.error('render failed:', err) }
+        try { renderComparisonTable() } catch (err) { console.error('renderComparisonTable failed:', err) }
       } catch (err) {
         console.error('Sauna data load failed:', err)
+        const tc = document.getElementById('totalCount')
+        if (tc) tc.textContent = 'virhe'
         document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui: ' + String(err.message || err) + '</div>'
       } finally {
         refreshing = false
