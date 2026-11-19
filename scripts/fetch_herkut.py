@@ -72,7 +72,7 @@ def get_next_update_iso(now_hel: datetime) -> str:
 
 def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dict[str, Any]]:
     t0 = time.monotonic()
-    url = "https://api.resq-club.com" + "/v2/offers"
+    url = "https://api.resq-club.com" + "/api/v2/offers"
     items: List[Dict[str, Any]] = []
     try:
         resp = requests.get(url, params={"neLat": 60.35, "neLng": 25.25, "swLat": 60.10, "swLng": 24.60}, headers=HEADERS, timeout=15, verify=certifi.where())
@@ -114,7 +114,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                     plabel = f"Nouto {dp} klo {dt_end.strftime('%H:%M')} asti"
                 except Exception: pass
             pdisp = f"{p_eur:.2f}".replace(".", ",") + " €" + (f" (norm. {o_eur:.2f}".replace(".", ",") + " €)" if o_eur and o_eur > p_eur else "")
-            durl = f"https://://://resq-club.com{oid}"
+            durl = f"https://://://://resq-club.com{oid}"
             items.append({"id": make_id("resq", oname, vname), "title": f"{oname} – {vname}", "store_name": vname, "mall_name": "Lauttis" if "lauttasaari" in addr.lower() or "lauttis" in vname.lower() else "", "address": addr, "region": infer_region(f"{city} {addr} {vname}"), "category": "leipomo", "price_eur": round(p_eur, 2), "price_kg": None, "price_display": pdisp, "valid_from": now_hel.strftime("%Y-%m-%d"), "valid_until": v_until, "custom_time_label": plabel, "lat": float(lat), "lon": float(lon), "source_type": "live_verified", "source_name": "ResQ Club", "deal_url": durl, "store_offers_url": durl, "maps_url": f"https://google.com{lat},{lon}", "verified_at": now_hel.isoformat()})
         monitor.record("resq_club", "ok" if items else "empty", len(items), latency, resp.status_code)
     except Exception as exc:
