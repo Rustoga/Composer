@@ -635,15 +635,17 @@
       const btn = document.getElementById('refreshNow')
       if (btn) btn.disabled = true
       try {
-        const res = await fetch('./saunas.json', { cache: 'no-store' })
+        const res = await fetch('./saunas.json?t=' + Date.now(), { cache: 'no-store' })
+        if (!res.ok) throw new Error('HTTP ' + res.status)
         const data = await res.json()
         snapshot = Array.isArray(data) ? { events: data } : data
-        snapshot.events = Array.isArray(snapshot.events) ? snapshot.events : []
+        if (!Array.isArray(snapshot.events)) snapshot.events = []
         setTimeStats()
         render()
         renderComparisonTable()
       } catch (err) {
-        document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui.</div>'
+        console.error('Sauna data load failed:', err)
+        document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui: ' + String(err.message || err) + '</div>'
       } finally {
         refreshing = false
         if (btn) btn.disabled = false
