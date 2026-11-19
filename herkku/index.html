@@ -250,6 +250,68 @@
     }
     .helper b { color: var(--ink); }
 
+    /* Unified cross-page navigation */
+    .sitenav {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 14px;
+      flex-wrap: wrap;
+    }
+    .navpill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--muted);
+      background: var(--card);
+      transition: all 0.15s;
+    }
+    .navpill:hover { border-color: var(--accent-glow); color: var(--accent); }
+    .navpill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 14px rgba(255,77,141,0.45);
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .filters { justify-content: center; }
+      .sitenav { justify-content: center; }
+    }
+
+    /* Origin switcher */
+    .origins { display: flex; gap: 6px; margin: 6px 0 14px; flex-wrap: wrap; }
+    .origin-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+    }
+    .origin-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-glow);
+    }
+    .gps-status {
+      font-size: 11px;
+      margin-left: 8px;
+      color: var(--muted);
+    }
+    .gps-status.ok { color: var(--mint); }
+    .gps-status.err { color: #ef4444; }
+    .gps-status.load { color: var(--lemon); }
+
     /* Quick filter pills */
     .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 14px; }
     .filter-pill {
@@ -329,6 +391,11 @@
 </head>
 <body>
   <div class="wrap">
+    <nav class="sitenav">
+      <a href="../lokki/" class="navpill">🕊️ Tapahtumat</a>
+      <a href="../sauna/" class="navpill">♨ Saunat</a>
+      <a href="./" class="navpill active">🍬 Herkut &amp; Leffat</a>
+    </nav>
     <header>
       <h1>🍬 Herkut Helsingissä</h1>
       <p class="lede">Edulliset makeiset, irtokarkit ja leipomotuotteet Helsingissä, Espoossa ja Vantaalla – sekä leffapäivät (≤ 7 €) Finnkinolta, Kino Reginalta, Cinema Orionilta, Bio Rexiltä ja Rivieralta. Päivitetään automaattisesti kahdesti päivässä (06:00 ja 19:00).</p>
@@ -358,6 +425,13 @@
       <button class="filter-pill" data-filter="nearest">📍 Lähin asemalta</button>
     </div>
 
+    <div class="origins">
+      <button class="origin-pill active" data-origin="station">🚆 Rautatieasema</button>
+      <button class="origin-pill" data-origin="lauttis">🏝️ Lauttis</button>
+      <button class="origin-pill" data-origin="gps">📍 Oma sijainti (GPS)</button>
+      <span id="gpsStatus" class="gps-status"></span>
+    </div>
+
     <div class="stats">
       <span class="pill">Yhteensä: <strong class="val" id="totalCount">0</strong></span>
       <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
@@ -372,7 +446,7 @@
           <tr>
             <th>Herkku / Tarjous</th>
             <th>Paikka / Kauppakeskus</th>
-            <th>Etäisyys asemalta</th>
+            <th id="distHeader">Etäisyys asemalta</th>
             <th>Kävelyaika</th>
             <th>Hinta (€ / €/kg)</th>
             <th>Voimassa</th>
@@ -393,14 +467,60 @@
 
   <script>
     const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
+    const ORIGIN_STATION = { lat: 60.1719, lon: 24.9414, label: 'Rautatieasema', name: 'Helsingin rautatieasema' }
+    const ORIGIN_LAUTTIS = { lat: 60.1589, lon: 24.8825, label: 'Lauttis', name: 'Kauppakeskus Lauttis' }
     let snapshot = { treats: [] }
     let searchTerm = ''
     let regionFilter = 'ALL'
     let categoryFilter = 'all'
-    let nearestSort = false
     let cheapFilter = false
     let viewMode = 'cards'
     let refreshing = false
+    let origin = 'station' // 'station' | 'lauttis' | 'gps'
+    let userLat = null
+    let userLon = null
+    let gpsStatus = 'idle' // 'idle' | 'loading' | 'ok' | 'err'
+
+    function getOrigin() {
+      if (origin === 'gps' && userLat != null && userLon != null) {
+        return { lat: userLat, lon: userLon, label: 'Oma sijainti', name: 'Oma sijainti (GPS)' }
+      }
+      if (origin === 'lauttis') return ORIGIN_LAUTTIS
+      return ORIGIN_STATION
+    }
+
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const toRad = (d) => (d * Math.PI) / 180
+      const R = 6371
+      const dLat = toRad(lat2 - lat1)
+      const dLon = toRad(lon2 - lon1)
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    }
+
+    function walkingMin(km) {
+      if (km == null) return '–'
+      const min = (km / 1.333) * 60 // ~80 m/min walking speed
+      if (min < 1) return '< 1 min'
+      if (min < 60) return `${Math.round(min)} min`
+      const h = Math.floor(min / 60)
+      const m = Math.round(min % 60)
+      return m === 0 ? `${h} h` : `${h} h ${m} min`
+    }
+
+    function attachDistances(t) {
+      const o = getOrigin()
+      if (t.lat == null || t.lon == null) {
+        t.distKm = null
+        t.distWalking = '–'
+        return
+      }
+      const km = haversineKm(o.lat, o.lon, t.lat, t.lon)
+      t.distKm = km
+      t.distWalking = walkingMin(km)
+    }
 
     function sortRegions(keys) {
       return [...keys].sort((a, b) => {
@@ -432,7 +552,7 @@
         } else if (categoryFilter === 'leipomo') {
           if (!/leipomo/.test(t.category || '')) return false
         } else if (categoryFilter === 'mall') {
-          if (!t.mall) return false
+          if (!t.mall_name) return false
         } else if (categoryFilter === 'movie') {
           if (!/leffa/.test(t.tags.join(' '))) return false
         } else if (categoryFilter === 'cheap') {
@@ -480,18 +600,28 @@
     }
 
     function mallBadge(t) {
-      if (!t.mall) return ''
-      return `<span class="mall-badge">🏬 ${t.mall}</span>`
+      if (!t.mall_name) return ''
+      return `<span class="mall-badge">🏬 ${t.mall_name}</span>`
     }
 
     function stationLabel(t) {
-      if (t.station_km == null) return ''
-      const km = Number(t.station_km).toFixed(1)
-      return `<span class="station">🚉 ${km} km · ${t.station_walking || '–'}</span>`
+      if (t.distKm == null) return ''
+      const km = Number(t.distKm).toFixed(1)
+      const o = getOrigin()
+      const from = o.label === 'Oma sijainti' ? 'sijainnistasi' : `${o.label}ltä`
+      return `<span class="station">🚉 ${km} km ${from} · ${t.distWalking}</span>`
+    }
+
+    function originLabel() {
+      const o = getOrigin()
+      if (o.label === 'Oma sijainti') return 'sijainnistasi'
+      if (o.label === 'Lauttis') return 'Lauttiksesta'
+      return 'asemalta'
     }
 
     function render() {
       const treats = filteredTreats(snapshot.treats || [])
+      treats.forEach(attachDistances)
       document.getElementById('totalCount').textContent = String(treats.length)
       const root = document.getElementById('sections')
 
@@ -506,9 +636,9 @@
       root.innerHTML = regions.map((region) => {
         const items = grouped.get(region) || []
         items.sort((a, b) => {
-          if (nearestSort) {
-            const aKm = a.station_km == null ? 9999 : a.station_km
-            const bKm = b.station_km == null ? 9999 : b.station_km
+          if (categoryFilter === 'nearest') {
+            const aKm = a.distKm == null ? 9999 : a.distKm
+            const bKm = b.distKm == null ? 9999 : b.distKm
             if (aKm !== bKm) return aKm - bKm
             return (a.title || '').localeCompare(b.title || '')
           }
@@ -516,8 +646,8 @@
           const bCheap = (b.price_kg != null && b.price_kg <= 6) || (b.price_eur != null && b.price_eur <= 5)
           if (aCheap && !bCheap) return -1
           if (!aCheap && bCheap) return 1
-          const aKm = a.station_km == null ? 9999 : a.station_km
-          const bKm = b.station_km == null ? 9999 : b.station_km
+          const aKm = a.distKm == null ? 9999 : a.distKm
+          const bKm = b.distKm == null ? 9999 : b.distKm
           if (aKm !== bKm) return aKm - bKm
           return (a.title || '').localeCompare(b.title || '')
         })
@@ -540,12 +670,13 @@
                   <div class="meta-row">
                     ${mallBadge(t)}
                     <span>📍 ${[t.street, t.locality].filter(Boolean).join(', ') || 'Tuntematon osoite'}</span>
-                    ${t.station_km != null ? `<span>🚉 ${Number(t.station_km).toFixed(1)} km · ${t.station_walking}</span>` : ''}
+                    ${t.distKm != null ? `<span>🚉 ${Number(t.distKm).toFixed(1)} km · ${t.distWalking}</span>` : ''}
                   </div>
                   ${t.valid ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">⏱️ ${t.valid}</div>` : ''}
                   <div class="links">
-                    ${t.sourceUrl ? `<a href="${t.sourceUrl}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
-                    ${t.mapsUrl ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : ''}
+                    ${t.deal_url ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>` : ''}
+                    ${t.store_offers_url ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>` : ''}
+                    ${t.mapsUrl ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Kartta</a>` : ''}
                   </div>
                 </article>
               `).join('')}
@@ -577,8 +708,34 @@
       window._countdownTimer = setInterval(tick, 30000)
     }
 
+    function updateOriginUI() {
+      document.querySelectorAll('.origin-pill').forEach((p) => {
+        const active = p.getAttribute('data-origin') === origin
+        p.classList.toggle('active', active)
+      })
+      const distHeader = document.getElementById('distHeader')
+      if (distHeader) {
+        const o = getOrigin()
+        distHeader.textContent = `Etäisyys (${o.label})`
+      }
+      const nearestPill = document.querySelector('.filter-pill[data-filter="nearest"]')
+      if (nearestPill) {
+        nearestPill.textContent = `📍 Lähin ${originLabel()}`
+      }
+      const status = document.getElementById('gpsStatus')
+      if (status) {
+        if (gpsStatus === 'ok') { status.textContent = '✓ GPS käytössä'; status.className = 'gps-status ok' }
+        else if (gpsStatus === 'err') { status.textContent = '✗ GPS ei käytettävissä'; status.className = 'gps-status err' }
+        else if (gpsStatus === 'loading') { status.textContent = '⏳ Haetaan sijaintia…'; status.className = 'gps-status load' }
+        else { status.textContent = ''; status.className = 'gps-status' }
+      }
+      render()
+      renderComparisonTable()
+    }
+
     function renderComparisonTable() {
       const treats = filteredTreats(snapshot.treats || [])
+      treats.forEach(attachDistances)
       const body = document.getElementById('compareTableBody')
       const caption = document.getElementById('tableCaption')
 
@@ -588,12 +745,15 @@
         const price = t.price_kg != null
           ? `<span class="kg">${fmtEur(t.price_kg)} €/kg</span>`
           : (t.price_eur != null ? `<span class="price">${fmtEur(t.price_eur)} €</span>` : '<span>-</span>')
-        const km = t.station_km != null ? `<span class="km">${Number(t.station_km).toFixed(1)} km</span>` : '-'
-        const walk = t.station_walking || '-'
-        const mall = t.mall || '-'
-        const place = `${t.place || ''}${mall ? ` (${mall})` : ''}`
-        const website = t.sourceUrl
-          ? `<a href="${t.sourceUrl}" target="_blank" rel="noreferrer">Lähde</a>`
+        const km = t.distKm != null ? `<span class="km">${Number(t.distKm).toFixed(1)} km</span>` : '-'
+        const walk = t.distWalking || '-'
+        const mall = t.mall_name || '-'
+        const place = `${t.store_name || ''}${mall ? ` (${mall})` : ''}`
+        const website = t.deal_url
+          ? `<a href="${t.deal_url}" target="_blank" rel="noreferrer">Lähde</a>`
+          : '-'
+        const store = t.store_offers_url
+          ? `<a href="${t.store_offers_url}" target="_blank" rel="noreferrer">Myymälä</a>`
           : '-'
         const maps = t.mapsUrl
           ? `<a href="${t.mapsUrl}" target="_blank" rel="noreferrer">📍 Kartta</a>`
@@ -607,7 +767,7 @@
             <td>${walk}</td>
             <td>${price}</td>
             <td style="max-width: 160px;">${t.valid || '–'}</td>
-            <td class="links">${website} ${maps}</td>
+            <td class="links">${website} ${store} ${maps}</td>
           </tr>
         `
       }).join('')
@@ -636,6 +796,31 @@
       }
     }
 
+    function requestGps() {
+      if (!navigator.geolocation) {
+        gpsStatus = 'err'
+        updateOriginUI()
+        return
+      }
+      gpsStatus = 'loading'
+      updateOriginUI()
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLat = pos.coords.latitude
+          userLon = pos.coords.longitude
+          gpsStatus = 'ok'
+          origin = 'gps'
+          updateOriginUI()
+        },
+        (err) => {
+          gpsStatus = 'err'
+          origin = 'station'
+          updateOriginUI()
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      )
+    }
+
     document.getElementById('search').addEventListener('input', (e) => {
       searchTerm = e.target.value || ''
       render()
@@ -652,12 +837,26 @@
       pill.addEventListener('click', (e) => {
         const f = e.currentTarget.getAttribute('data-filter')
         categoryFilter = f
+        cheapFilter = (f === 'cheap')
         document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('active'))
         e.currentTarget.classList.add('active')
-        nearestSort = (f === 'nearest')
-        cheapFilter = (f === 'cheap')
         render()
         renderComparisonTable()
+      })
+    })
+
+    document.querySelectorAll('.origin-pill').forEach((pill) => {
+      pill.addEventListener('click', (e) => {
+        const o = e.currentTarget.getAttribute('data-origin')
+        if (o === 'gps') {
+          requestGps()
+          return
+        }
+        origin = o
+        userLat = null
+        userLon = null
+        gpsStatus = 'idle'
+        updateOriginUI()
       })
     })
 
@@ -685,6 +884,7 @@
       load()
     })
 
+    updateOriginUI()
     load()
   </script>
 </body>

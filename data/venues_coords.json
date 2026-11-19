@@ -302,6 +302,50 @@
       "lon": 25.0496,
       "mall": null,
       "type": "cinema"
+    },
+    {
+      "key": "lauttis",
+      "name": "Kauppakeskus Lauttis",
+      "street": "Lauttasaarentie 20",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "mall": "Lauttis",
+      "type": "mall"
+    },
+    {
+      "key": "k-supermarket-lauttasaari",
+      "name": "K-Supermarket Lauttasaari",
+      "street": "Lauttasaarentie 20",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "mall": "Lauttis",
+      "type": "supermarket"
+    },
+    {
+      "key": "s-market-lauttasaari",
+      "name": "S-Market Lauttasaari",
+      "street": "Lauttasaarentie 20",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "mall": "Lauttis",
+      "type": "supermarket"
+    },
+    {
+      "key": "lidl-lauttasaari",
+      "name": "Lidl Lauttasaari",
+      "street": "Lauttasaarentie 20",
+      "locality": "Helsinki",
+      "region": "Helsinki",
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "mall": "Lauttis",
+      "type": "supermarket"
     }
   ]
 }
