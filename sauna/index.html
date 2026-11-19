@@ -639,6 +639,7 @@ let refreshing = false
 
     function isSeasonalSummer(e) {
       const text = ((e.openingHours || '') + ' ' + (e.shortDesc || '') + ' ' + (e.notes || '')).toLowerCase()
+      if (/kesällä suljettu|suljettu kesällä/.test(text)) return false
       return /touko.?syyskuu|kesäkausi|kesäsauna|summer/.test(text)
     }
 
