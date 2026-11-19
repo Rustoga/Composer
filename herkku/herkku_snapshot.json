@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T22:56:28.165305+02:00",
+  "generatedAt": "2026-11-19T23:04:36.887586+02:00",
   "nextUpdateAt": "2026-11-20T06:00:00+02:00",
   "updateSchedule": [
     "06:00",
@@ -13,83 +13,124 @@
       "resq_club": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 971,
+        "latency_ms": 1064,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 9,
-        "checked_at": "2026-11-19T22:56:29.136952+02:00"
+        "consecutive_failures": 10,
+        "checked_at": "2026-11-19T23:04:37.952820+02:00"
       },
       "myhelsinki_events": {
         "status": "ok",
         "items_found": 5,
-        "latency_ms": 351,
+        "latency_ms": 1508,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T22:56:29.495204+02:00"
+        "checked_at": "2026-11-19T23:04:39.466971+02:00"
       },
       "finnkino_movies": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 401,
+        "latency_ms": 377,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 1,
-        "checked_at": "2026-11-19T22:56:29.897889+02:00"
+        "consecutive_failures": 2,
+        "checked_at": "2026-11-19T23:04:39.845056+02:00"
       },
       "k_ruoka": {
         "status": "ok",
-        "items_found": 8,
-        "latency_ms": 3821,
+        "items_found": 6,
+        "latency_ms": 4868,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T22:56:33.722008+02:00"
+        "checked_at": "2026-11-19T23:04:44.716651+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 4052,
+        "latency_ms": 3677,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T22:56:37.774303+02:00"
+        "checked_at": "2026-11-19T23:04:48.393948+02:00"
       },
       "s_group": {
         "status": "ok",
-        "items_found": 3,
-        "latency_ms": 2870,
+        "items_found": 4,
+        "latency_ms": 2916,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-19T22:56:40.645346+02:00"
+        "checked_at": "2026-11-19T23:04:54.565471+02:00"
+      }
+    }
+  },
+  "diagnostics": {
+    "ok_sources": 4,
+    "total_sources": 6,
+    "needs_attention": [
+      "resq_club",
+      "finnkino_movies"
+    ],
+    "sources": {
+      "resq_club": {
+        "status": "error",
+        "items_found": 0,
+        "latency_ms": 1064,
+        "http_status": 404,
+        "error_reason": "HTTP 404",
+        "consecutive_failures": 10,
+        "checked_at": "2026-11-19T23:04:37.952820+02:00"
+      },
+      "myhelsinki_events": {
+        "status": "ok",
+        "items_found": 5,
+        "latency_ms": 1508,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T23:04:39.466971+02:00"
+      },
+      "finnkino_movies": {
+        "status": "error",
+        "items_found": 0,
+        "latency_ms": 377,
+        "http_status": 404,
+        "error_reason": "HTTP 404",
+        "consecutive_failures": 2,
+        "checked_at": "2026-11-19T23:04:39.845056+02:00"
+      },
+      "k_ruoka": {
+        "status": "ok",
+        "items_found": 6,
+        "latency_ms": 4868,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T23:04:44.716651+02:00"
+      },
+      "lidl": {
+        "status": "empty",
+        "items_found": 0,
+        "latency_ms": 3677,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T23:04:48.393948+02:00"
+      },
+      "s_group": {
+        "status": "ok",
+        "items_found": 4,
+        "latency_ms": 2916,
+        "http_status": 200,
+        "error_reason": null,
+        "consecutive_failures": 0,
+        "checked_at": "2026-11-19T23:04:54.565471+02:00"
       }
     }
   },
   "treats": [
-    {
-      "id": "k_ruoka_7635ebe7adc7",
-      "title": "Pirkka herkkusieni 200 g, Suomi",
-      "store_name": "K-Supermarket Lauttasaari (Lauttis)",
-      "mall_name": "Lauttis",
-      "address": "Lauttasaarentie 28, 00200 Helsinki",
-      "region": "Helsinki",
-      "category": "makeiset",
-      "price_eur": 2.0,
-      "price_kg": null,
-      "price_display": "2,00 €",
-      "valid_from": "2026-11-19",
-      "valid_until": "2026-11-22",
-      "custom_time_label": null,
-      "lat": 60.1589,
-      "lon": 24.8825,
-      "source_type": "live_verified",
-      "source_name": "K-Ruoka Tarjoukset",
-      "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
-      "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
-      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
-    },
     {
       "id": "k_ruoka_a4f18931904c",
       "title": "Elonen Sacherleivos tai Limoncello leivos 2 kpl/170 g",
@@ -111,7 +152,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
       "id": "k_ruoka_4bbe11223621",
@@ -134,7 +175,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
       "id": "k_ruoka_5ff3bec629e5",
@@ -157,34 +198,11 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
-      "id": "k_ruoka_2534277f0506",
-      "title": "HK Herkkumaksamakkara 300g",
-      "store_name": "K-Supermarket Lauttasaari (Lauttis)",
-      "mall_name": "Lauttis",
-      "address": "Lauttasaarentie 28, 00200 Helsinki",
-      "region": "Helsinki",
-      "category": "makeiset",
-      "price_eur": 2.89,
-      "price_kg": null,
-      "price_display": "2,89 €",
-      "valid_from": "2026-11-19",
-      "valid_until": "2026-11-22",
-      "custom_time_label": null,
-      "lat": 60.1589,
-      "lon": 24.8825,
-      "source_type": "live_verified",
-      "source_name": "K-Ruoka Tarjoukset",
-      "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
-      "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
-      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
-    },
-    {
-      "id": "k_ruoka_0db6c42d50b0",
-      "title": "Plussa-kortilla",
+      "id": "k_ruoka_f017bcd7c11f",
+      "title": "Fazer Fasupalat 175-199 g",
       "store_name": "K-Supermarket Lauttasaari (Lauttis)",
       "mall_name": "Lauttis",
       "address": "Lauttasaarentie 28, 00200 Helsinki",
@@ -203,19 +221,65 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
-      "id": "s_group_7b129dab5c4e",
-      "title": "Uusi",
+      "id": "k_ruoka_a291854c25e5",
+      "title": "Fazer Aito kaurajuoma Barista 1 l UHT",
+      "store_name": "K-Supermarket Lauttasaari (Lauttis)",
+      "mall_name": "Lauttis",
+      "address": "Lauttasaarentie 28, 00200 Helsinki",
+      "region": "Helsinki",
+      "category": "makeiset",
+      "price_eur": 3.0,
+      "price_kg": null,
+      "price_display": "3,00 €",
+      "valid_from": "2026-11-19",
+      "valid_until": "2026-11-22",
+      "custom_time_label": null,
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "source_type": "live_verified",
+      "source_name": "K-Ruoka Tarjoukset",
+      "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
+    },
+    {
+      "id": "k_ruoka_a50f595424b6",
+      "title": "Viennetta jäätelökakut 650 ml",
+      "store_name": "K-Supermarket Lauttasaari (Lauttis)",
+      "mall_name": "Lauttis",
+      "address": "Lauttasaarentie 28, 00200 Helsinki",
+      "region": "Helsinki",
+      "category": "makeiset",
+      "price_eur": 2.0,
+      "price_kg": null,
+      "price_display": "2,00 €",
+      "valid_from": "2026-11-19",
+      "valid_until": "2026-11-22",
+      "custom_time_label": null,
+      "lat": 60.1589,
+      "lon": 24.8825,
+      "source_type": "live_verified",
+      "source_name": "K-Ruoka Tarjoukset",
+      "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
+      "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
+    },
+    {
+      "id": "s_group_78f7bc71cd4e",
+      "title": "Fazer Puikula Täysjyväruis 9kpl 500g, täysjyväruisleipä",
       "store_name": "S-market Lauttasaari",
       "mall_name": "Lauttasaari",
       "address": "Lauttasaarentie 23, 00200 Helsinki",
       "region": "Helsinki",
       "category": "makeiset",
-      "price_eur": 5.85,
+      "price_eur": 1.59,
       "price_kg": null,
-      "price_display": "5,85 €",
+      "price_display": "1,59 €",
       "valid_from": "2026-11-19",
       "valid_until": "2026-11-22",
       "custom_time_label": null,
@@ -223,22 +287,22 @@
       "lon": 24.8832,
       "source_type": "live_verified",
       "source_name": "S-ryhmä Tarjoukset",
-      "deal_url": "https://www.s-kaupat.fi/#tarjoukset",
-      "store_offers_url": "https://www.s-kaupat.fi/#tarjoukset",
+      "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
+      "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
-      "id": "s_group_e7480491ed9d",
-      "title": "Zoégas 450g Julkaffe suodatinkahvi",
+      "id": "s_group_e6a083fa6cb0",
+      "title": "Fazer Aito Kaurajuoma Barista 1L UHT",
       "store_name": "S-market Lauttasaari",
       "mall_name": "Lauttasaari",
       "address": "Lauttasaarentie 23, 00200 Helsinki",
       "region": "Helsinki",
       "category": "makeiset",
-      "price_eur": 6.99,
+      "price_eur": 1.69,
       "price_kg": null,
-      "price_display": "6,99 €",
+      "price_display": "1,69 €",
       "valid_from": "2026-11-19",
       "valid_until": "2026-11-22",
       "custom_time_label": null,
@@ -246,22 +310,22 @@
       "lon": 24.8832,
       "source_type": "live_verified",
       "source_name": "S-ryhmä Tarjoukset",
-      "deal_url": "https://www.s-kaupat.fi/#tarjoukset",
-      "store_offers_url": "https://www.s-kaupat.fi/#tarjoukset",
+      "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
+      "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     },
     {
-      "id": "s_group_bc039b34a652",
-      "title": "Marabou Oreo Suklaalevy 160g",
+      "id": "s_group_0723146f4ba0",
+      "title": "Fazer Remix Bad +sour karkkipussi 300g",
       "store_name": "S-market Lauttasaari",
       "mall_name": "Lauttasaari",
       "address": "Lauttasaarentie 23, 00200 Helsinki",
       "region": "Helsinki",
       "category": "makeiset",
-      "price_eur": 3.25,
+      "price_eur": 1.5,
       "price_kg": null,
-      "price_display": "3,25 €",
+      "price_display": "1,50 €",
       "valid_from": "2026-11-19",
       "valid_until": "2026-11-22",
       "custom_time_label": null,
@@ -269,10 +333,10 @@
       "lon": 24.8832,
       "source_type": "live_verified",
       "source_name": "S-ryhmä Tarjoukset",
-      "deal_url": "https://www.s-kaupat.fi/#tarjoukset",
-      "store_offers_url": "https://www.s-kaupat.fi/#tarjoukset",
+      "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
+      "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-19T22:56:28.165305+02:00"
+      "verified_at": "2026-11-19T23:04:36.887586+02:00"
     }
   ]
 }

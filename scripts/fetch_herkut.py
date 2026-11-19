@@ -27,11 +27,17 @@ HEADERS = {
 }
 
 TREAT_KEYWORDS = [
-    "irtokark", "makeis", "suklaa", "karkki", "pulla", "leivos", "munkki",
-    "croissant", "jäätelö", "viennetta", "keksi", "donitsi", "viineri",
-    "kakku", "herkku", "paistopiste", "kahvi", "glögi", "pipari", "fazer",
-    "arnolds", "robert's coffee", "espresso house", "gateau", "kanniston",
-    "picnic", "bakery", "pastry", "candy",
+    "irtokark", "makeis", "suklaa", "karkki", "marmeladi", "lakrits",
+    "salmiak", "pulla", "leivos", "munkki", "croissant", "jäätelö",
+    "viennetta", "keksi", "donitsi", "viineri", "kakku", "paistopiste",
+    "kahvi", "glögi", "pipari", "fazer", "marabou", "panda", "malaco",
+    "haribo", "arnolds", "gateau", "kanniston",
+]
+NON_TREAT_WORDS = [
+    "makkara", "maksamakkara", "herkkumaksamakkara", "herkkusieni", "sieni",
+    "kinkku", "broileri", "kana", "lohi", "juusto", "maito", "peruna",
+    "kurkku", "tomaatti", "salaatti", "pesuaine", "vaippa", "koiran",
+    "kissan",
 ]
 CINEMA_KEYWORDS = ["elokuva", "kino", "leffa", "näytös", "cinema", "superpäivä", "leffapäivä"]
 
@@ -299,6 +305,25 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
             monitor.record(source_key, "error", 0, latency, status, f"HTTP {status}")
             return []
         lines = [ln.strip() for ln in body.splitlines() if ln.strip()]
+        badge_labels = {"uusi", "plussa-kortilla", "etuhinta", "tarjous", "kampanja", "rajoitettu erä", "norm.", "vertailuhinta"}
+        def extract_title(idx: int) -> str:
+            for j in (idx - 1, idx - 2, idx - 3):
+                if j < 0:
+                    continue
+                cand = lines[j].strip()
+                low = cand.lower()
+                if not cand or len(cand) <= 3:
+                    continue
+                if low in badge_labels:
+                    continue
+                if any(b in low for b in badge_labels):
+                    continue
+                if low.startswith(("−", "-", "–")):
+                    continue
+                if re.match(r"^\d", low):
+                    continue
+                return cand
+            return lines[idx].strip()
         for i, ln in enumerate(lines):
             m = re.search(r"(\d{1,2})[,.](\d{2})\s*€", ln)
             if not m:
@@ -307,9 +332,13 @@ def fetch_supermarket(source_key: str, source_name: str, url: str, deep_url: str
             if price <= 0.15 or price > 7.0:
                 continue
             ctx_txt = " ".join(lines[max(0, i - 2): min(len(lines), i + 3)]).lower()
-            if not any(k in ctx_txt for k in TREAT_KEYWORDS):
+            title = extract_title(i)
+            tlow = title.lower()
+            ctx_low = ctx_txt.lower()
+            if any(w in tlow or w in ctx_low for w in NON_TREAT_WORDS):
                 continue
-            title = lines[i - 1] if i > 0 and len(lines[i - 1]) > 3 else ln
+            if not any(k in tlow for k in TREAT_KEYWORDS):
+                continue
             v_end = (now_hel + timedelta(days=3)).strftime("%Y-%m-%d")
             items.append({
                 "id": make_id(source_key, title, store),
@@ -354,8 +383,10 @@ def main() -> None:
     monitor = SourceHealthMonitor(prev_health)
 
     u_kruoka = url_of("www.k-ruoka.fi", "/artikkelit/k-supermarket/k-supermarket-tarjoukset")
+    u_kruoka_alt = url_of("www.k-ruoka.fi", "/kauppa/tuotehaku/makeiset-ja-snacksit")
     u_lidl = url_of("www.lidl.fi", "/h/ruoka-ja-juoma/h10068374")
-    u_skaupat = url_of("www.s-kaupat.fi", "/")
+    u_skaupat_candy = url_of("www.s-kaupat.fi", "/tuotteet/makeiset-ja-herkut")
+    u_skaupat_fallback = url_of("www.s-kaupat.fi", "/tuotteet?query=makeiset")
 
     by_source = {
         "resq_club": fetch_resq_club(monitor, now_hel),
@@ -363,8 +394,10 @@ def main() -> None:
         "finnkino_movies": fetch_finnkino_movies(monitor, now_hel),
         "k_ruoka": fetch_supermarket("k_ruoka", "K-Ruoka Tarjoukset", u_kruoka, u_kruoka, "K-Supermarket Lauttasaari (Lauttis)", "Lauttis", "Lauttasaarentie 28, 00200 Helsinki", 60.1589, 24.8825, monitor, now_hel),
         "lidl": fetch_supermarket("lidl", "Lidl Tarjoukset", u_lidl, u_lidl, "Lidl Lauttasaari", "Lauttasaari", "Heikkiläntie 2, 00210 Helsinki", 60.1572, 24.8861, monitor, now_hel),
-        "s_group": fetch_supermarket("s_group", "S-ryhmä Tarjoukset", u_skaupat, "https://www.s-kaupat.fi/#tarjoukset", "S-market Lauttasaari", "Lauttasaari", "Lauttasaarentie 23, 00200 Helsinki", 60.1594, 24.8832, monitor, now_hel),
+        "s_group": fetch_supermarket("s_group", "S-ryhmä Tarjoukset", u_skaupat_candy, u_skaupat_candy, "S-market Lauttasaari", "Lauttasaari", "Lauttasaarentie 23, 00200 Helsinki", 60.1594, 24.8832, monitor, now_hel),
     }
+    if not by_source.get("s_group"):
+        by_source["s_group"] = fetch_supermarket("s_group", "S-ryhmä Tarjoukset", u_skaupat_fallback, u_skaupat_fallback, "S-market Lauttasaari", "Lauttasaari", "Lauttasaarentie 23, 00200 Helsinki", 60.1594, 24.8832, monitor, now_hel)
 
     labels = {
         "resq_club": "ResQ Club",
@@ -389,6 +422,9 @@ def main() -> None:
     for it in merged:
         if float(it.get("price_eur") or 99) > 7.0:
             continue
+        blob = str(it.get("title") or "").lower()
+        if any(w in blob for w in NON_TREAT_WORDS):
+            continue
         if not is_valid_deep_url(it.get("deal_url") or ""):
             continue
         if str(it.get("valid_until") or "") < today_str:
@@ -405,6 +441,7 @@ def main() -> None:
         "updateSchedule": ["06:00", "19:00"],
         "timezone": "Europe/Helsinki",
         "sourceHealth": {"okSources": diag["ok_sources"], "totalSources": diag["total_sources"], "sources": diag["sources"]},
+        "diagnostics": diag,
         "treats": valid,
     }
     if not getattr(args, "dry_run", False):
