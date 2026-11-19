@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+window.__MOKKI_BOOTED__ = true;
+document.body.style.background = '#1a222d';
+const _bootHint = document.getElementById('control-hint');
+if (_bootHint) _bootHint.textContent = 'JS booted…';
 
 // ---------------------------------------------------------------------------
 // Top-level error trapping: any startup, shader, or unhandled rejection failure
@@ -265,17 +268,8 @@ function fetchGlb(url, onProgress) {
         });
       })
       .then((buf) => {
-        // Parse GLB with GLTFLoader
+        // Parse GLB with GLTFLoader (uncompressed glTF 2.0 — no extensions)
         const loader = new GLTFLoader();
-
-        // Wire DRACOLoader for KHR_draco_mesh_compression
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-        loader.setDRACOLoader(dracoLoader);
-
-        // Wire MeshoptDecoder for EXT_meshopt_compression
-        loader.setMeshoptDecoder(MeshoptDecoder);
-
         loader.parse(buf, '', (gltf) => {
           resolve(gltf);
         }, (err) => {

@@ -59,11 +59,50 @@
     </div>
     <div id="loading">
         <div class="spinner"></div>
-        <div id="loading-text">Loading engine&hellip;</div>
+        <div id="loading-text">Loading engine…</div>
         <div class="progress-bar"><div id="loading-progress" class="progress-bar-fill"></div></div>
     </div>
     <div id="error"><div class="err-msg" id="error-msg"></div><button class="btn" id="btn-error-retry" style="border-color:#fff;color:#fff;margin-top:0.5rem;">Try again</button></div>
     <div id="timeout-banner" class="timeout-banner">Still loading… using fallback scene. <button class="btn" id="btn-timeout-retry" style="border-color:#ff6b6b;color:#ff6b6b;font-size:0.7rem;padding:0.2rem 0.5rem;margin-left:0.5rem;">Retry</button></div>
-    <script type="module" src="mokki.js?v=20261119"></script>
+    <script>
+      // Boot guard: visible error surface even if module import fails
+      window.addEventListener('error', (e) => {
+        const msg = e.error ? e.error.message : String(e.message || e);
+        const el = document.getElementById('error');
+        const msgEl = document.getElementById('error-msg');
+        if (el && msgEl) {
+          el.classList.add('visible');
+          msgEl.textContent = 'Boot error: ' + msg;
+        }
+        const load = document.getElementById('loading');
+        if (load) load.classList.remove('visible');
+      });
+      window.addEventListener('unhandledrejection', (e) => {
+        const reason = e.reason || {};
+        const msg = reason.message || String(reason);
+        const el = document.getElementById('error');
+        const msgEl = document.getElementById('error-msg');
+        if (el && msgEl) {
+          el.classList.add('visible');
+          msgEl.textContent = 'Boot rejection: ' + msg;
+        }
+        const load = document.getElementById('loading');
+        if (load) load.classList.remove('visible');
+      });
+      // 5-second watchdog: if mokki.js never boots, show error
+      setTimeout(() => {
+        if (!window.__MOKKI_BOOTED__) {
+          const el = document.getElementById('error');
+          const msgEl = document.getElementById('error-msg');
+          const load = document.getElementById('loading');
+          if (el && msgEl) {
+            el.classList.add('visible');
+            msgEl.textContent = 'Module mokki.js failed to load or execute — check importmap / network.';
+          }
+          if (load) load.classList.remove('visible');
+        }
+      }, 5000);
+    </script>
+    <script type="module" src="mokki.js?v=20261119b"></script>
 </body>
 </html>
