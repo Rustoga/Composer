@@ -151,7 +151,7 @@
       border: 1px solid rgba(34,197,94,0.55);
       color: #bbf7d0;
       background: rgba(34,197,94,0.12);
-      border-radius: 999px;
+      border-radius: 10px;
       padding: 3px 7px;
       width: fit-content;
       text-transform: uppercase;
@@ -162,10 +162,16 @@
       border: 1px solid rgba(239,68,68,0.55);
       color: #fecaca;
       background: rgba(239,68,68,0.12);
-      border-radius: 999px;
+      border-radius: 10px;
       padding: 3px 7px;
       width: fit-content;
       text-transform: uppercase;
+    }
+    .price-detail {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.4;
     }
     .badges { display: flex; flex-wrap: wrap; gap: 5px; }
     .sauna {
@@ -571,18 +577,27 @@ let refreshing = false
     }
 
     function priceLabel(e) {
-      if (e.isFree) return '<span class="free">Ilmainen / Free</span>'
-      if (e.priceDetails) {
-        const items = e.priceDetails.items
-          .map((i) => {
-            const days = i.days ? ` (${i.days})` : ''
-            return `${i.adult} €${i.reduced != null ? ' / ' + i.reduced + ' €' : ''}${days}`
-          })
-          .join(' · ')
-        return `<span class="paid">${items}</span>`
+      if (e.isFree) return '<span class="free">Ilmainen</span>'
+      if (e.priceDetails && e.priceDetails.items && e.priceDetails.items.length) {
+        const first = e.priceDetails.items[0]
+        const amount = first.adult != null ? first.adult : '-'
+        return `<span class="paid">${amount} €</span>`
       }
       if (e.priceAdult != null) return `<span class="paid">${e.priceAdult} €</span>`
       return '<span class="paid">-</span>'
+    }
+
+    function priceDetailsLabel(e) {
+      if (!e.priceDetails || !e.priceDetails.items || !e.priceDetails.items.length) return ''
+      const first = e.priceDetails.items[0]
+      const tiers = e.priceDetails.items
+        .slice(1)
+        .map((i) => {
+          const days = i.days ? ` (${i.days})` : ''
+          return `${i.adult} €${i.reduced != null ? ' / ' + i.reduced + ' €' : ''}${days}`
+        })
+      const note = e.priceDetails.note ? ` · ${e.priceDetails.note}` : ''
+      return tiers.length || note ? `<div class="price-detail">🎟️ ${tiers.join(' · ')}${note}</div>` : ''
     }
 
     function ratingLabel(e) {
@@ -668,10 +683,10 @@ let refreshing = false
                   ${e.stationKm != null ? `<div class="meta station-line">${stationLabel(e)}</div>` : ''}
                   <div class="meta">📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</div>
                   <div class="meta">🏷️ ${e.category || 'Yleinen'}</div>
+                  ${priceDetailsLabel(e)}
                   <div class="links">
                     ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
                     ${e.mapsUrl && !/^https?:\/\/(www\.)?google\.com(\/|$)/.test(e.mapsUrl) ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : (e.title ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title + ' ' + (e.street||'') + ' ' + e.location)}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : '')}
-                    ${e.reittiopasUrl && e.reittiopasUrl.includes("?to=") ? `<a href="${e.reittiopasUrl}" target="_blank" rel="noreferrer">🚌 Reittiopas</a>` : (e.street ? `<a href="https://www.reittiopas.fi/?to=${encodeURIComponent(e.street + ', ' + e.location)}" target="_blank" rel="noreferrer">🚌 Reittiopas</a>` : '')}
                   </div>
                 </article>
               `).join('')}
