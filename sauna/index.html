@@ -173,6 +173,17 @@
       width: fit-content;
       text-transform: uppercase;
     }
+    .varaus {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(249,115,22,0.55);
+      color: #fdba74;
+      background: rgba(249,115,22,0.12);
+      border-radius: 999px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
     .type {
       font-size: 10px;
       letter-spacing: 0.05em;
@@ -257,6 +268,57 @@
       background: rgba(26,14,8,0.35);
     }
     .helper b { color: #f0e6da; }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .compare-table th {
+      background: var(--card-hover);
+      color: #fdf2e8;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .compare-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      color: #f0e6da;
+      vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover { background: rgba(245,158,11,0.06); }
+    .compare-table .price { font-weight: 700; color: var(--accent-glow); }
+    .compare-table .free { color: #22c55e; }
+    .compare-table .km { white-space: nowrap; }
+    .compare-table .links a {
+      display: inline-block;
+      margin-right: 6px;
+      font-size: 10.5px;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      text-decoration: none;
+      color: #f0e6da;
+    }
+    .compare-table .links a:hover { border-color: var(--accent-glow); color: var(--accent-glow); }
+    .table-caption {
+      margin: 6px 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
     .steam {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 120px;
@@ -337,6 +399,25 @@
     <div class="stats">
       <span class="pill">Yhteensä: <strong id="totalCount">0</strong></span>
       <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
+    </div>
+
+    <div class="table-caption" id="tableCaption">Vertaa Helsingin julkisia saunoja</div>
+    <div class="table-wrap">
+      <table class="compare-table" id="compareTable">
+        <thead>
+          <tr>
+            <th>Sauna</th>
+            <th>Osoite</th>
+            <th>Etäisyys asemalta</th>
+            <th>Kävelyaika</th>
+            <th>Aikuinen (€)</th>
+            <th>Aukioloajat</th>
+            <th>Varaus</th>
+            <th>Verkkosivusto</th>
+          </tr>
+        </thead>
+        <tbody id="compareTableBody"></tbody>
+      </table>
     </div>
 
     <div id="sections" class="sections"></div>
@@ -480,6 +561,7 @@
                     ${ratingLabel(e)}
                     ${userRatingLabel(e)}
                     ${e.sauna ? '<span class="sauna">♨ Sauna</span>' : ''}
+                    ${e.varaus ? '<span class="varaus">🔒 Varaus / Reservation</span>' : ''}
                     ${e.saunaType ? `<span class="type">${e.saunaType}</span>` : ''}
                     ${e.nature ? '<span class="nature">🌲 Luontopuisto / Nature park</span>' : ''}
                   </div>
@@ -508,6 +590,45 @@
       document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
     }
 
+    function renderComparisonTable() {
+      const helsinki = (snapshot.events || []).filter((e) =>
+        (e.region === 'Helsinki' || e.location === 'Helsinki') &&
+        e.verificationStatus === 'PASS' &&
+        e.category !== 'tilaussauna'
+      )
+      helsinki.sort((a, b) => (a.stationKm || 9999) - (b.stationKm || 9999))
+
+      const body = document.getElementById('compareTableBody')
+      const caption = document.getElementById('tableCaption')
+
+      caption.textContent = `Vertaa Helsingin julkisia saunoja (${helsinki.length} vahvistettua)`
+
+      body.innerHTML = helsinki.map((e) => {
+        const price = e.isFree ? '<span class="free">Ilmainen</span>' :
+          (e.priceAdult != null ? `<span class="price">${e.priceAdult} €</span>` : '<span>-</span>')
+        const km = e.stationKm != null ? `<span class="km">${Number(e.stationKm).toFixed(1)} km</span>` : '-'
+        const walk = e.stationWalking || '-'
+        const booking = e.varaus ? 'Vain varauksella' : 'Ei varausta'
+        const website = e.sourceUrl
+          ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Verkkosivusto</a>`
+          : '-'
+        const hours = (e.openingHours || 'Tarkista sivuilta').replace(/;/g, ', ')
+
+        return `
+          <tr>
+            <td><strong>${e.title || 'Nimetön sauna'}</strong></td>
+            <td>${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</td>
+            <td class="km">${km}</td>
+            <td>${walk}</td>
+            <td>${price}</td>
+            <td style="max-width: 200px;">${hours}</td>
+            <td>${booking}</td>
+            <td class="links">${website}</td>
+          </tr>
+        `
+      }).join('')
+    }
+
     async function load() {
       if (refreshing) return
       refreshing = true
@@ -520,6 +641,7 @@
         snapshot.events = Array.isArray(snapshot.events) ? snapshot.events : []
         setTimeStats()
         render()
+        renderComparisonTable()
       } catch (err) {
         document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui.</div>'
       } finally {

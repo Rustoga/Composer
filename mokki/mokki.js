@@ -1,14 +1,52 @@
-import * as THREE from 'https://esm.sh/three@0.164.1';
-import { OrbitControls } from 'https://esm.sh/three@0.164.1/addons/controls/OrbitControls.js?dep=three@0.164.1';
+const CDN_URLS = [
+  'https://esm.sh/three@0.164.1',
+  'https://unpkg.com/three@0.164.1/build/three.module.js',
+  'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js',
+];
 
-const container = document.getElementById('canvas-container');
-const loading = document.getElementById('loading');
-const splatCountEl = document.getElementById('splat-count');
-const controlHintEl = document.getElementById('control-hint');
-const btnAutoFly = document.getElementById('btn-autofly');
-const btnReset = document.getElementById('btn-reset');
-const btnFile = document.getElementById('btn-file');
-const fileInput = document.getElementById('file-input');
+const ORBIT_URLS = [
+  'https://esm.sh/three@0.164.1/addons/controls/OrbitControls.js?dep=three@0.164.1',
+  'https://unpkg.com/three@0.164.1/examples/jsm/controls/OrbitControls.js',
+  'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js',
+];
+
+let THREE = null;
+let OrbitControls = null;
+
+let loadError = '';
+
+async function tryImport(url) {
+  try {
+    return await import(url);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function loadEngine() {
+  let threeMod = null;
+  for (const url of CDN_URLS) {
+    threeMod = await tryImport(url);
+    if (threeMod) break;
+  }
+  if (!threeMod) {
+    loadError = 'Failed to load 3D engine from all mirrors. Check your internet connection and retry.';
+    return false;
+  }
+  THREE = threeMod;
+
+  let orbitMod = null;
+  for (const url of ORBIT_URLS) {
+    orbitMod = await tryImport(url);
+    if (orbitMod) break;
+  }
+  if (!orbitMod) {
+    loadError = 'Failed to load camera controls.';
+    return false;
+  }
+  OrbitControls = orbitMod.OrbitControls || orbitMod.default;
+  return true;
+}
 
 const DEFAULT_URL = '/mokki/splats.ply';
 const FOV = 60;
@@ -17,7 +55,7 @@ const FAR = 2000;
 const FLY_SPEED = 6;
 const AUTO_SPEED = 0.5;
 
-let scene, camera, renderer, controls, splats, clock;
+let scene, camera, renderer, controls, splats;
 let center = new THREE.Vector3();
 let radius = 10;
 let autoFly = false;
@@ -25,6 +63,19 @@ let autoAngle = 0;
 let autoHeight = 0;
 const keys = {};
 let lastTime = 0;
+
+const container = document.getElementById('canvas-container');
+const loading = document.getElementById('loading');
+const errorEl = document.getElementById('error');
+const errorMsg = document.getElementById('error-msg');
+const splatCountEl = document.getElementById('splat-count');
+const controlHintEl = document.getElementById('control-hint');
+const btnAutoFly = document.getElementById('btn-autofly');
+const btnReset = document.getElementById('btn-reset');
+const btnReload = document.getElementById('btn-reload');
+const btnErrorRetry = document.getElementById('btn-error-retry');
+const btnFile = document.getElementById('btn-file');
+const fileInput = document.getElementById('file-input');
 
 const vertexShader = `
 attribute vec3 position;
@@ -57,14 +108,37 @@ void main() {
 }
 `;
 
-function init() {
+function showError(msg) {
+  loadError = msg;
+  errorMsg.textContent = msg;
+  loading.classList.add('hidden');
+  errorEl.classList.add('visible');
+}
+
+function hideError() {
+  errorEl.classList.remove('visible');
+}
+
+async function start() {
+  hideError();
+  loading.classList.remove('hidden');
+  const ok = await loadEngine();
+  if (!ok) {
+    showError(loadError || 'Engine load failed.');
+    return;
+  }
+  initScene();
+}
+
+function initScene() {
+  loading.classList.add('hidden');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x060609);
   scene.fog = new THREE.FogExp2(0x060609, 0.006);
 
   camera = new THREE.PerspectiveCamera(FOV, container.clientWidth / container.clientHeight, NEAR, FAR);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
@@ -86,6 +160,8 @@ function init() {
     controls.enabled = !autoFly;
   });
   btnReset.addEventListener('click', resetView);
+  btnReload.addEventListener('click', () => start());
+  btnErrorRetry.addEventListener('click', () => start());
   btnFile.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -103,21 +179,18 @@ function init() {
     reader.readAsArrayBuffer(file);
   });
 
-  clock = new THREE.Clock();
-
   loadSplats(DEFAULT_URL).then(() => {
-    loading.classList.add('hidden');
     lastTime = performance.now();
     animate();
   }).catch((err) => {
     console.warn('Auto load failed, using fallback:', err);
-    loading.classList.add('hidden');
     lastTime = performance.now();
     animate();
   });
 }
 
 function onResize() {
+  if (!camera || !renderer) return;
   camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(container.clientWidth, container.clientHeight);
@@ -138,7 +211,7 @@ function resetView() {
 }
 
 function updateFly(dt) {
-  if (!controls.enabled || autoFly) return;
+  if (!controls.enabled || autoFly || !camera) return;
   const move = new THREE.Vector3();
   camera.getWorldDirection(move);
   move.y = 0;
@@ -151,12 +224,11 @@ function updateFly(dt) {
   if (keys['KeyA'] || keys['ArrowLeft']) camera.position.addScaledVector(right, -speed);
   if (keys['Space']) camera.position.y += speed;
   if (keys['ShiftLeft'] || keys['ShiftRight']) camera.position.y -= speed;
-  controls.target.add(move.clone().multiplyScalar(0));
   controls.update();
 }
 
 function updateAutoFly(dt) {
-  if (!autoFly || !splats) return;
+  if (!autoFly || !splats || !camera) return;
   autoAngle += AUTO_SPEED * dt;
   const x = center.x + Math.cos(autoAngle) * radius;
   const z = center.z + Math.sin(autoAngle) * radius;
@@ -167,12 +239,13 @@ function updateAutoFly(dt) {
 
 function animate(now = 0) {
   requestAnimationFrame(animate);
+  if (!renderer || !scene || !camera) return;
   if (lastTime === 0) { lastTime = now; return; }
   const dt = Math.min(Math.max((now - lastTime) / 1000, 0), 0.1);
   lastTime = now;
   updateFly(dt);
   updateAutoFly(dt);
-  if (!autoFly) controls.update();
+  if (!autoFly && controls) controls.update();
   renderer.render(scene, camera);
 }
 
@@ -279,7 +352,6 @@ function parsePly(input) {
   const hasFdc = idx['f_dc_0'] !== undefined;
   const hasOpacity = idx['opacity'] !== undefined;
   const hasScale = idx['scale_0'] !== undefined;
-  const hasColor = hasR && hasG && hasB;
 
   if (format === 'ascii') {
     const get = (vals, name) => { const o = idx[name]; return o === undefined ? NaN : parseFloat(vals[o]); };
@@ -293,7 +365,7 @@ function parsePly(input) {
       if (!isFinite(x) || !isFinite(y) || !isFinite(z)) continue;
       const pi = written * 3;
       positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
-      if (hasColor) {
+      if (hasR && hasG && hasB) {
         colors[pi] = Math.max(0, Math.min(1, (get(vals, 'red') || 0) / 255));
         colors[pi + 1] = Math.max(0, Math.min(1, (get(vals, 'green') || 0) / 255));
         colors[pi + 2] = Math.max(0, Math.min(1, (get(vals, 'blue') || 0) / 255));
@@ -327,7 +399,7 @@ function parsePly(input) {
     if (!isFinite(x) || !isFinite(y) || !isFinite(z)) { byteOff += stride; continue; }
     const pi = written * 3;
     positions[pi] = x; positions[pi + 1] = y; positions[pi + 2] = z;
-    if (hasColor) {
+    if (hasR && hasG && hasB) {
       colors[pi] = Math.max(0, Math.min(1, readProp('red') / 255));
       colors[pi + 1] = Math.max(0, Math.min(1, readProp('green') / 255));
       colors[pi + 2] = Math.max(0, Math.min(1, readProp('blue') / 255));
@@ -417,4 +489,10 @@ function generateFallback() {
   return { count, positions, colors, sizes, opacities };
 }
 
-init();
+window.addEventListener('error', (e) => {
+  if (!THREE) {
+    showError('Engine failed to load. ' + (e.message || 'Unknown error'));
+  }
+});
+
+start();

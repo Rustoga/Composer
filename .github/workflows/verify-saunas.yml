@@ -1,0 +1,67 @@
+name: Verify Sauna Directory Data
+
+on:
+  push:
+    paths:
+      - 'sauna/saunas.json'
+      - 'sauna/index.html'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  audit-saunas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate JSON structure and check Helsinki URLs
+        run: |
+          python3 - << 'EOF'
+          import json, urllib.request, sys
+
+          with open('sauna/saunas.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+
+          events = data.get('events', [])
+          total = data.get('total', 0)
+
+          if total != len(events):
+              print(f"ERROR: total ({total}) != events length ({len(events)})")
+              sys.exit(1)
+
+          ids = set()
+          broken_links = []
+
+          for e in events:
+              eid = e.get('id')
+              if eid in ids:
+                  print(f"ERROR: Duplicate ID found: {eid}")
+                  sys.exit(1)
+              ids.add(eid)
+
+              if e.get('region') == 'Helsinki' and e.get('verificationStatus') == 'PASS':
+                  for field in ['url', 'sourceUrl', 'priceSource', 'hoursSource', 'bookingSource']:
+                      link = e.get(field)
+                      if link and link.startswith('http'):
+                          try:
+                              req = urllib.request.Request(link, headers={'User-Agent': 'Mozilla/5.0'})
+                              with urllib.request.urlopen(req, timeout=10) as resp:
+                                  if resp.status >= 400:
+                                      broken_links.append((eid, field, link, resp.status))
+                          except Exception as err:
+                              broken_links.append((eid, field, link, str(err)))
+
+          print(f"Validated {len(events)} saunas successfully.")
+          if broken_links:
+              print("WARNING - Broken Helsinki URLs detected:")
+              for item in broken_links:
+                  print(" -", item)
+              sys.exit(1)
+          EOF
