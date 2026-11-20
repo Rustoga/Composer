@@ -1,63 +1,64 @@
 {
-  "ok_sources": 5,
+  "ok_sources": 4,
   "total_sources": 6,
   "needs_attention": [
-    "finnkino_movies"
+    "finnkino_movies",
+    "k_ruoka"
   ],
   "sources": {
     "resq_club": {
-      "status": "ok",
-      "items_found": 9,
-      "latency_ms": 5221,
+      "status": "empty",
+      "items_found": 0,
+      "latency_ms": 5716,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-20T12:51:31.652819+02:00"
+      "checked_at": "2026-11-21T00:29:10.403439+02:00"
     },
     "myhelsinki_events": {
       "status": "ok",
-      "items_found": 1,
-      "latency_ms": 1690,
+      "items_found": 2,
+      "latency_ms": 2375,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-20T12:51:33.348775+02:00"
+      "checked_at": "2026-11-21T00:29:12.784696+02:00"
     },
     "finnkino_movies": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2602,
+      "latency_ms": 2606,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 11,
-      "checked_at": "2026-11-20T12:51:35.952693+02:00"
+      "consecutive_failures": 13,
+      "checked_at": "2026-11-21T00:29:15.392077+02:00"
     },
     "k_ruoka": {
-      "status": "ok",
-      "items_found": 4,
-      "latency_ms": 3790,
-      "http_status": 200,
-      "error_reason": null,
-      "consecutive_failures": 0,
-      "checked_at": "2026-11-20T12:51:39.750367+02:00"
+      "status": "blocked",
+      "items_found": 0,
+      "latency_ms": 2621,
+      "http_status": 403,
+      "error_reason": "HTTP 403",
+      "consecutive_failures": 2,
+      "checked_at": "2026-11-21T00:29:18.013986+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 4024,
+      "latency_ms": 4701,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-20T12:51:43.775663+02:00"
+      "checked_at": "2026-11-21T00:29:22.715749+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 1,
-      "latency_ms": 3275,
+      "latency_ms": 3130,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-20T12:51:50.730295+02:00"
+      "checked_at": "2026-11-21T00:29:29.939029+02:00"
     }
   }
 }
