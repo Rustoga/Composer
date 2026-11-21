@@ -90,6 +90,16 @@ def infer_region(text: str) -> str:
         return "Vantaa"
     return "Helsinki"
 
+def target_region(text: str) -> Optional[str]:
+    low = (text or "").lower()
+    if any(k in low for k in ["espoo", "isoomena", "iso omena", "sello", "ainoa", "omena"]):
+        return "Espoo"
+    if any(k in low for k in ["vantaa", "jumbo", "dixi", "myyrmanni", "flamingo"]):
+        return "Vantaa"
+    if any(k in low for k in ["helsinki", "lauttasaari", "lauttis", "käpylä", "itis", "tennispalatsi", "kinopalatsi", "maxim", "malmi", "pasila", "kallio", "kamppi", "ruoholahti", "haaga", "munkkiniemi", "töölö", "kluuvi", "viikki", "myllypuro", "kontula", "vuosaari", "herttoniemi", "laajasalo"]):
+        return "Helsinki"
+    return None
+
 EXCLUDE_KEYWORDS = [
     "ruisleipä", "paahtoleipä", "kauraleipä", "moniviljaleipä", "sämpylä", "patonki",
     "näkkileipä", "rieska", "ruispala", "jälkiuuni", "vehnäjauho", "hiiva",
@@ -224,6 +234,9 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
             if not is_good_deal(cat, p_eur, None, discount):
                 continue
             addr = vname
+            reg = target_region(f"{addr} {vname}")
+            if reg is None:
+                continue
             lat, lon = 60.1699, 24.9384
             durl = url_of("resq-club.com", f"/app/offers/{oid}")
             items.append({
@@ -232,7 +245,7 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 "store_name": vname,
                 "mall_name": "Lauttis" if "lauttasaari" in addr.lower() or "lauttis" in vname.lower() else "",
                 "address": addr,
-                "region": infer_region(f"{addr} {vname}"),
+                "region": reg,
                 "category": cat,
                 "price_eur": round(p_eur, 2),
                 "price_kg": None,
@@ -320,7 +333,7 @@ def fetch_myhelsinki_events(monitor: SourceHealthMonitor, now_hel: datetime) -> 
                 "store_name": vname,
                 "mall_name": "",
                 "address": addr,
-                "region": infer_region(f"{addr} {vname}"),
+                "region": reg,
                 "category": cat,
                 "price_eur": round(p_eur, 2),
                 "normal_price_eur": round(normal, 2) if normal else None,
