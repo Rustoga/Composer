@@ -40,7 +40,7 @@
     .deal-card.epic-card { position:relative; overflow:hidden; transform-style:preserve-3d; transition:transform .15s ease, box-shadow .15s ease; }
     .deal-card.epic-card.active { transform: perspective(700px) rotateY(var(--rx,0deg)) rotateX(var(--ry,0deg)); box-shadow:0 18px 40px rgba(0,0,0,0.28); }
     .deal-card.epic-card::before { content:""; position:absolute; inset:0; background:radial-gradient(farthest-corner circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 55%); pointer-events:none; mix-blend-mode:soft-light; z-index:0; }
-    .deal-card.epic-card::after { content:""; position:absolute; inset:0; background:linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.35) 40%, rgba(255,215,0,0.45) 50%, rgba(255,255,255,0.35) 60%, transparent 75%); background-size:200% 200%; background-position:var(--mx,50%) var(--my,50%); mix-blend-mode:color-dodge; opacity:0; transition:opacity .2s; pointer-events:none; z-index:0; }
+    .deal-card.epic-card::after { content:""; position:absolute; inset:0; background:linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.35) 40%, rgba(255,215,0,0.45) 50%, rgba(255,255,255,0.35) 60%, transparent 75%); background-size:200% 200%; background-position:var(--mx,50%) var(--my,50%); mix-blend-mode:color-dodge; opacity:0; transition:opacity .2s; pointer-events:none; z-index:2; }
     .deal-card.epic-card.active::after { opacity:1; }
     .deal-card.epic-card > * { position:relative; z-index:1; }
     .card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
