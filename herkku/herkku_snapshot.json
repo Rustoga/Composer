@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T10:12:25.271673+02:00",
+  "generatedAt": "2026-11-21T10:14:18.235832+02:00",
   "nextUpdateAt": "2026-11-21T19:00:00+02:00",
   "updateSchedule": [
     "06:00",
@@ -13,56 +13,56 @@
       "resq_club": {
         "status": "ok",
         "items_found": 24,
-        "latency_ms": 7161,
+        "latency_ms": 5046,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:32.437955+02:00"
+        "checked_at": "2026-11-21T10:14:23.286695+02:00"
       },
       "myhelsinki_events": {
         "status": "ok",
         "items_found": 2,
-        "latency_ms": 2017,
+        "latency_ms": 1980,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:34.466441+02:00"
+        "checked_at": "2026-11-21T10:14:25.271896+02:00"
       },
       "finnkino_movies": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 3427,
+        "latency_ms": 2915,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 12,
-        "checked_at": "2026-11-21T10:12:37.895060+02:00"
+        "consecutive_failures": 13,
+        "checked_at": "2026-11-21T10:14:28.188419+02:00"
       },
       "k_ruoka": {
         "status": "ok",
         "items_found": 4,
-        "latency_ms": 3917,
+        "latency_ms": 3873,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:41.818458+02:00"
+        "checked_at": "2026-11-21T10:14:32.068145+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 3704,
+        "latency_ms": 3856,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:45.523101+02:00"
+        "checked_at": "2026-11-21T10:14:35.924845+02:00"
       },
       "s_group": {
         "status": "ok",
         "items_found": 1,
-        "latency_ms": 4070,
+        "latency_ms": 3307,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:52.976601+02:00"
+        "checked_at": "2026-11-21T10:14:43.141605+02:00"
       }
     }
   },
@@ -76,56 +76,56 @@
       "resq_club": {
         "status": "ok",
         "items_found": 24,
-        "latency_ms": 7161,
+        "latency_ms": 5046,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:32.437955+02:00"
+        "checked_at": "2026-11-21T10:14:23.286695+02:00"
       },
       "myhelsinki_events": {
         "status": "ok",
         "items_found": 2,
-        "latency_ms": 2017,
+        "latency_ms": 1980,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:34.466441+02:00"
+        "checked_at": "2026-11-21T10:14:25.271896+02:00"
       },
       "finnkino_movies": {
         "status": "error",
         "items_found": 0,
-        "latency_ms": 3427,
+        "latency_ms": 2915,
         "http_status": 404,
         "error_reason": "HTTP 404",
-        "consecutive_failures": 12,
-        "checked_at": "2026-11-21T10:12:37.895060+02:00"
+        "consecutive_failures": 13,
+        "checked_at": "2026-11-21T10:14:28.188419+02:00"
       },
       "k_ruoka": {
         "status": "ok",
         "items_found": 4,
-        "latency_ms": 3917,
+        "latency_ms": 3873,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:41.818458+02:00"
+        "checked_at": "2026-11-21T10:14:32.068145+02:00"
       },
       "lidl": {
         "status": "empty",
         "items_found": 0,
-        "latency_ms": 3704,
+        "latency_ms": 3856,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:45.523101+02:00"
+        "checked_at": "2026-11-21T10:14:35.924845+02:00"
       },
       "s_group": {
         "status": "ok",
         "items_found": 1,
-        "latency_ms": 4070,
+        "latency_ms": 3307,
         "http_status": 200,
         "error_reason": null,
         "consecutive_failures": 0,
-        "checked_at": "2026-11-21T10:12:52.976601+02:00"
+        "checked_at": "2026-11-21T10:14:43.141605+02:00"
       }
     }
   },
@@ -154,7 +154,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261780",
       "store_offers_url": "https://resq-club.com/app/offers/17261780",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_d6633a21b5b4",
@@ -180,7 +180,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261877",
       "store_offers_url": "https://resq-club.com/app/offers/17261877",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_deb712aab144",
@@ -206,7 +206,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261748",
       "store_offers_url": "https://resq-club.com/app/offers/17261748",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_e4f95e3520a5",
@@ -232,7 +232,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261741",
       "store_offers_url": "https://resq-club.com/app/offers/17261741",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_c6a355c60606",
@@ -258,7 +258,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261758",
       "store_offers_url": "https://resq-club.com/app/offers/17261758",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_358e2b8badba",
@@ -284,7 +284,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261956",
       "store_offers_url": "https://resq-club.com/app/offers/17261956",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_f5e372141d00",
@@ -310,7 +310,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261744",
       "store_offers_url": "https://resq-club.com/app/offers/17261744",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_6d573add83d8",
@@ -336,7 +336,7 @@
       "deal_url": "https://resq-club.com/app/offers/17258849",
       "store_offers_url": "https://resq-club.com/app/offers/17258849",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_691c5e41c988",
@@ -362,7 +362,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261815",
       "store_offers_url": "https://resq-club.com/app/offers/17261815",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_c78b86dea32d",
@@ -388,7 +388,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261763",
       "store_offers_url": "https://resq-club.com/app/offers/17261763",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_d44e5a1fe3c1",
@@ -414,7 +414,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261769",
       "store_offers_url": "https://resq-club.com/app/offers/17261769",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_65b03c8416a2",
@@ -440,7 +440,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261199",
       "store_offers_url": "https://resq-club.com/app/offers/17261199",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_83766c030978",
@@ -466,7 +466,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261108",
       "store_offers_url": "https://resq-club.com/app/offers/17261108",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_88047ae313fc",
@@ -492,7 +492,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261111",
       "store_offers_url": "https://resq-club.com/app/offers/17261111",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_09847a22d329",
@@ -518,7 +518,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261812",
       "store_offers_url": "https://resq-club.com/app/offers/17261812",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_8f1138f83117",
@@ -544,7 +544,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261448",
       "store_offers_url": "https://resq-club.com/app/offers/17261448",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_728a791dc91c",
@@ -570,7 +570,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261449",
       "store_offers_url": "https://resq-club.com/app/offers/17261449",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_0b6a5e26f104",
@@ -596,7 +596,7 @@
       "deal_url": "https://resq-club.com/app/offers/17257956",
       "store_offers_url": "https://resq-club.com/app/offers/17257956",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_632c5755e06f",
@@ -622,7 +622,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261312",
       "store_offers_url": "https://resq-club.com/app/offers/17261312",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_bed5e20b1978",
@@ -648,7 +648,7 @@
       "deal_url": "https://resq-club.com/app/offers/17258644",
       "store_offers_url": "https://resq-club.com/app/offers/17258644",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_09a72ec0865c",
@@ -674,7 +674,7 @@
       "deal_url": "https://resq-club.com/app/offers/17258666",
       "store_offers_url": "https://resq-club.com/app/offers/17258666",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_230cb628790f",
@@ -700,7 +700,7 @@
       "deal_url": "https://resq-club.com/app/offers/17260776",
       "store_offers_url": "https://resq-club.com/app/offers/17260776",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_acc22e5b665d",
@@ -726,7 +726,7 @@
       "deal_url": "https://resq-club.com/app/offers/17261170",
       "store_offers_url": "https://resq-club.com/app/offers/17261170",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "resq_65e3851d2b33",
@@ -752,7 +752,7 @@
       "deal_url": "https://resq-club.com/app/offers/17260436",
       "store_offers_url": "https://resq-club.com/app/offers/17260436",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1699,24.9384",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "k_ruoka_4aa85d18e291",
@@ -778,7 +778,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "k_ruoka_a4f18931904c",
@@ -804,7 +804,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "k_ruoka_0697c2e3e8a4",
@@ -830,7 +830,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "k_ruoka_a50f595424b6",
@@ -856,7 +856,7 @@
       "deal_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "store_offers_url": "https://www.k-ruoka.fi/artikkelit/k-supermarket/k-supermarket-tarjoukset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1589,24.8825",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     },
     {
       "id": "s_group_0723146f4ba0",
@@ -882,7 +882,7 @@
       "deal_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "store_offers_url": "https://www.s-kaupat.fi/tuotteet?query=makeiset",
       "maps_url": "https://www.google.com/maps/search/?api=1&query=60.1594,24.8832",
-      "verified_at": "2026-11-21T10:12:25.271673+02:00"
+      "verified_at": "2026-11-21T10:14:18.235832+02:00"
     }
   ]
 }

@@ -8,56 +8,56 @@
     "resq_club": {
       "status": "ok",
       "items_found": 24,
-      "latency_ms": 7161,
+      "latency_ms": 5046,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-21T10:12:32.437955+02:00"
+      "checked_at": "2026-11-21T10:14:23.286695+02:00"
     },
     "myhelsinki_events": {
       "status": "ok",
       "items_found": 2,
-      "latency_ms": 2017,
+      "latency_ms": 1980,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-21T10:12:34.466441+02:00"
+      "checked_at": "2026-11-21T10:14:25.271896+02:00"
     },
     "finnkino_movies": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 3427,
+      "latency_ms": 2915,
       "http_status": 404,
       "error_reason": "HTTP 404",
-      "consecutive_failures": 12,
-      "checked_at": "2026-11-21T10:12:37.895060+02:00"
+      "consecutive_failures": 13,
+      "checked_at": "2026-11-21T10:14:28.188419+02:00"
     },
     "k_ruoka": {
       "status": "ok",
       "items_found": 4,
-      "latency_ms": 3917,
+      "latency_ms": 3873,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-21T10:12:41.818458+02:00"
+      "checked_at": "2026-11-21T10:14:32.068145+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 3704,
+      "latency_ms": 3856,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-21T10:12:45.523101+02:00"
+      "checked_at": "2026-11-21T10:14:35.924845+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 1,
-      "latency_ms": 4070,
+      "latency_ms": 3307,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-21T10:12:52.976601+02:00"
+      "checked_at": "2026-11-21T10:14:43.141605+02:00"
     }
   }
 }
