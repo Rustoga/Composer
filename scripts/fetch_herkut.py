@@ -98,7 +98,7 @@ def target_region(text: str) -> Optional[str]:
         return "Vantaa"
     if any(k in low for k in ["helsinki", "lauttasaari", "lauttis", "käpylä", "itis", "tennispalatsi", "kinopalatsi", "maxim", "malmi", "pasila", "kallio", "kamppi", "ruoholahti", "haaga", "munkkiniemi", "töölö", "kluuvi", "viikki", "myllypuro", "kontula", "vuosaari", "herttoniemi", "laajasalo"]):
         return "Helsinki"
-    return None
+    return "Muu Suomi"
 
 EXCLUDE_KEYWORDS = [
     "ruisleipä", "paahtoleipä", "kauraleipä", "moniviljaleipä", "sämpylä", "patonki",
@@ -235,8 +235,6 @@ def fetch_resq_club(monitor: SourceHealthMonitor, now_hel: datetime) -> List[Dic
                 continue
             addr = vname
             reg = target_region(f"{addr} {vname}")
-            if reg is None:
-                continue
             lat, lon = 60.1699, 24.9384
             durl = url_of("resq-club.com", f"/app/offers/{oid}")
             items.append({
