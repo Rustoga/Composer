@@ -138,7 +138,7 @@ async function loadSnapshot(){const err=document.getElementById("loadError");err
     function tickCountdown(){const{dateObj,label}=computeNextHelsinkiUpdate();document.getElementById("nextUpdateAt").textContent=label;const ms=Math.max(0,dateObj-Date.now());document.getElementById("countdown").textContent=`${Math.floor(ms/3600000)}h ${Math.floor((ms%3600000)/60000)}m`;}
     document.getElementById("searchInput").addEventListener("input",e=>{state.search=e.target.value;render();});
     document.getElementById("regionSelect").addEventListener("change",e=>{state.region=e.target.value;render();});
-    document.getElementById("refreshBtn").addEventListener("click",loadSnapshot);
+    document.getElementById("refreshBtn").addEventListener("click",async()=>{const b=document.getElementById("refreshBtn");const t=b.textContent;b.textContent="Ladataan…";b.disabled=true;try{await loadSnapshot();}finally{b.textContent=t;b.disabled=false;}});
     document.getElementById("cardViewBtn").addEventListener("click",()=>{state.viewMode="cards";document.getElementById("cardViewBtn").classList.add("active");document.getElementById("tableViewBtn").classList.remove("active");render();});
     document.getElementById("tableViewBtn").addEventListener("click",()=>{state.viewMode="table";document.getElementById("tableViewBtn").classList.add("active");document.getElementById("cardViewBtn").classList.remove("active");render();});
     document.querySelectorAll("#categoryRow .pill-btn").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#categoryRow .pill-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.category=b.dataset.cat;render();}));
