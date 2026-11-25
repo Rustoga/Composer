@@ -8,58 +8,58 @@
   ],
   "sources": {
     "resq_club": {
-      "status": "empty",
-      "items_found": 0,
-      "latency_ms": 4969,
+      "status": "ok",
+      "items_found": 11,
+      "latency_ms": 5376,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-25T02:18:37.600440+02:00"
+      "checked_at": "2026-11-25T14:01:09.751249+02:00"
     },
     "myhelsinki_events": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 699,
+      "latency_ms": 1254,
       "http_status": null,
       "error_reason": "name 'reg' is not defined",
-      "consecutive_failures": 4,
-      "checked_at": "2026-11-25T02:18:38.299785+02:00"
+      "consecutive_failures": 6,
+      "checked_at": "2026-11-25T14:01:11.006004+02:00"
     },
     "finnkino_movies": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2427,
+      "latency_ms": 2452,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 31,
-      "checked_at": "2026-11-25T02:18:40.727439+02:00"
+      "consecutive_failures": 33,
+      "checked_at": "2026-11-25T14:01:13.459240+02:00"
     },
     "k_ruoka": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2654,
+      "latency_ms": 2412,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 2,
-      "checked_at": "2026-11-25T02:18:43.382169+02:00"
+      "consecutive_failures": 4,
+      "checked_at": "2026-11-25T14:01:15.872059+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 3896,
+      "latency_ms": 4873,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-25T02:18:47.279615+02:00"
+      "checked_at": "2026-11-25T14:01:20.746503+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 1,
-      "latency_ms": 2743,
+      "latency_ms": 2789,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-25T02:18:53.307489+02:00"
+      "checked_at": "2026-11-25T14:01:27.369610+02:00"
     }
   }
 }
