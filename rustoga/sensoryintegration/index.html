@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sensory Integration – Rustoga</title>
+  <style>
+    :root { --bg:#000; --card:#080808; --muted:#9a9a9a; --line:#262626; --accent:#fff; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:#f2f2f2; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; padding:24px; overflow-x:hidden; }
+    .wrap { max-width: 1080px; margin:0 auto; position:relative; z-index:2; }
+    h1 { margin:0 0 6px; font-size:clamp(1.8rem,4vw,2.8rem); letter-spacing:-0.02em; color:#fff; }
+    .lede { color:var(--muted); line-height:1.6; max-width:60ch; }
+    .hero { display:grid; grid-template-columns: 320px 1fr; gap:28px; margin-top:28px; align-items:start; }
+    .cover { border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .cover img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; filter:grayscale(100%) contrast(1.15); }
+    .tracklist { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); }
+    .track { display:grid; grid-template-columns: 40px 1fr auto; gap:12px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--line); transition:background .15s; }
+    .track:last-child { border-bottom:none; }
+    .track:hover { background:#141414; }
+    .track .num { color:var(--muted); font-size:.9rem; }
+    .track .name { color:#fff; font-size:.95rem; }
+    .track .name a { color:#fff; text-decoration:none; }
+    .track .name a:hover { text-decoration:underline; }
+    .track .dur { color:var(--muted); font-size:.85rem; font-variant-numeric:tabular-nums; }
+    .embeds { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:28px; }
+    .embed { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); }
+    .embed iframe { width:100%; border:0; display:block; }
+    .credits { margin-top:28px; padding:18px; border:1px solid var(--line); border-radius:12px; background:rgba(10,10,10,.5); }
+    .credits p { color:var(--muted); line-height:1.6; margin:0 0 8px; }
+    .credits .label { color:#fff; font-weight:600; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+    .links a { color:#f2f2f2; border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-size:.82rem; text-decoration:none; }
+    .links a:hover { border-color:#fff; color:#fff; }
+    .sitenav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+    .navpill { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; text-decoration:none; color:var(--muted); background:var(--card); }
+    .navpill:hover { border-color:#fff; color:#fff; }
+    .navpill.active { background:#fff; color:#000; border-color:#fff; }
+
+    /* Berlin techno animations */
+    .scanlines { position:fixed; inset:0; pointer-events:none; z-index:1; background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 2px,transparent 4px); animation:scan 6s linear infinite; mix-blend-mode:overlay; }
+    @keyframes scan { 0%{transform:translateY(0)} 100%{transform:translateY(4px)} }
+    .gridbg { position:fixed; inset:0; pointer-events:none; z-index:0; background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size:48px 48px; animation:gridmove 12s linear infinite; opacity:.35; }
+    @keyframes gridmove { 0%{transform:translate(0,0)} 100%{transform:translate(48px,48px)} }
+    .pulse { position:fixed; top:50%; left:50%; width:70vmin; height:70vmin; margin:-35vmin; border:1px solid rgba(255,255,255,.12); border-radius:50%; pointer-events:none; z-index:0; animation:pulse 5s ease-out infinite; }
+    .pulse:nth-child(2){animation-delay:1.6s;} .pulse:nth-child(3){animation-delay:3.2s;}
+    @keyframes pulse { 0%{transform:scale(.3);opacity:.9;} 100%{transform:scale(1.7);opacity:0;} }
+    .glitch { position:relative; display:inline-block; }
+    .glitch::before,.glitch::after { content:attr(data-text); position:absolute; left:0; top:0; width:100%; height:100%; }
+    .glitch::before { color:#fff; animation:glitch1 4s infinite; mix-blend-mode:difference; }
+    .glitch::after { color:#fff; animation:glitch2 4s infinite; mix-blend-mode:difference; }
+    @keyframes glitch1 { 0%,90%,100%{clip-path:inset(0 0 100% 0);transform:translate(0)} 92%{clip-path:inset(10% 0 60% 0);transform:translate(-2px,1px)} 94%{clip-path:inset(60% 0 10% 0);transform:translate(2px,-1px)} 96%{clip-path:inset(30% 0 40% 0);transform:translate(-1px,2px)} }
+    @keyframes glitch2 { 0%,90%,100%{clip-path:inset(100% 0 0 0);transform:translate(0)} 91%{clip-path:inset(20% 0 50% 0);transform:translate(2px,-2px)} 93%{clip-path:inset(50% 0 20% 0);transform:translate(-2px,2px)} 95%{clip-path:inset(10% 0 70% 0);transform:translate(1px,-1px)} }
+
+    @media (max-width:780px){ .hero{grid-template-columns:1fr;} .embeds{grid-template-columns:1fr;} body{padding:14px;} }
+  </style>
+</head>
+<body>
+  <div class="gridbg"></div>
+  <div class="pulse"></div>
+  <div class="pulse"></div>
+  <div class="pulse"></div>
+  <div class="scanlines"></div>
+  <div class="wrap">
+    <nav class="sitenav">
+      <a href="../../lokki/" class="navpill">🕊️ Tapahtumat</a>
+      <a href="../../sauna/" class="navpill">♨ Saunat</a>
+      <a href="../../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+      <a href="../../keikka/" class="navpill">🎸 Keikat</a>
+      <a href="../../rustoga/" class="navpill active">🎧 Rustoga</a>
+    </nav>
+    <h1 class="glitch" data-text="Sensory Integration">Sensory Integration</h1>
+    <p class="lede">Rustoga · album · released May 6, 2024 · electronic / ambient / vocal</p>
+
+    <div class="hero">
+      <div class="cover">
+        <img src="https://f4.bcbits.com/img/a3910106390_10.jpg" alt="Sensory Integration cover" />
+      </div>
+      <div class="tracklist">
+        <div class="track"><span class="num">01</span><span class="name"><a href="https://rustoga.bandcamp.com/track/deafening" target="_blank" rel="noreferrer">Deafening</a></span><span class="dur">03:56</span></div>
+        <div class="track"><span class="num">02</span><span class="name"><a href="https://rustoga.bandcamp.com/track/vituttaa-feat-mariuslurius-2" target="_blank" rel="noreferrer">Vituttaa (feat. MariusLurius)</a></span><span class="dur">03:05</span></div>
+        <div class="track"><span class="num">03</span><span class="name"><a href="https://rustoga.bandcamp.com/track/touch-feat-albin" target="_blank" rel="noreferrer">Touch (feat. Albin)</a></span><span class="dur">03:37</span></div>
+        <div class="track"><span class="num">04</span><span class="name"><a href="https://rustoga.bandcamp.com/track/can-you-feel" target="_blank" rel="noreferrer">Can You Feel</a></span><span class="dur">02:18</span></div>
+        <div class="track"><span class="num">05</span><span class="name"><a href="https://rustoga.bandcamp.com/track/smelling-salts" target="_blank" rel="noreferrer">Smelling Salts</a></span><span class="dur">02:30</span></div>
+        <div class="track"><span class="num">06</span><span class="name"><a href="https://rustoga.bandcamp.com/track/longing-feat-veikko" target="_blank" rel="noreferrer">Longing (feat. Veikko)</a></span><span class="dur">03:40</span></div>
+        <div class="track"><span class="num">07</span><span class="name"><a href="https://rustoga.bandcamp.com/track/dysgeusia" target="_blank" rel="noreferrer">Dysgeusia</a></span><span class="dur">03:45</span></div>
+        <div class="track"><span class="num">08</span><span class="name"><a href="https://rustoga.bandcamp.com/track/vituttaa-mega-jumputus-instrumental" target="_blank" rel="noreferrer">Vituttaa Mega Jumputus Instrumental</a></span><span class="dur">03:22</span></div>
+      </div>
+    </div>
+
+    <div class="embeds">
+      <div class="embed">
+        <iframe src="https://bandcamp.com/EmbeddedPlayer/album=2179392842/size=large/bgcol=000000/linkcol=ffffff/transparent=true/" seamless height="472" loading="lazy" title="Bandcamp player"></iframe>
+      </div>
+      <div class="embed">
+        <iframe src="https://www.youtube.com/embed/videoseries?list=OLAK5uy_knCBRmB_LaNBBuKar9tWQ4r9k4pK30qK8" height="472" loading="lazy" title="YouTube playlist" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <div class="credits">
+      <p><span class="label">Released:</span> May 6, 2024</p>
+      <p><span class="label">License:</span> all rights reserved</p>
+      <p><span class="label">Tags:</span> ambient, electronic, finland, indie, vocal</p>
+      <p><span class="label">Artist:</span> Rustoga — Rudolf Westerholm, Finnish electronic music producer.</p>
+      <div class="links">
+        <a href="https://rustoga.bandcamp.com/album/sensory-integration" target="_blank" rel="noreferrer">Buy on Bandcamp</a>
+        <a href="https://www.youtube.com/playlist?list=OLAK5uy_knCBRmB_LaNBBuKar9tWQ4r9k4pK30qK8" target="_blank" rel="noreferrer">YouTube playlist</a>
+        <a href="../../rustoga/" rel="noreferrer">← Back to releases</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

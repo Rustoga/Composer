@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rustoga – releases</title>
+  <style>
+    :root { --bg:#000; --card:#080808; --muted:#9a9a9a; --line:#262626; --accent:#fff; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:#f2f2f2; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; padding:24px; }
+    .wrap { max-width: 1080px; margin:0 auto; }
+    h1 { margin:0 0 6px; font-size:clamp(1.8rem,4vw,2.8rem); letter-spacing:-0.02em; color:#fff; }
+    .lede { color:var(--muted); line-height:1.6; max-width:60ch; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; margin-top:28px; }
+    .card { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); transition:transform .18s,border-color .18s; }
+    .card:hover { transform:translateY(-3px); border-color:#fff; }
+    .card img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; filter:grayscale(100%) contrast(1.1); }
+    .card .meta { padding:14px 16px; }
+    .card .title { font-weight:700; font-size:1.05rem; color:#fff; }
+    .card .sub { color:var(--muted); font-size:.88rem; margin-top:4px; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .links a { color:#f2f2f2; border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-size:.82rem; text-decoration:none; }
+    .links a:hover { border-color:#fff; color:#fff; }
+    .bio { margin-top:32px; padding:18px; border:1px solid var(--line); border-radius:12px; background:rgba(10,10,10,.5); }
+    .bio p { color:var(--muted); line-height:1.6; }
+    .sitenav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+    .navpill { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; text-decoration:none; color:var(--muted); background:var(--card); }
+    .navpill:hover { border-color:#fff; color:#fff; }
+    .navpill.active { background:#fff; color:#000; border-color:#fff; }
+    .scanlines { position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 1px,transparent 2px,transparent 4px); animation:scan 6s linear infinite; mix-blend-mode:overlay; }
+    @keyframes scan { 0%{transform:translateY(0)} 100%{transform:translateY(4px)} }
+    @media (max-width:780px){ body{padding:14px;} }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="wrap">
+    <nav class="sitenav">
+      <a href="../lokki/" class="navpill">🕊️ Tapahtumat</a>
+      <a href="../sauna/" class="navpill">♨ Saunat</a>
+      <a href="../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+      <a href="../keikka/" class="navpill">🎸 Keikat</a>
+      <a href="./" class="navpill active">🎧 Rustoga</a>
+    </nav>
+    <h1>Rustoga</h1>
+    <p class="lede">Releases by Rudolf Westerholm aka Rustoga — Finnish electronic music producer. Minimal, hypnotic, built for late nights and long drives.</p>
+
+    <div class="grid">
+      <a class="card" href="./sensoryintegration/">
+        <img src="https://f4.bcbits.com/img/a3910106390_10.jpg" alt="Sensory Integration cover" />
+        <div class="meta">
+          <div class="title">Sensory Integration</div>
+          <div class="sub">Album · released May 6, 2024 · 8 tracks</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="bio">
+      <p>Rudolf Westerholm aka Rustoga is a Finnish electronic music producer with 17+ years of experience. More releases, mixes and visual work live on Bandcamp, Spotify and YouTube.</p>
+      <div class="links">
+        <a href="https://rustoga.bandcamp.com" target="_blank" rel="noreferrer">Bandcamp</a>
+        <a href="https://open.spotify.com/artist/26OW0tluLWLtMMdszbZlQc" target="_blank" rel="noreferrer">Spotify</a>
+        <a href="https://www.youtube.com/playlist?list=OLAK5uy_knCBRmB_LaNBBuKar9tWQ4r9k4pK30qK8" target="_blank" rel="noreferrer">YouTube</a>
+        <a href="https://www.instagram.com/rustoga/" target="_blank" rel="noreferrer">Instagram</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
