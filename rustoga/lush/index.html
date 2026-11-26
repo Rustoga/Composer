@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lush – Rustoga</title>
+  <style>
+    :root { --bg:#000; --card:#050505; --muted:#9a9a9a; --line:#1f1f1f; --accent:#fff; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:#f2f2f2; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; }
+    .wrap { max-width: 1180px; margin:0 auto; padding:24px; position:relative; z-index:2; }
+    .hero { position:relative; min-height:72vh; display:flex; flex-direction:column; justify-content:flex-end; padding:40px 24px 60px; overflow:hidden; border-bottom:1px solid var(--line); }
+    .hero-bg { position:absolute; inset:0; z-index:0; }
+    .wave { position:absolute; left:0; right:0; height:2px; background:rgba(255,255,255,.5); animation:wave 8s ease-in-out infinite; }
+    .wave.w1 { top:30%; animation-delay:0s; }
+    .wave.w2 { top:50%; animation-delay:2s; opacity:.6; }
+    .wave.w3 { top:70%; animation-delay:4s; opacity:.3; }
+    @keyframes wave { 0%,100%{transform:translateX(-10%) scaleX(1.1); opacity:.3} 50%{transform:translateX(10%) scaleX(1.2); opacity:.8} }
+    .blur { position:absolute; width:40vmin; height:40vmin; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.12), transparent 70%); filter:blur(30px); animation:drift 12s ease-in-out infinite; }
+    .blur.b1 { top:20%; left:10%; }
+    .blur.b2 { bottom:10%; right:15%; animation-delay:3s; }
+    @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-15px)} }
+    .hero-content { position:relative; z-index:2; max-width:1180px; margin:0 auto; width:100%; }
+    .eyebrow { font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+    .title { font-size:clamp(2.4rem,7vw,5rem); font-weight:800; line-height:.95; letter-spacing:-.03em; color:#fff; margin:0 0 14px; }
+    .subtitle { color:var(--muted); font-size:1.05rem; max-width:60ch; line-height:1.6; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+    .chip { border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:.82rem; color:var(--muted); background:rgba(0,0,0,.5); }
+    .chip strong { color:#fff; }
+    .sitenav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; padding:14px 0; }
+    .navpill { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; text-decoration:none; color:var(--muted); background:var(--card); }
+    .navpill:hover { border-color:#fff; color:#fff; }
+    .navpill.active { background:#fff; color:#000; border-color:#fff; }
+    .section { padding:60px 0; border-bottom:1px solid var(--line); }
+    .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; }
+    .section-head h2 { margin:0; font-size:1.4rem; color:#fff; }
+    .section-head .kicker { color:var(--muted); font-size:.85rem; letter-spacing:.18em; text-transform:uppercase; }
+    .two { display:grid; grid-template-columns: 360px 1fr; gap:36px; align-items:start; }
+    .cover { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .cover img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; filter:grayscale(100%) contrast(1.1); }
+    .cover .caption { padding:12px 14px; color:var(--muted); font-size:.82rem; border-top:1px solid var(--line); }
+    .tracklist { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .track { display:grid; grid-template-columns:44px 1fr auto; gap:14px; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); transition:background .15s, padding-left .15s; }
+    .track:last-child { border-bottom:none; }
+    .track:hover { background:#0f0f0f; padding-left:22px; }
+    .track .num { color:var(--muted); font-size:.9rem; }
+    .track .name { color:#fff; font-size:.98rem; }
+    .track .name a { color:#fff; text-decoration:none; }
+    .track .name a:hover { text-decoration:underline; }
+    .track .dur { color:var(--muted); font-size:.85rem; }
+    .story { color:#d8d8d8; line-height:1.75; font-size:1.02rem; }
+    .story p { margin:0 0 16px; }
+    .embeds { display:grid; grid-template-columns:1fr; gap:18px; }
+    .embed { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .embed iframe { width:100%; border:0; display:block; height:472px; }
+    .credits { color:#d8d8d8; line-height:1.7; font-size:.95rem; }
+    .credits p { margin:0 0 8px; }
+    .credits strong { color:#fff; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; margin:24px 0; }
+    .links a { color:#f2f2f2; border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:.82rem; text-decoration:none; }
+    .links a:hover { border-color:#fff; color:#fff; }
+    .footer { padding:40px 0 20px; color:var(--muted); font-size:.85rem; }
+    @media (max-width:900px){ .two{grid-template-columns:1fr;} }
+    @media (max-width:780px){ .wrap{padding:14px;} .hero{min-height:60vh;} }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-bg">
+      <div class="blur b1"></div>
+      <div class="blur b2"></div>
+      <div class="wave w1"></div>
+      <div class="wave w2"></div>
+      <div class="wave w3"></div>
+    </div>
+    <div class="hero-content">
+      <nav class="sitenav">
+        <a href="../../lokki/" class="navpill">🕊️ Tapahtumat</a>
+        <a href="../../sauna/" class="navpill">♨ Saunat</a>
+        <a href="../../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+        <a href="../../keikka/" class="navpill">🎸 Keikat</a>
+        <a href="../../rustoga/" class="navpill active">🎧 Rustoga</a>
+      </nav>
+      <div class="eyebrow">Rustoga · Album · 2023</div>
+      <h1 class="title">Lush</h1>
+      <p class="subtitle">A dreamy, feather-light album — born into the world like a dew into the morning. Soft, lush textures and quiet vocals.</p>
+      <div class="hero-meta">
+        <span class="chip"><strong>3</strong> tracks</span>
+        <span class="chip">Released <strong>Sep 27, 2023</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section">
+      <div class="two">
+        <div>
+          <div class="cover">
+            <img src="https://f4.bcbits.com/img/a1295058869_10.jpg" alt="Lush cover" />
+            <div class="caption">Lush</div>
+          </div>
+          <div class="links">
+            <a href="https://rustoga.bandcamp.com/album/lush-2" target="_blank" rel="noreferrer">Buy on Bandcamp</a>
+            <a href="../../rustoga/" rel="noreferrer">← Back to releases</a>
+          </div>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Tracklist</h2>
+            <span class="kicker">03 tracks</span>
+          </div>
+          <div class="tracklist">
+            <div class="track"><span class="num">01</span><div class="name"><a href="https://rustoga.bandcamp.com/track/as-dream-in-sleep-i-was-born-into-this-world-and-the-mind-so-featherlight-as-a-dew-into-the-morning-i-will-someday-too" target="_blank" rel="noreferrer">As dream in sleep I was born into this world…</a></div><span class="dur">04:18</span></div>
+            <div class="track"><span class="num">02</span><div class="name"><a href="https://rustoga.bandcamp.com/track/k-perry-2" target="_blank" rel="noreferrer">Käperry</a></div><span class="dur">02:54</span></div>
+            <div class="track"><span class="num">03</span><div class="name"><a href="https://rustoga.bandcamp.com/track/all-we-had-2" target="_blank" rel="noreferrer">All We Had</a></div><span class="dur">02:58</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Listen</h2>
+        <span class="kicker">Bandcamp</span>
+      </div>
+      <div class="embeds">
+        <div class="embed">
+          <iframe src="https://bandcamp.com/EmbeddedPlayer/album=1377723208/size=large/bgcol=000000/linkcol=ffffff/transparent=true/" loading="lazy" title="Bandcamp player"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Credits</h2>
+        <span class="kicker">Details</span>
+      </div>
+      <div class="credits">
+        <p><strong>Released:</strong> September 27, 2023</p>
+        <p><strong>Tags:</strong> Ambient, Electronic, Finland, Indie, Vocal</p>
+      </div>
+    </section>
+
+    <div class="footer">© Rustoga · Lush</div>
+  </div>
+</body>
+</html>

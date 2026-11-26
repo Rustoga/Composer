@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nurturing Growth – Rustoga</title>
+  <style>
+    :root { --bg:#000; --card:#050505; --muted:#9a9a9a; --line:#1f1f1f; --accent:#fff; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:#f2f2f2; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; }
+    .wrap { max-width: 1180px; margin:0 auto; padding:24px; position:relative; z-index:2; }
+    .hero { position:relative; min-height:72vh; display:flex; flex-direction:column; justify-content:flex-end; padding:40px 24px 60px; overflow:hidden; border-bottom:1px solid var(--line); }
+    .hero-bg { position:absolute; inset:0; z-index:0; }
+    .grow { position:absolute; bottom:0; width:2px; background:linear-gradient(to top, rgba(255,255,255,.8), transparent); animation:grow 4s ease-in-out infinite; }
+    @keyframes grow { 0%{height:0;opacity:.2} 50%{height:60%;opacity:1} 100%{height:0;opacity:.2} }
+    .hero-content { position:relative; z-index:2; max-width:1180px; margin:0 auto; width:100%; }
+    .eyebrow { font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+    .title { font-size:clamp(2.4rem,7vw,5rem); font-weight:800; line-height:.95; letter-spacing:-.03em; color:#fff; margin:0 0 14px; }
+    .subtitle { color:var(--muted); font-size:1.05rem; max-width:60ch; line-height:1.6; }
+    .hero-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+    .chip { border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:.82rem; color:var(--muted); background:rgba(0,0,0,.5); }
+    .chip strong { color:#fff; }
+    .sitenav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; padding:14px 0; }
+    .navpill { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; text-decoration:none; color:var(--muted); background:var(--card); }
+    .navpill:hover { border-color:#fff; color:#fff; }
+    .navpill.active { background:#fff; color:#000; border-color:#fff; }
+    .section { padding:60px 0; border-bottom:1px solid var(--line); }
+    .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; }
+    .section-head h2 { margin:0; font-size:1.4rem; color:#fff; }
+    .section-head .kicker { color:var(--muted); font-size:.85rem; letter-spacing:.18em; text-transform:uppercase; }
+    .two { display:grid; grid-template-columns: 360px 1fr; gap:36px; align-items:start; }
+    .cover { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .cover img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; filter:grayscale(100%) contrast(1.1); }
+    .cover .caption { padding:12px 14px; color:var(--muted); font-size:.82rem; border-top:1px solid var(--line); }
+    .tracklist { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .track { display:grid; grid-template-columns:44px 1fr auto; gap:14px; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); transition:background .15s, padding-left .15s; }
+    .track:last-child { border-bottom:none; }
+    .track:hover { background:#0f0f0f; padding-left:22px; }
+    .track .num { color:var(--muted); font-size:.9rem; }
+    .track .name { color:#fff; font-size:.98rem; }
+    .track .name a { color:#fff; text-decoration:none; }
+    .track .name a:hover { text-decoration:underline; }
+    .track .dur { color:var(--muted); font-size:.85rem; }
+    .story { color:#d8d8d8; line-height:1.75; font-size:1.02rem; }
+    .story p { margin:0 0 16px; }
+    .embeds { display:grid; grid-template-columns:1fr; gap:18px; }
+    .embed { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .embed iframe { width:100%; border:0; display:block; height:472px; }
+    .credits { color:#d8d8d8; line-height:1.7; font-size:.95rem; }
+    .credits p { margin:0 0 8px; }
+    .credits strong { color:#fff; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; margin:24px 0; }
+    .links a { color:#f2f2f2; border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:.82rem; text-decoration:none; }
+    .links a:hover { border-color:#fff; color:#fff; }
+    .footer { padding:40px 0 20px; color:var(--muted); font-size:.85rem; }
+    @media (max-width:900px){ .two{grid-template-columns:1fr;} }
+    @media (max-width:780px){ .wrap{padding:14px;} .hero{min-height:60vh;} }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-bg">
+      <div class="grow" style="left:10%;animation-delay:0s;"></div>
+      <div class="grow" style="left:25%;animation-delay:.6s;height:40%;"></div>
+      <div class="grow" style="left:40%;animation-delay:1.2s;height:70%;"></div>
+      <div class="grow" style="left:55%;animation-delay:.3s;height:30%;"></div>
+      <div class="grow" style="left:70%;animation-delay:1.8s;height:55%;"></div>
+      <div class="grow" style="left:85%;animation-delay:.9s;height:45%;"></div>
+    </div>
+    <div class="hero-content">
+      <nav class="sitenav">
+        <a href="../../lokki/" class="navpill">🕊️ Tapahtumat</a>
+        <a href="../../sauna/" class="navpill">♨ Saunat</a>
+        <a href="../../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+        <a href="../../keikka/" class="navpill">🎸 Keikat</a>
+        <a href="../../rustoga/" class="navpill active">🎧 Rustoga</a>
+      </nav>
+      <div class="eyebrow">Rustoga · Album · 2026</div>
+      <h1 class="title">Nurturing<br/>Growth 🌱</h1>
+      <p class="subtitle">An ambient electronic album meant to keep in the background while nurturing plants or yourself in everyday tasks. Composed for a friend's allotment plot and the joy of doing with hands outdoors.</p>
+      <div class="hero-meta">
+        <span class="chip"><strong>8</strong> tracks</span>
+        <span class="chip">Released <strong>June 25, 2026</strong></span>
+        <span class="chip">Cover art by Joshio Kallio</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="section">
+      <div class="two">
+        <div>
+          <div class="cover">
+            <img src="https://f4.bcbits.com/img/a0564732154_10.jpg" alt="Nurturing Growth cover" />
+            <div class="caption">Cover art by Joshio Kallio</div>
+          </div>
+          <div class="links">
+            <a href="https://rustoga.bandcamp.com/album/nurturing-growth" target="_blank" rel="noreferrer">Buy on Bandcamp</a>
+            <a href="../../rustoga/" rel="noreferrer">← Back to releases</a>
+          </div>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Tracklist</h2>
+            <span class="kicker">08 tracks</span>
+          </div>
+          <div class="tracklist">
+            <div class="track"><span class="num">01</span><div class="name"><a href="https://rustoga.bandcamp.com/track/random-acts-of-kindness-intro" target="_blank" rel="noreferrer">Random Acts of Kindness (Intro)</a></div><span class="dur">01:19</span></div>
+            <div class="track"><span class="num">02</span><div class="name"><a href="https://rustoga.bandcamp.com/track/hope-theres-good-soil" target="_blank" rel="noreferrer">Hope There's Good Soil</a></div><span class="dur">05:36</span></div>
+            <div class="track"><span class="num">03</span><div class="name"><a href="https://rustoga.bandcamp.com/track/shimmering-cds-in-an-allotment-plot" target="_blank" rel="noreferrer">Shimmering CDs in an Allotment Plot</a></div><span class="dur">05:21</span></div>
+            <div class="track"><span class="num">04</span><div class="name"><a href="https://rustoga.bandcamp.com/track/cartwheel-of-cabbage" target="_blank" rel="noreferrer">Cartwheel of Cabbage</a></div><span class="dur">04:07</span></div>
+            <div class="track"><span class="num">05</span><div class="name"><a href="https://rustoga.bandcamp.com/track/the-wooden-bench" target="_blank" rel="noreferrer">The Wooden Bench</a></div><span class="dur">05:34</span></div>
+            <div class="track"><span class="num">06</span><div class="name"><a href="https://rustoga.bandcamp.com/track/pull-the-weeds-2" target="_blank" rel="noreferrer">Pull The Weeds</a></div><span class="dur">03:14</span></div>
+            <div class="track"><span class="num">07</span><div class="name"><a href="https://rustoga.bandcamp.com/track/corc-sun-and-whey-drink" target="_blank" rel="noreferrer">Corc (Sun and Whey Drink)</a></div><span class="dur">05:41</span></div>
+            <div class="track"><span class="num">08</span><div class="name"><a href="https://rustoga.bandcamp.com/track/bonus-track-only-tree-tone" target="_blank" rel="noreferrer">Bonus Track - Only Tree Tone</a></div><span class="dur">28:52</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>About</h2>
+        <span class="kicker">Nurturing</span>
+      </div>
+      <div class="story">
+        <p>Nurturing Growth 🌱 is meant for you to keep in the background when nurturing your plants or yourself in everyday tasks in life. My dear friend Joshio loves plants and has his own channel where he tends to them while going through his processes, so these were originally composed for him. The songs have been tied into helping him out in an allotment plot and enjoying doing with hands while being outside.</p>
+        <p>Hope you enjoy Nurturing Growth 🌱! Take care! Oh, and naturally (heh) no AI used.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Listen</h2>
+        <span class="kicker">Bandcamp</span>
+      </div>
+      <div class="embeds">
+        <div class="embed">
+          <iframe src="https://bandcamp.com/EmbeddedPlayer/album=485095952/size=large/bgcol=000000/linkcol=ffffff/transparent=true/" loading="lazy" title="Bandcamp player"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Credits</h2>
+        <span class="kicker">Details</span>
+      </div>
+      <div class="credits">
+        <p><strong>Released:</strong> June 25, 2026</p>
+        <p><strong>Production:</strong> Rudolf &lsquo;Rustoga&rsquo; Westerholm</p>
+        <p><strong>Cover Art:</strong> Joshio Kallio</p>
+        <p><strong>Tags:</strong> Ambient, Electronic, Finland, Growth, Plants, Analogue, Life, Vocal</p>
+      </div>
+    </section>
+
+    <div class="footer">© Rustoga · Nurturing Growth</div>
+  </div>
+</body>
+</html>
