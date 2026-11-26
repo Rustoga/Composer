@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saunat Helsingissä - Lokki</title>
+  <style>
+    :root {
+      --bg: #1a0f0a;
+      --card: #241810;
+      --card-hover: #2e1f14;
+      --muted: #b08d6b;
+      --line: #4a3424;
+      --accent: #d97706;
+      --accent-glow: #f59e0b;
+      --fire: #ef4444;
+      --fire-glow: #fb923c;
+      --wood: #8b5a2b;
+      --wood-light: #d9a066;
+      --ember: #ef4444;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1000px 600px at 20% 10%, rgba(168,85,24,0.16), transparent 50%),
+        radial-gradient(800px 500px at 80% 80%, rgba(239,68,68,0.08), transparent 50%),
+        var(--bg);
+      color: #f0e6da;
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      padding: 24px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    header { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      letter-spacing: -0.02em;
+      color: #fdf2e8;
+      text-shadow: 0 2px 10px rgba(245,158,11,0.35);
+    }
+    .lede { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      margin: 12px 0 14px;
+    }
+    input, select, button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #140d09;
+      color: #f0e6da;
+      padding: 7px 12px;
+      font-size: 14px;
+    }
+    button { cursor: pointer; }
+    button.toggle.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent-glow);
+    }
+    button.refresh { background: var(--wood); border-color: var(--wood-light); color: #fffdf2; }
+    button.refresh:hover { background: #a66736; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin: 6px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .pill strong { color: #fdf2e8; }
+    .sections { display: grid; gap: 16px; }
+    .region {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(26,14,8,0.85), rgba(20,12,7,0.55));
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+    .region-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(139,90,43,0.25), transparent);
+    }
+    .region-head h2 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-glow);
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 10px;
+      padding: 8px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 18px;
+      background: var(--card);
+      display: grid;
+      gap: 6px;
+      line-height: 1.5;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      position: relative;
+    }
+    .card > * {
+      min-width: 0;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      align-items: center;
+    }
+    .meta-row .badge {
+      white-space: nowrap;
+    }
+    .badge.seasonal {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(245,158,11,0.55);
+      color: #fbbf24;
+      background: rgba(245,158,11,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .badge.open-badge {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(34,197,94,0.55);
+      color: #bbf7d0;
+      background: rgba(34,197,94,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .badge.closed-badge {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(245,158,11,0.55);
+      color: #fbbf24;
+      background: rgba(245,158,11,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .badge.unknown-badge {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(148,163,184,0.55);
+      color: #cbd5e1;
+      background: rgba(148,163,184,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .price-detail {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-glow);
+      box-shadow: 0 8px 24px rgba(245,158,11,0.12);
+    }
+    .title { font-weight: 700; line-height: 1.3; color: #fdf2e8; font-size: 15px; }
+    .meta { font-size: 12.5px; color: var(--muted); }
+    .free {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(34,197,94,0.55);
+      color: #bbf7d0;
+      background: rgba(34,197,94,0.12);
+      border-radius: 10px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .paid {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(239,68,68,0.55);
+      color: #fecaca;
+      background: rgba(239,68,68,0.12);
+      border-radius: 10px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .price-detail {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; }
+    .sauna {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(56,189,248,0.55);
+      color: #cffafe;
+      background: rgba(56,189,248,0.12);
+      border-radius: 999px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .varaus {
+      font-size: 10.5px;
+      letter-spacing: 0.09em;
+      border: 1px solid rgba(249,115,22,0.55);
+      color: #fdba74;
+      background: rgba(249,115,22,0.12);
+      border-radius: 999px;
+      padding: 3px 7px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .type {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line);
+      color: var(--wood-light);
+      background: rgba(139,90,43,0.15);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .nature {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(34,197,94,0.55);
+      color: #86efac;
+      background: rgba(34,197,94,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .busy {
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(245,158,11,0.55);
+      color: #fbbf24;
+      background: rgba(245,158,11,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .rating {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line);
+      color: #fbbf24;
+      background: rgba(251,191,36,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .user-rating {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(56,189,248,0.55);
+      color: #cffafe;
+      background: rgba(56,189,248,0.12);
+      border-radius: 6px;
+      padding: 2.5px 6px;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+    .stars {
+      display: inline-flex;
+      gap: 3px;
+      margin-top: 6px;
+    }
+    .star {
+      font-size: 14px;
+      color: rgba(251,191,36,0.35);
+      cursor: pointer;
+      transition: color 0.15s;
+      user-select: none;
+    }
+    .star.filled { color: #fbbf24; text-shadow: 0 0 6px rgba(251,191,36,0.6); }
+    .star:hover { color: #f59e0b; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; }
+    .links a {
+      text-decoration: none;
+      color: #f0e6da;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      transition: all 0.15s;
+    }
+    .links a:hover { border-color: var(--accent-glow); color: var(--accent-glow); }
+    .station-line { font-size: 11px; color: var(--wood-light); margin-top: 2px; }
+    .station-line a { color: var(--accent-glow); border-color: var(--accent-glow); padding: 1px 6px; font-size: 10.5px; }
+    .station { color: var(--accent-glow); font-weight: 700; }
+    .empty { padding: 20px; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; background: rgba(26,14,8,0.4); }
+    .helper {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      background: rgba(26,14,8,0.35);
+    }
+    .helper b { color: #f0e6da; }
+
+    /* Unified cross-page navigation */
+    .sitenav {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 14px;
+      flex-wrap: wrap;
+    }
+    .navpill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--muted);
+      background: var(--card);
+      transition: all 0.15s;
+    }
+    .navpill:hover { border-color: var(--accent-glow); color: var(--accent); }
+    .navpill.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 14px rgba(217,119,6,0.45);
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .sitenav { justify-content: center; }
+    }
+
+    /* Comparison table */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .compare-table th {
+      background: var(--card-hover);
+      color: #fdf2e8;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .compare-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      color: #f0e6da;
+      vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover { background: rgba(245,158,11,0.06); }
+    .compare-table .price { font-weight: 700; color: var(--accent-glow); }
+    .compare-table .free { color: #22c55e; }
+    .compare-table .km { white-space: nowrap; }
+    .compare-table .links a {
+      display: inline-block;
+      margin-right: 6px;
+      font-size: 10.5px;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      text-decoration: none;
+      color: #f0e6da;
+    }
+    .compare-table .links a:hover { border-color: var(--accent-glow); color: var(--accent-glow); }
+    .table-caption {
+      margin: 6px 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .steam {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 120px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.7;
+    }
+    .steam::before, .steam::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.18), transparent 70%);
+      filter: blur(24px);
+      animation: steam 12s linear infinite;
+    }
+    .steam::after { left: 45%; animation-duration: 16s; animation-delay: -5s; opacity: 0.9; width: 220px; height: 220px; }
+    .steam::before { left: 8%; animation-duration: 10s; animation-delay: -2s; }
+    @keyframes steam {
+      0% { transform: translateY(160px) scale(0.3); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-180px) scale(1.4); opacity: 0; }
+    }
+    .card:hover::after {
+      content: '';
+      position: absolute;
+      top: -14px; right: -14px;
+      width: 70px; height: 70px;
+      background: radial-gradient(circle, rgba(245,158,11,0.4), transparent 70%);
+      border-radius: 50%;
+      filter: blur(10px);
+      animation: smokePuff 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .card:hover::before {
+      animation: fireGlow 2s ease-out forwards;
+    }
+    @keyframes smokePuff {
+      0% { transform: translate(0, 0) scale(0.15); opacity: 0; }
+      35% { opacity: 1; }
+      100% { transform: translate(-30px, -45px) scale(2.5); opacity: 0; }
+    }
+    @keyframes fireGlow {
+      0% { opacity: 0.9; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+    @media (max-width: 780px) {
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .steam {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 120px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.7;
+    }
+    .steam::before, .steam::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.18), transparent 70%);
+      filter: blur(24px);
+      animation: steam 12s linear infinite;
+    }
+    .steam::after { left: 45%; animation-duration: 16s; animation-delay: -5s; opacity: 0.9; width: 220px; height: 220px; }
+    .steam::before { left: 8%; animation-duration: 10s; animation-delay: -2s; }
+    @keyframes steam {
+      0% { transform: translateY(160px) scale(0.3); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-180px) scale(1.4); opacity: 0; }
+    }
+    .card:hover::after {
+      content: '';
+      position: absolute;
+      top: -14px; right: -14px;
+      width: 70px; height: 70px;
+      background: radial-gradient(circle, rgba(245,158,11,0.4), transparent 70%);
+      border-radius: 50%;
+      filter: blur(10px);
+      animation: smokePuff 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .card:hover::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(245,158,11,0.25);
+      animation: fireGlow 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes smokePuff {
+      0% { transform: translate(0, 0) scale(0.15); opacity: 0; }
+      35% { opacity: 1; }
+      100% { transform: translate(-30px, -45px) scale(2.5); opacity: 0; }
+    }
+    @keyframes fireGlow {
+      0% { opacity: 0.9; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="sitenav">
+      <a href="../lokki/" class="navpill">🕊️ Tapahtumat</a>
+      <a href="./" class="navpill active">♨ Saunat</a>
+      <a href="../herkku/" class="navpill">🍬 Herkut &amp; Leffat</a>
+    </nav>
+    <div class="steam"></div>
+    <header>
+      <h1>♨ Saunat Helsingissä</h1>
+      <p class="lede">Julkiset saunat Helsingissä, Espoossa, Vantaalla ja Tampereella. Hinnat, aukioloajat, kulkuohjeet ja etäisyys Helsingin rautatieasemalta. Aukiolot ovat tilan aukioloja (ei yksittäistä tapahtuma-aikaa) – tarkista aina paikan omilta sivuilta ennen käyntiä.</p>
+    </header>
+
+    <div class="topbar">
+      <input id="search" placeholder="Etsi nimeä, osoitetta, saunatyyppiä…" />
+      <select id="regionSelect">
+        <option value="ALL">Kaikki alueet</option>
+        <option value="Helsinki">Helsinki</option>
+        <option value="Espoo">Espoo</option>
+        <option value="Vantaa">Vantaa</option>
+        <option value="Muu Suomi">Muu Suomi</option>
+      </select>
+      <button id="refreshNow" class="refresh">Päivitä</button>
+      <button id="uimahalliToggle" class="toggle">Uimahallit</button>
+      <button id="nearestToggle" class="toggle">📍 Lähin asemalta</button>
+      <button id="budgetToggle" class="toggle">💶 Edulliset &amp; ilmaiset (≤ 15 €)</button>
+      <button id="openTodayToggle" class="toggle">🟢 Avoinna tänään</button>
+      <button id="viewToggle" class="toggle active">🎴 Korttinäkymä</button>
+      <button id="tableViewToggle" class="toggle">📋 Taulukkonäkymä</button>
+    </div>
+
+    <div class="stats">
+      <span class="pill">Yhteensä: <strong id="totalCount">0</strong></span>
+      <span class="pill">Päivitetty: <strong id="lastUpdate">-</strong></span>
+    </div>
+
+    <div class="table-caption" id="tableCaption">Vertaa Helsingin julkisia saunoja</div>
+    <div class="table-wrap" id="tableWrap" style="display:none">
+      <table class="compare-table" id="compareTable">
+        <thead>
+          <tr>
+            <th>Sauna</th>
+            <th>Osoite</th>
+            <th>Etäisyys asemalta</th>
+            <th>Kävelyaika</th>
+            <th>Aikuinen (€)</th>
+            <th>Aukioloajat</th>
+            <th>Varaus</th>
+            <th>Verkkosivusto</th>
+          </tr>
+        </thead>
+        <tbody id="compareTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="sections" class="sections"></div>
+
+    <div class="helper">
+      <b>Ilmainen sauna:</b> merkitty <span class="free" style="display:inline">Ilmainen / Free</span>. Maksulliset saunat näyttävät aikuisen hinnan (€). Avausajat ovat tilan aukioloja ja voivat muuttua – tarkista aina laitoksen verkkosivuilta. Klikkaa karttalinkkiä reittiohjeisiin.
+    </div>
+  </div>
+
+  <script>
+    const PRIORITY = ['Helsinki', 'Espoo', 'Vantaa', 'Muu Suomi']
+    let snapshot = { events: [] }
+    let searchTerm = ''
+    let regionFilter = 'ALL'
+let uimahalliFilter = true
+let nearestSort = false
+let budgetFilter = false
+let viewMode = 'cards'
+let openTodayFilter = false
+let refreshing = false
+    let userRatings = {}
+
+    try {
+      const stored = localStorage.getItem('saunaUserRatings')
+      if (stored) userRatings = JSON.parse(stored)
+    } catch (e) {}
+
+    function sortRegions(keys) {
+      return [...keys].sort((a, b) => {
+        const ai = PRIORITY.indexOf(a)
+        const bi = PRIORITY.indexOf(b)
+        if (ai === -1 && bi === -1) return a.localeCompare(b)
+        if (ai === -1) return 1
+        if (bi === -1) return -1
+        return ai - bi
+      })
+    }
+
+    function normalize(str) {
+      return String(str || '').toLowerCase()
+    }
+
+    function getOpenStatus(e) {
+      const oh = e.openingHours || ''
+      if (!oh || oh.includes('Tarkista') || oh.includes('vahvistamatta')) return { status: 'unknown' }
+      if (/joka päivä/.test(oh)) return { status: 'open24h' }
+      if (/24\/7/.test(oh)) return { status: 'open24h' }
+
+      // Helsinki time using Intl.DateTimeFormat
+      const fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Helsinki',
+        day: 'numeric',
+        month: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      })
+      const p = {}
+      fmt.formatToParts(new Date()).forEach(part => {
+        if (part.type === 'day') p.day = parseInt(part.value)
+        if (part.type === 'month') p.month = parseInt(part.value)
+        if (part.type === 'hour') p.hour = parseInt(part.value)
+        if (part.type === 'minute') p.minute = parseInt(part.value)
+      })
+      const todayD = p.day
+      const todayM = p.month
+      const todayDM = todayD + '.' + todayM + '.'
+      const currentMinutes = p.hour * 60 + p.minute
+
+      const fiWeekdays = ['Su', 'Ma', 'Ti', 'Ke', 'To', 'Pe', 'La']
+      const helDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Helsinki' }))
+      const todayFi = fiWeekdays[helDate.getDay()]
+      const todayIdx = fiWeekdays.indexOf(todayFi)
+
+      // Priority 1 — Exact calendar date match (dateSchedules)
+      if (e.dateSchedules && Array.isArray(e.dateSchedules) && e.dateSchedules.length > 0) {
+        const todayEntry = e.dateSchedules.find(s => s.startsWith(todayDM + ' '))
+        if (todayEntry) {
+          const timeMatch = todayEntry.match(/([0-9]{1,2})(?:[.:]([0-9]{2}))?\s*[-–]\s*([0-9]{1,2})(?:[.:]([0-9]{2}))?/)
+          if (timeMatch) {
+            const openMinutes = parseInt(timeMatch[1]) * 60 + (timeMatch[2] ? parseInt(timeMatch[2]) : 0)
+            const closeMinutes = parseInt(timeMatch[3]) * 60 + (timeMatch[4] ? parseInt(timeMatch[4]) : 0)
+            if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+              return { status: 'open', closeTime: timeMatch[3] + ':' + (timeMatch[4] || '00') }
+            } else if (currentMinutes >= closeMinutes) {
+              return { status: 'closed-late', closeTime: timeMatch[3] + ':' + (timeMatch[4] || '00') }
+            } else {
+              return { status: 'closed-early', openTime: timeMatch[1] + ':' + (timeMatch[2] || '00') }
+            }
+          }
+        }
+        return { status: 'closed-today' }
+      }
+
+      // Closed today?
+      const closedToday = new RegExp(todayFi + '\\s*suljettu', 'i').test(oh)
+      if (closedToday) return { status: 'closed' }
+
+      // Try matching today's weekday directly
+      const singleDayRegex = new RegExp(todayFi + '[^0-9]*([0-9]{1,2})[.:]([0-9]{2})\\s*[\\u2013-]\\s*([0-9]{1,2})[.:]([0-9]{2})', 'i')
+      let match = oh.match(singleDayRegex)
+
+      // If no direct match, try weekday range expansion (e.g. "Ma–pe")
+      if (!match) {
+        const endash = String.fromCodePoint(0x2013)
+        const rangeRegex = new RegExp('(Ma|Ti|Ke|To|Pe|La|Su)' + endash + '(Ma|Ti|Ke|To|Pe|La|Su)', 'gi')
+        let rangeMatch
+        while ((rangeMatch = rangeRegex.exec(oh)) !== null) {
+          const startDay = rangeMatch[1].charAt(0).toUpperCase() + rangeMatch[1].slice(1).toLowerCase()
+          const endDay = rangeMatch[2].charAt(0).toUpperCase() + rangeMatch[2].slice(1).toLowerCase()
+          const startIdx = fiWeekdays.indexOf(startDay)
+          const endIdx = fiWeekdays.indexOf(endDay)
+          if (startIdx <= todayIdx && todayIdx <= endIdx) {
+            const afterRange = oh.slice(rangeMatch.index + rangeMatch[0].length)
+            const timeMatch2 = afterRange.match(/([0-9]{1,2})[.:]([0-9]{2})\s*[\u2013-]\s*([0-9]{1,2})[.:]([0-9]{2})/)
+            if (timeMatch2) {
+              match = [null, timeMatch2[1], timeMatch2[2], timeMatch2[3], timeMatch2[4]]
+              break
+            }
+          }
+        }
+      }
+
+      if (match) {
+        const openMinutes = parseInt(match[1]) * 60 + parseInt(match[2])
+        const closeMinutes = parseInt(match[3]) * 60 + parseInt(match[4])
+        if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+          return { status: 'open', closeTime: match[3] + ':' + match[4] }
+        } else if (currentMinutes >= closeMinutes) {
+          return { status: 'closed-late', closeTime: match[3] + ':' + match[4] }
+        } else {
+          return { status: 'closed-early', openTime: match[1] + ':' + match[2] }
+        }
+      }
+
+      // Open today if weekday mentioned but no specific time range found
+      if (new RegExp(todayFi).test(oh)) return { status: 'open' }
+
+      return { status: 'unknown' }
+    }
+
+    function openStatusBadge(e) {
+      const s = getOpenStatus(e)
+      switch (s.status) {
+        case 'open':
+        case 'open24h':
+          if (e.id === 'helsinki-sompasauna') return '<span class="badge open-badge" title="Avoinna ympäri vuorokauden">✓ Auki 24/7</span>'
+          return '<span class="badge open-badge" title="Avoinna nyt">✓ Auki nyt' + (s.closeTime ? ' (sulkeutuu ' + s.closeTime + ')' : '') + '</span>'
+        case 'closed-late':
+          return '<span class="badge closed-badge" title="Suljettu nyt">Suljettu nyt (sulkeutui ' + s.closeTime + ')</span>'
+        case 'closed-early':
+          return '<span class="badge closed-badge" title="Avautuu tänään">Avautuu tänään klo ' + s.openTime + '</span>'
+        case 'closed-today':
+          return '<span class="badge unknown-badge" title="Ei yleisövuoroa tänään">Ei yleisövuoroa tänään</span>'
+        case 'closed':
+          return '<span class="badge closed-badge" title="Suljettu tänään">Suljettu tänään</span>'
+        default:
+          return '<span class="badge unknown-badge" title="Tarkista aukioloajat">ℹ️ Tarkista vuorot sivuilta</span>'
+      }
+    }
+
+    function isSeasonalSummer(e) {
+      const text = ((e.openingHours || '') + ' ' + (e.shortDesc || '') + ' ' + (e.notes || '')).toLowerCase()
+      if (/kesällä suljettu|suljettu kesällä/.test(text)) return false
+      return /touko.?syyskuu|kesäkausi|kesäsauna|summer/.test(text)
+    }
+
+    function filteredEvents(events) {
+      const q = normalize(searchTerm)
+      return events.filter((e) => {
+        if (regionFilter !== 'ALL' && e.region !== regionFilter) return false
+        if (!uimahalliFilter && /uimahalli/.test(normalize(e.category || ''))) return false
+        if (budgetFilter) {
+          const isFree = e.isFree === true || e.isFree === 1
+          const price = e.priceAdult != null ? e.priceAdult : (e.priceDetails?.items?.[0]?.adult ?? null)
+          if (!isFree && (price == null || price > 15)) return false
+        }
+        if (openTodayFilter) {
+          const s = getOpenStatus(e)
+          // Show if open now, always open, will open later today, or was open earlier today
+          if (s.status === 'closed-today' || s.status === 'closed') return false
+        }
+        if (!q) return true
+        return (
+          normalize(e.title).includes(q) ||
+          normalize(e.location).includes(q) ||
+          normalize(e.street || '').includes(q) ||
+          normalize(e.saunaType || '').includes(q) ||
+          normalize(e.category || '').includes(q)
+        )
+      })
+    }
+
+    function groupByRegion(events) {
+      const map = new Map()
+      for (const e of events) {
+        const r = e.region || 'Muu Suomi'
+        if (!map.has(r)) map.set(r, [])
+        map.get(r).push(e)
+      }
+      return map
+    }
+
+    function priceLabel(e) {
+      if (e.isFree) return '<span class="free">Ilmainen</span>'
+      if (e.price && /^\d/.test(e.price)) return `<span class="paid">${e.price}</span>`
+      if (e.priceDetails && e.priceDetails.items && e.priceDetails.items.length) {
+        const first = e.priceDetails.items[0]
+        const amount = first.adult != null ? first.adult : '-'
+        return `<span class="paid">${amount} €</span>`
+      }
+      if (e.priceAdult != null) return `<span class="paid">${e.priceAdult} €</span>`
+      return '<span class="paid">-</span>'
+    }
+
+    function priceDetailsLabel(e) {
+      if (!e.priceDetails || !e.priceDetails.items || !e.priceDetails.items.length) return ''
+      const first = e.priceDetails.items[0]
+      const tiers = e.priceDetails.items
+        .slice(1)
+        .map((i) => {
+          const days = i.days ? ` (${i.days})` : ''
+          return `${i.adult} €${i.reduced != null ? ' / ' + i.reduced + ' €' : ''}${days}`
+        })
+      const note = e.priceDetails.note ? ` · ${e.priceDetails.note}` : ''
+      const fullText = `🎟️ ${tiers.join(' · ')}${note}`
+      return tiers.length || note ? `<div class="price-detail" title="${fullText}">${fullText}</div>` : ''
+    }
+
+    function ratingLabel(e) {
+      if (typeof e.rating !== 'number') return ''
+      return `<span class="rating" title="Googlen arvio ${e.rating}/5">⭐ ${e.rating}</span>`
+    }
+
+    function userRatingLabel(e) {
+      const r = userRatings[e.id]
+      if (r == null) return ''
+      return `<span class="user-rating" title="Oma arviosi">${Number(r).toFixed(1)}/5</span>`
+    }
+
+    function saveUserRating(id, rating) {
+      userRatings[id] = rating
+      try {
+        localStorage.setItem('saunaUserRatings', JSON.stringify(userRatings))
+      } catch (e) {}
+      render()
+    }
+
+    function stationLabel(e) {
+      if (e.stationKm == null) return ''
+      const km = Number(e.stationKm).toFixed(1)
+      return `<span class="station">🚉 ${km} km from ${e.location} station · ${e.stationWalking} walking</span>`
+    }
+
+    function render() {
+      const events = filteredEvents(snapshot.events || [])
+      document.getElementById('totalCount').textContent = String(events.length)
+      const root = document.getElementById('sections')
+
+      if (!events.length) {
+        root.innerHTML = '<div class="empty">Ei saunoja valituilla suodattimilla.</div>'
+        return
+      }
+
+      const grouped = groupByRegion(events)
+      const regions = sortRegions(Array.from(grouped.keys()))
+      root.innerHTML = regions.map((region) => {
+        const items = grouped.get(region) || []
+        // Sort: nearest station first, then free first, then distance, then name
+        items.sort((a, b) => {
+          if (nearestSort) {
+            const aKm = a.stationKm == null ? 9999 : a.stationKm
+            const bKm = b.stationKm == null ? 9999 : b.stationKm
+            if (aKm !== bKm) return aKm - bKm
+            return (a.title || '').localeCompare(b.title || '')
+          }
+          const aFree = a.isFree === true || a.isFree === 1
+          const bFree = b.isFree === true || b.isFree === 1
+          if (aFree && !bFree) return -1
+          if (!aFree && bFree) return 1
+          const aKm = a.stationKm == null ? 9999 : a.stationKm
+          const bKm = b.stationKm == null ? 9999 : b.stationKm
+          if (aKm !== bKm) return aKm - bKm
+          return (a.title || '').localeCompare(b.title || '')
+        })
+        return `
+          <section class="region">
+            <div class="region-head">
+              <h2>${region}</h2>
+              <span class="meta">${items.length} saunaa</span>
+            </div>
+            <div class="grid">
+              ${items.map((e) => `
+                <article class="card">
+                  <div class="header-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="title">${e.title || 'Nimetön sauna'}</div>
+                      ${ratingLabel(e)}
+                    </div>
+                    ${priceLabel(e)}
+                  </div>
+                  <div class="meta-row">
+                    <span class="badge">${e.saunaType || e.category || 'Yleinen'}</span>
+                    <span>📍 ${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</span>
+                    ${e.stationKm != null ? `<span>🚉 ${Number(e.stationKm).toFixed(1)} km · ${e.stationWalking}</span>` : ''}
+                  </div>
+                  ${e.shortDesc ? `<div class="meta shortdesc" style="font-size:0.84rem;line-height:1.4;">🕒 ${e.shortDesc}</div>` : ''}
+                  ${priceDetailsLabel(e)}
+                  ${isSeasonalSummer(e) ? `<span class="badge seasonal" title="Kesäsauna, avoinna vain touko–syyskuussa">☀️ Kesäsauna (touko–syyskuu)</span>` : ''}
+                  ${openStatusBadge(e)}
+                  <div class="links">
+                    ${e.sourceUrl ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">webpage</a>` : ''}
+                    ${e.mapsUrl && !/^https?:\/\/(www\.)?google\.com(\/|$)/.test(e.mapsUrl) ? `<a href="${e.mapsUrl}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : (e.title ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.title + ' ' + (e.street||'') + ' ' + e.location)}" target="_blank" rel="noreferrer">📍 Google Maps</a>` : '')}
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+        `
+      }).join('')
+    }
+
+    function setTimeStats() {
+      const last = snapshot.generatedAt ? new Date(snapshot.generatedAt) : null
+      document.getElementById('lastUpdate').textContent = last && !Number.isNaN(last) ? last.toLocaleString('fi-FI') : '-'
+    }
+
+    function renderComparisonTable() {
+      const helsinki = (snapshot.events || []).filter((e) =>
+        (e.region === 'Helsinki' || e.location === 'Helsinki') &&
+        e.verificationStatus === 'PASS' &&
+        e.category !== 'tilaussauna'
+      )
+      helsinki.sort((a, b) => (a.stationKm || 9999) - (b.stationKm || 9999))
+
+      const body = document.getElementById('compareTableBody')
+      const caption = document.getElementById('tableCaption')
+
+      caption.textContent = `Vertaa Helsingin julkisia saunoja (${helsinki.length} vahvistettua)`
+
+      body.innerHTML = helsinki.map((e) => {
+        const price = e.isFree ? '<span class="free">Ilmainen</span>' :
+          (e.price && /^\d/.test(e.price) ? `<span class="price">${e.price}</span>` :
+           (e.priceAdult != null ? `<span class="price">${e.priceAdult} €</span>` : '<span>-</span>'))
+        const km = e.stationKm != null ? `<span class="km">${Number(e.stationKm).toFixed(1)} km</span>` : '-'
+        const walk = e.stationWalking || '-'
+        const booking = e.varaus ? 'Vain varauksella' : 'Ei varausta'
+        const website = e.sourceUrl
+          ? `<a href="${e.sourceUrl}" target="_blank" rel="noreferrer">Verkkosivusto</a>`
+          : '-'
+        const hours = (e.openingHours || 'Tarkista sivuilta').replace(/;/g, ', ')
+
+        return `
+          <tr>
+            <td><strong>${e.title || 'Nimetön sauna'}</strong>${typeof e.rating === 'number' ? ` <span class="rating">⭐ ${e.rating}</span>` : ''}</td>
+            <td>${[e.street, e.location].filter(Boolean).join(', ') || 'Tuntematon osoite'}</td>
+            <td class="km">${km}</td>
+            <td>${walk}</td>
+            <td>${price}</td>
+            <td style="max-width: 200px;">${hours}</td>
+            <td>${booking}</td>
+            <td class="links">${website}</td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    async function load() {
+      if (refreshing) return
+      refreshing = true
+      const btn = document.getElementById('refreshNow')
+      if (btn) btn.disabled = true
+      try {
+        const res = await fetch('/sauna/saunas.json?t=' + Date.now(), { cache: 'no-store' })
+        if (!res.ok) throw new Error('HTTP ' + res.status)
+        const data = await res.json()
+        snapshot = Array.isArray(data) ? { events: data } : data
+        if (!Array.isArray(snapshot.events)) snapshot.events = []
+        // Update counter immediately, before render (so it never stays at 0 on partial failure)
+        const tc = document.getElementById('totalCount')
+        if (tc) tc.textContent = String(snapshot.events.length)
+        setTimeStats()
+        try { render() } catch (err) { console.error('render failed:', err) }
+        try { renderComparisonTable() } catch (err) { console.error('renderComparisonTable failed:', err) }
+      } catch (err) {
+        console.error('Sauna data load failed:', err)
+        const tc = document.getElementById('totalCount')
+        if (tc) tc.textContent = 'virhe'
+        document.getElementById('sections').innerHTML = '<div class="empty">Saunojen lataaminen epäonnistui: ' + String(err.message || err) + '</div>'
+      } finally {
+        refreshing = false
+        if (btn) btn.disabled = false
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchTerm = e.target.value || ''
+      render()
+    })
+
+    document.getElementById('regionSelect').addEventListener('change', (e) => {
+      regionFilter = e.target.value
+      render()
+    })
+
+    document.getElementById('uimahalliToggle').addEventListener('click', (e) => {
+      uimahalliFilter = !uimahalliFilter
+      e.currentTarget.classList.toggle('active', uimahalliFilter)
+      render()
+    })
+
+    document.getElementById('nearestToggle').addEventListener('click', (e) => {
+      nearestSort = !nearestSort
+      e.currentTarget.classList.toggle('active', nearestSort)
+      render()
+    })
+
+    document.getElementById('budgetToggle').addEventListener('click', (e) => {
+      budgetFilter = !budgetFilter
+      e.currentTarget.classList.toggle('active', budgetFilter)
+      render()
+    })
+
+    document.getElementById('openTodayToggle').addEventListener('click', (e) => {
+      openTodayFilter = !openTodayFilter
+      e.currentTarget.classList.toggle('active', openTodayFilter)
+      render()
+    })
+
+    document.getElementById('viewToggle').addEventListener('click', () => {
+      viewMode = 'cards'
+      document.getElementById('viewToggle').classList.add('active')
+      document.getElementById('tableViewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = 'none'
+      document.getElementById('tableWrap').style.display = 'none'
+      document.getElementById('sections').style.display = ''
+      render()
+    })
+
+    document.getElementById('tableViewToggle').addEventListener('click', () => {
+      viewMode = 'table'
+      document.getElementById('tableViewToggle').classList.add('active')
+      document.getElementById('viewToggle').classList.remove('active')
+      document.getElementById('tableCaption').style.display = ''
+      document.getElementById('tableWrap').style.display = ''
+      document.getElementById('sections').style.display = 'none'
+      renderComparisonTable()
+    })
+
+    document.getElementById('refreshNow').addEventListener('click', () => {
+      load()
+    })
+
+    load()
+  </script>
+</body>
+</html>
