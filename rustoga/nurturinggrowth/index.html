@@ -10,7 +10,7 @@
     body { margin:0; background:var(--bg); color:#f2f2f2; font-family:ui-sans-serif,system-ui,-apple-system,sans-serif; }
     .wrap { max-width: 1180px; margin:0 auto; padding:24px; position:relative; z-index:2; }
     .hero { position:relative; min-height:72vh; display:flex; flex-direction:column; justify-content:flex-end; padding:40px 24px 60px; overflow:hidden; border-bottom:1px solid var(--line); }
-    .hero-bg { position:absolute; inset:0; z-index:0; background: radial-gradient(900px 500px at 50% 100%, rgba(34,197,94,.22), transparent 60%); }
+    .hero-bg { position:absolute; inset:0; z-index:0; background: radial-gradient(900px 500px at 50% 100%, rgba(34,197,94,.28), transparent 60%), radial-gradient(700px 400px at 20% 0%, rgba(74,222,128,.18), transparent 60%); }
     .grow { position:absolute; bottom:0; width:2px; background:linear-gradient(to top, rgba(74,222,128,.9), transparent); animation:grow 4s ease-in-out infinite; }
     @keyframes grow { 0%{height:0;opacity:.2} 50%{height:60%;opacity:1} 100%{height:0;opacity:.2} }
     .hero-content { position:relative; z-index:2; max-width:1180px; margin:0 auto; width:100%; }
@@ -55,6 +55,10 @@
     .footer { padding:40px 0 20px; color:var(--muted); font-size:.85rem; }
     @media (max-width:900px){ .two{grid-template-columns:1fr;} }
     @media (max-width:780px){ .wrap{padding:14px;} .hero{min-height:60vh;} }
+
+    .leaf { position:absolute; width:14px; height:8px; background:rgba(74,222,128,.7); border-radius:50% 0 50% 0; animation:leafgrow 5s ease-in-out infinite; transform-origin:bottom left; }
+    @keyframes leafgrow { 0%{transform:scale(0) rotate(-20deg); opacity:0} 40%{transform:scale(1) rotate(10deg); opacity:1} 100%{transform:scale(1.1) rotate(20deg); opacity:.4} }
+
   </style>
 </head>
 <body>
@@ -66,6 +70,12 @@
       <div class="grow" style="left:55%;animation-delay:.3s;height:30%;"></div>
       <div class="grow" style="left:70%;animation-delay:1.8s;height:55%;"></div>
       <div class="grow" style="left:85%;animation-delay:.9s;height:45%;"></div>
+      <div class="leaf" style="left:12%;bottom:30%;animation-delay:0s;"></div>
+      <div class="leaf" style="left:27%;bottom:20%;animation-delay:.8s;transform:scaleX(-1);"></div>
+      <div class="leaf" style="left:42%;bottom:45%;animation-delay:1.4s;"></div>
+      <div class="leaf" style="left:57%;bottom:18%;animation-delay:.4s;transform:scaleX(-1);"></div>
+      <div class="leaf" style="left:72%;bottom:35%;animation-delay:2s;"></div>
+      <div class="leaf" style="left:87%;bottom:25%;animation-delay:1.1s;transform:scaleX(-1);"></div>
     </div>
     <div class="hero-content">
       <nav class="sitenav">
