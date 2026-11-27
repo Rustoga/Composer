@@ -7,58 +7,58 @@
   ],
   "sources": {
     "resq_club": {
-      "status": "ok",
-      "items_found": 12,
-      "latency_ms": 5188,
+      "status": "empty",
+      "items_found": 0,
+      "latency_ms": 5410,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-26T13:48:42.372058+02:00"
+      "checked_at": "2026-11-27T02:16:14.331199+02:00"
     },
     "myhelsinki_events": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 1897,
+      "latency_ms": 1004,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-26T13:48:44.272951+02:00"
+      "checked_at": "2026-11-27T02:16:15.341278+02:00"
     },
     "finnkino_movies": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2498,
+      "latency_ms": 2598,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 37,
-      "checked_at": "2026-11-26T13:48:46.772473+02:00"
+      "consecutive_failures": 39,
+      "checked_at": "2026-11-27T02:16:17.940293+02:00"
     },
     "k_ruoka": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2540,
+      "latency_ms": 2588,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 8,
-      "checked_at": "2026-11-26T13:48:49.313091+02:00"
+      "consecutive_failures": 10,
+      "checked_at": "2026-11-27T02:16:20.528492+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 4154,
+      "latency_ms": 4322,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-26T13:48:53.467894+02:00"
+      "checked_at": "2026-11-27T02:16:24.852072+02:00"
     },
     "s_group": {
       "status": "ok",
       "items_found": 1,
-      "latency_ms": 2786,
+      "latency_ms": 3237,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-26T13:48:59.863483+02:00"
+      "checked_at": "2026-11-27T02:16:31.938362+02:00"
     }
   }
 }
