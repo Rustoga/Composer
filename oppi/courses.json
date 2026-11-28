@@ -684,116 +684,40 @@
       "online": false
     },
     {
-      "id": "helao-search",
-      "provider": "Helsingin aikuisopisto (Helao)",
-      "title": "Kurssihaku (1000+ kurssia/vuosi)",
-      "category": "Kaikki aihealueet",
-      "priceEur": null,
+      "id": "helao-adult-ballet-beginners",
+      "provider": "Helsingin aikuisopisto",
+      "title": "Aikuisbaletti - alkeet (viikonloppukurssi)",
+      "category": "Tanssi",
+      "priceEur": 39,
       "credits": null,
-      "format": "Lähi- ja verkko-opetus",
-      "location": "Annankatu 29 B / Runeberginkatu 22-24",
+      "format": "Lähiopetus",
+      "location": "Annankatu 29 B",
       "city": "Helsinki",
       "district": "Keskusta",
-      "schedule": [],
-      "startDate": "2027-01-01",
-      "endDate": "2027-12-31",
-      "regStart": "2026-11-01",
-      "regEnd": "2027-12-31",
-      "url": "https://helao.fi/en/courses",
-      "status": "open",
+      "schedule": [
+        {
+          "day": 5,
+          "start": "10:00",
+          "end": "11:30"
+        },
+        {
+          "day": 6,
+          "start": "10:00",
+          "end": "11:30"
+        }
+      ],
+      "startDate": "2027-01-16",
+      "endDate": "2027-01-17",
+      "regStart": "2026-12-01",
+      "regEnd": "2027-01-15",
+      "url": "https://helao.fi/en/adult-ballet-classes-in-helsinki",
+      "status": "coming",
       "intro": true,
       "hobby": true,
-      "leisure": true,
+      "leisure": false,
       "online": false,
       "epassi": true,
-      "notes": "Yli 1000 kurssia vuodessa: kielet, taiteet, käsityöt, hyvinvointi, tanssi. Epassi/Smartum tuettu. Linkki suoraan kurssihakuun."
-    },
-    {
-      "id": "kallio-kansalaisopisto",
-      "provider": "Kalliolan kansalaisopisto",
-      "title": "Kurssit (historiallisesti ~600 kurssia)",
-      "category": "Kaikki aihealueet",
-      "priceEur": null,
-      "credits": null,
-      "format": "Lähiopetus",
-      "location": "Kallio",
-      "city": "Helsinki",
-      "district": "Kallio",
-      "schedule": [],
-      "startDate": "2027-01-01",
-      "endDate": "2027-06-30",
-      "regStart": "2026-11-01",
-      "regEnd": "2027-01-31",
-      "url": "https://www.kalliola.fi",
-      "status": "coming",
-      "intro": true,
-      "hobby": true,
-      "leisure": false,
-      "online": false,
-      "epassi": false,
-      "notes": "Huom: toiminta hiipuu konkurssin (loppu-2026) jälkeen. Historiallisesti ~600 kurssia Kalliossa."
-    },
-    {
-      "id": "liikunta-hel-courses",
-      "provider": "Helsingin kaupungin liikuntapalvelut",
-      "title": "Liikuntakurssit (kaupunki)",
-      "category": "Liikunta",
-      "priceEur": 40,
-      "credits": null,
-      "format": "Lähiopetus",
-      "location": "Useita liikuntapaikkoja",
-      "city": "Helsinki",
-      "district": "Useita",
-      "schedule": [
-        {
-          "day": 2,
-          "start": "17:30",
-          "end": "19:00"
-        }
-      ],
-      "startDate": "2027-01-13",
-      "endDate": "2027-03-10",
-      "regStart": "2026-12-01",
-      "regEnd": "2027-01-10",
-      "url": "https://liikunta.hel.fi",
-      "status": "coming",
-      "intro": true,
-      "hobby": true,
-      "leisure": false,
-      "online": false,
-      "epassi": false,
-      "notes": "Kaupungin liikuntakurssit: tekniikka, tanssi, jooga, pallopelit. Edulliset hinnat."
-    },
-    {
-      "id": "unisport-courses",
-      "provider": "UniSport",
-      "title": "UniSport-kurssit (tekniikka, tanssi, jooga, pallopelit)",
-      "category": "Liikunta",
-      "priceEur": 55,
-      "credits": null,
-      "format": "Lähiopetus",
-      "location": "UniSport-salit (Kumpula, Otaniemi, keskusta)",
-      "city": "Helsinki",
-      "district": "Useita",
-      "schedule": [
-        {
-          "day": 1,
-          "start": "17:00",
-          "end": "18:30"
-        }
-      ],
-      "startDate": "2027-01-12",
-      "endDate": "2027-03-10",
-      "regStart": "2026-12-01",
-      "regEnd": "2027-01-10",
-      "url": "https://www.unisport.fi",
-      "status": "coming",
-      "intro": true,
-      "hobby": true,
-      "leisure": false,
-      "online": false,
-      "epassi": false,
-      "notes": "Avoimet HY:n, Aallon, Hankenin ja Taideyliopiston opiskelijoille/henkilökunnalle."
+      "notes": "Lauantai-sunnuntai 16-17.1.2027. Ei aikaisempaa balettikokemusta vaadita. Opetus suomeksi, liikkeet demonstroidaan."
     }
   ]
 }
