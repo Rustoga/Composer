@@ -34,37 +34,6 @@
       "online": true
     },
     {
-      "id": "aalto-data-python",
-      "provider": "Aalto-yliopisto",
-      "title": "Data Analytics with Python (intro)",
-      "category": "Tieto ja data",
-      "priceEur": 95,
-      "credits": 5,
-      "format": "Verkko-opetus",
-      "location": "Online",
-      "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 2,
-          "start": "17:00",
-          "end": "19:30"
-        }
-      ],
-      "startDate": "2027-01-13",
-      "endDate": "2027-03-03",
-      "regStart": "2026-12-01",
-      "regEnd": "2027-01-10",
-      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit",
-      "status": "coming",
-      "intro": true,
-      "hobby": false,
-      "leisure": false,
-      "notes": "Verkko-opetus keskiviikkoisin. Sopii aloittelijoille.",
-      "district": "Verkko",
-      "epassi": false,
-      "online": true
-    },
-    {
       "id": "hy-python-intro",
       "provider": "Helsingin yliopisto",
       "title": "Johdatus ohjelmointiin (Python)",
@@ -193,33 +162,22 @@
       "provider": "Impi Studio",
       "title": "Start Pole Dancing - alkeiskurssi",
       "category": "Tanssi ja liikunta",
-      "priceEur": 135,
+      "priceEur": 72,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Pasilankatu 10, Rubik House",
       "city": "Helsinki (Pasila)",
-      "schedule": [
-        {
-          "day": 1,
-          "start": "18:00",
-          "end": "19:30"
-        },
-        {
-          "day": 3,
-          "start": "18:00",
-          "end": "19:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-12",
       "endDate": "2027-02-04",
       "regStart": "2026-11-01",
-      "regEnd": "2027-01-10",
-      "url": "https://impistore.com/en",
-      "status": "coming",
+      "regEnd": "2026-12-31",
+      "url": "https://impistore.com/en/collections/starttikurssit",
+      "status": "open",
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Tiistai ja torstai. Aloittelijoille suunnattu 4 viikon kurssi.",
+      "notes": "Starttikurssi (Marras-/Joulukuu 2026), 4 viikkoa, 72 €. Aikataulu varaaheti.fi/impi.",
       "district": "Pasila",
       "epassi": false,
       "online": false
@@ -229,7 +187,7 @@
       "provider": "Pole4Fit",
       "title": "Pole dance - aloittelijakurssi",
       "category": "Tanssi ja liikunta",
-      "priceEur": 120,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Bruno Granholmin kuja 2, Vallila",
@@ -250,7 +208,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet.",
+      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet. (Hinta: tarkista kurssisivulta.)",
       "district": "Vallila",
       "epassi": false,
       "online": false
@@ -260,7 +218,7 @@
       "provider": "S-Dance",
       "title": "Beginner Track - Kizomba & Semba",
       "category": "Tanssi",
-      "priceEur": 95,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Helsinki (keskusta)",
@@ -281,7 +239,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita.",
+      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita. (Hinta: tarkista kurssisivulta.)",
       "district": "Helsinki",
       "epassi": false,
       "online": false
@@ -291,7 +249,7 @@
       "provider": "Wonder Club",
       "title": "Beginners Friday - twerk & sensual dance",
       "category": "Tanssi",
-      "priceEur": 60,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Helsinki studio",
@@ -312,7 +270,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit.",
+      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit. (Hinta: tarkista kurssisivulta.)",
       "district": "Helsinki",
       "epassi": false,
       "online": false
@@ -322,7 +280,7 @@
       "provider": "Imperia Dance Studio",
       "title": "Pole dance - intro (venäjä/englanti)",
       "category": "Tanssi ja liikunta",
-      "priceEur": 45,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Sahaajankatu 11",
@@ -343,7 +301,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Lauantaisin. Myös venäjänkielinen opetus.",
+      "notes": "Lauantaisin. Myös venäjänkielinen opetus. (Hinta: tarkista kurssisivulta.)",
       "district": "Herttoniemi",
       "epassi": false,
       "online": false
@@ -353,7 +311,7 @@
       "provider": "Helsingin aikuisopisto",
       "title": "Salsa - alkeet (suomi/englanti)",
       "category": "Tanssi",
-      "priceEur": 110,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Annankatu 29 B",
@@ -374,7 +332,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi.",
+      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi. Hinta: tarkista kurssisivulta.",
       "district": "keskusta",
       "epassi": true,
       "online": false
@@ -533,37 +491,6 @@
       "district": "Helsinki",
       "epassi": true,
       "online": false
-    },
-    {
-      "id": "aalto-strategy-mgmt",
-      "provider": "Aalto-yliopisto",
-      "title": "Strategic Management (intro)",
-      "category": "Liiketalous",
-      "priceEur": 110,
-      "credits": 6,
-      "format": "Verkko-opetus",
-      "location": "Online",
-      "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 1,
-          "start": "17:30",
-          "end": "20:00"
-        }
-      ],
-      "startDate": "2027-01-12",
-      "endDate": "2027-03-09",
-      "regStart": "2026-12-01",
-      "regEnd": "2027-01-10",
-      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit",
-      "status": "coming",
-      "intro": true,
-      "hobby": false,
-      "leisure": false,
-      "notes": "Tiistaisin verkossa.",
-      "district": "Verkko",
-      "epassi": false,
-      "online": true
     },
     {
       "id": "hy-yoga-philosophy",
