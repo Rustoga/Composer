@@ -56,8 +56,9 @@
     .navpill:hover { border-color: var(--accent-glow); color: var(--accent); }
     .navpill.active { background: var(--accent); color: #0b1020; border-color: var(--accent-glow); box-shadow: 0 0 14px rgba(201,162,39,0.45); }
     .topbar {
-      display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 8px; margin: 14px 0 10px;
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px;
     }
+    .topbar input, .topbar select, .topbar button { flex: 1 1 180px; min-width: 140px; }
     input, select, button {
       border: 1px solid var(--line); border-radius: 10px; background: #0b1220;
       color: var(--ink); padding: 9px 12px; font-size: 14px;
@@ -65,7 +66,7 @@
     button { cursor: pointer; }
     button.toggle.active { background: var(--accent); color: #0b1020; border-color: var(--accent-glow); }
     button.view-btn { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-glow); font-weight: 600; }
-    button.view-btn.active { background: var(--accent); color: #0b1020; }
+    button.ics-btn { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-glow); font-size: 12px; padding: 6px 10px; }
     .stats { display: flex; flex-wrap: wrap; gap: 12px 18px; margin: 6px 0 16px; color: var(--muted); font-size: 13px; }
     .pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
     .sections { display: grid; gap: 18px; }
@@ -166,15 +167,28 @@
     <div class="topbar">
       <input id="search" placeholder="Hae nimellä, paikalla, aiheella..." />
       <select id="providerSelect"><option value="ALL">Kaikki tarjoajat</option></select>
+      <select id="districtSelect"><option value="ALL">Kaikki alueet</option></select>
       <select id="statusSelect">
         <option value="ALL">Kaikki statukset</option>
         <option value="open">Ilmoittautuminen auki</option>
         <option value="coming">Tulossa</option>
       </select>
+      <select id="priceSelect">
+        <option value="ALL">Kaikki hinnat</option>
+        <option value="0-50">&lt; 50 €</option>
+        <option value="50-100">50-100 €</option>
+        <option value="100+">&gt; 100 €</option>
+        <option value="free">Maksuton</option>
+      </select>
+      <select id="epassiSelect">
+        <option value="ALL">Epassi/Smartum: kaikki</option>
+        <option value="yes">Epassi/Smartum tuettu</option>
+      </select>
       <select id="introSelect">
         <option value="ALL">Kaikki kurssit</option>
         <option value="intro">Vain introkurssit</option>
         <option value="hobby">Vain harrastuskurssit</option>
+        <option value="leisure">Vain omaan tahtiin</option>
       </select>
       <button id="scheduleToggle" class="view-btn">📅 Aikataulunäkymä</button>
     </div>
@@ -207,13 +221,17 @@
     </div>
   </div>
 
+  <script id="embeddedCourses" type="application/json">{"generatedAt":"2026-11-28T08:00:00Z","providerColors":{},"courses":[{"id":"aalto-spm-2","provider":"Aalto-yliopisto","title":"Strategic People Management","category":"Johtaminen / HR","priceEur":120,"credits":6,"format":"Verkko-opetus","location":"Online (MyCourses)","city":"Helsinki (Otaniemi)","schedule":[{"day":0,"start":"17:30","end":"20:45"}],"startDate":"2027-01-18","endDate":"2027-03-15","regStart":"2026-12-14","regEnd":"2027-01-15","url":"https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/strategic-people-management-2","status":"coming","intro":false,"hobby":false,"leisure":false,"notes":"8 viikkoa, maanantaisin. Iltaopetus. Osallistuminen odotettu; luennot eivät tallennu.","district":"Verkko","epassi":false,"online":true},{"id":"aalto-data-python","provider":"Aalto-yliopisto","title":"Data Analytics with Python (intro)","category":"Tieto ja data","priceEur":95,"credits":5,"format":"Verkko-opetus","location":"Online","city":"Helsinki","schedule":[{"day":2,"start":"17:00","end":"19:30"}],"startDate":"2027-01-13","endDate":"2027-03-03","regStart":"2026-12-01","regEnd":"2027-01-10","url":"https://www.aalto.fi/fi/avoimen-yliopiston-kurssit","status":"coming","intro":true,"hobby":false,"leisure":false,"notes":"Verkko-opetus keskiviikkoisin. Sopii aloittelijoille.","district":"Verkko","epassi":false,"online":true},{"id":"hy-python-intro","provider":"Helsingin yliopisto","title":"Johdatus ohjelmointiin (Python)","category":"Tietotekniikka","priceEur":75,"credits":5,"format":"Lähi- ja verkko-opetus","location":"Kumpulan kampus","city":"Helsinki","schedule":[{"day":0,"start":"17:00","end":"19:00"}],"startDate":"2027-01-11","endDate":"2027-03-15","regStart":"2026-12-07","regEnd":"2027-01-08","url":"https://studies.helsinki.fi/kurssit","status":"coming","intro":true,"hobby":false,"leisure":false,"notes":"Maanantaisin lähikontaktiopetus. Ilmoittautuminen aukeaa joulukuussa.","district":"Verkko","epassi":false,"online":true},{"id":"hy-italian-alkeet","provider":"Helsingin yliopisto","title":"Italiano 1 - alkeet","category":"Kielet","priceEur":90,"credits":5,"format":"Lähiopetus","location":"Porthania","city":"Helsinki","schedule":[{"day":2,"start":"17:00","end":"19:00"}],"startDate":"2027-01-13","endDate":"2027-03-10","regStart":"2026-12-07","regEnd":"2027-01-09","url":"https://studies.helsinki.fi/kurssit","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Keskiviikkoisin. Ei aikaisempaa osaamista vaadita.","district":"Helsinki","epassi":false,"online":false},{"id":"hy-art-history-intro","provider":"Helsingin yliopisto","title":"Taidehistorian johdantokurssi","category":"Taide ja kulttuuri","priceEur":85,"credits":5,"format":"Lähiopetus","location":"Metsätalo","city":"Helsinki","schedule":[{"day":3,"start":"17:30","end":"19:30"}],"startDate":"2027-01-14","endDate":"2027-03-11","regStart":"2026-12-07","regEnd":"2027-01-09","url":"https://studies.helsinki.fi/kurssit","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Torstaisin iltaopetus.","district":"Helsinki","epassi":false,"online":false},{"id":"hy-philosophy-intro","provider":"Helsingin yliopisto","title":"Filosofian perusteet","category":"Filosofia","priceEur":70,"credits":5,"format":"Verkko-opetus","location":"Online","city":"Helsinki","schedule":[{"day":1,"start":"18:00","end":"20:00"}],"startDate":"2027-01-12","endDate":"2027-03-09","regStart":"2026-12-07","regEnd":"2027-01-09","url":"https://studies.helsinki.fi/kurssit","status":"coming","intro":true,"hobby":false,"leisure":false,"notes":"Tiistaisin verkossa. Omaan tahtiin luettava materiaali.","district":"Verkko","epassi":false,"online":true},{"id":"impi-pole-start","provider":"Impi Studio","title":"Start Pole Dancing - alkeiskurssi","category":"Tanssi ja liikunta","priceEur":135,"credits":null,"format":"Lähiopetus","location":"Pasilankatu 10, Rubik House","city":"Helsinki (Pasila)","schedule":[{"day":1,"start":"18:00","end":"19:30"},{"day":3,"start":"18:00","end":"19:30"}],"startDate":"2027-01-12","endDate":"2027-02-04","regStart":"2026-11-01","regEnd":"2027-01-10","url":"https://impistore.com/en","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Tiistai ja torstai. Aloittelijoille suunnattu 4 viikon kurssi.","district":"Pasila","epassi":false,"online":false},{"id":"pole4fit-intro","provider":"Pole4Fit","title":"Pole dance - aloittelijakurssi","category":"Tanssi ja liikunta","priceEur":120,"credits":null,"format":"Lähiopetus","location":"Bruno Granholmin kuja 2, Vallila","city":"Helsinki (Vallila)","schedule":[{"day":0,"start":"17:30","end":"19:00"}],"startDate":"2027-01-11","endDate":"2027-02-15","regStart":"2026-11-15","regEnd":"2027-01-09","url":"https://pole4fit.com","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet.","district":"Vallila","epassi":false,"online":false},{"id":"sdance-beginner","provider":"S-Dance","title":"Beginner Track - Kizomba & Semba","category":"Tanssi","priceEur":95,"credits":null,"format":"Lähiopetus","location":"Helsinki (keskusta)","city":"Helsinki","schedule":[{"day":0,"start":"18:00","end":"21:00"}],"startDate":"2027-01-11","endDate":"2027-01-25","regStart":"2026-12-01","regEnd":"2027-01-04","url":"https://www.sdances.com/classes","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita.","district":"Helsinki","epassi":false,"online":false},{"id":"wonder-beginners-friday","provider":"Wonder Club","title":"Beginners Friday - twerk & sensual dance","category":"Tanssi","priceEur":60,"credits":null,"format":"Lähiopetus","location":"Helsinki studio","city":"Helsinki","schedule":[{"day":4,"start":"17:00","end":"18:30"}],"startDate":"2027-01-08","endDate":"2027-03-26","regStart":"2026-11-01","regEnd":"2027-01-07","url":"https://wonderclub.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Perjantai-iltaisin. Matalan kynnyksen tanssitunnit.","district":"Helsinki","epassi":false,"online":false},{"id":"imperia-pole-intro","provider":"Imperia Dance Studio","title":"Pole dance - intro (venäjä/englanti)","category":"Tanssi ja liikunta","priceEur":45,"credits":null,"format":"Lähiopetus","location":"Sahaajankatu 11","city":"Helsinki (Herttoniemi)","schedule":[{"day":5,"start":"11:00","end":"12:30"}],"startDate":"2027-01-09","endDate":"2027-02-27","regStart":"2026-11-01","regEnd":"2027-01-08","url":"https://imperiadance.fi/en","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Lauantaisin. Myös venäjänkielinen opetus.","district":"Herttoniemi","epassi":false,"online":false},{"id":"helao-salsa-beginners","provider":"Helsingin aikuisopisto","title":"Salsa - alkeet (suomi/englanti)","category":"Tanssi","priceEur":110,"credits":null,"format":"Lähiopetus","location":"Annankatu 29 B","city":"Helsinki (keskusta)","schedule":[{"day":1,"start":"18:00","end":"19:30"}],"startDate":"2027-01-12","endDate":"2027-03-16","regStart":"2026-12-01","regEnd":"2027-01-10","url":"https://helao.fi/en/courses/dance-courses","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Tiistaisin. Opetus suomeksi ja englanniksi.","district":"keskusta","epassi":true,"online":false},{"id":"tvo-keramiikka","provider":"Helsingin työväenopisto","title":"Keramiikka - peruskurssi","category":"Kuvataide ja käsityö","priceEur":95,"credits":null,"format":"Lähiopetus","location":"Opistotalo, Kallio","city":"Helsinki","schedule":[{"day":2,"start":"17:30","end":"20:00"}],"startDate":"2027-01-13","endDate":"2027-03-10","regStart":"2026-11-24","regEnd":"2027-01-10","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Keskiviikkoisin. Materiaalit sisältyvät hintaan.","district":"Helsinki","epassi":true,"online":false},{"id":"tvo-valokuvaus","provider":"Helsingin työväenopisto","title":"Valokuvaus - perusteet","category":"Media ja taide","priceEur":80,"credits":null,"format":"Lähiopetus","location":"Malmitalo","city":"Helsinki","schedule":[{"day":5,"start":"10:00","end":"13:00"}],"startDate":"2027-01-09","endDate":"2027-02-27","regStart":"2026-11-24","regEnd":"2027-01-08","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Lauantaisin. Oma kamera suositeltava.","district":"Helsinki","epassi":true,"online":false},{"id":"tvo-jooga","provider":"Helsingin työväenopisto","title":"Jooga - alkeet","category":"Liikunta ja hyvinvointi","priceEur":65,"credits":null,"format":"Lähiopetus","location":"Itämerentalo, Ruoholahti","city":"Helsinki","schedule":[{"day":0,"start":"17:00","end":"18:15"}],"startDate":"2027-01-11","endDate":"2027-03-15","regStart":"2026-11-24","regEnd":"2027-01-10","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Maanantaisin. Rauhallinen alkeiskurssi.","district":"Helsinki","epassi":true,"online":false},{"id":"kansanopisto-kirjoittaminen","provider":"Kansanopisto (Helsinki)","title":"Luova kirjoittaminen - intro","category":"Kirjoittaminen","priceEur":55,"credits":null,"format":"Lähiopetus","location":"Helsinki (kampus)","city":"Helsinki","schedule":[{"day":6,"start":"14:00","end":"16:00"}],"startDate":"2027-01-10","endDate":"2027-02-28","regStart":"2026-12-01","regEnd":"2027-01-08","url":"https://ilmonet.fi","status":"coming","intro":true,"hobby":true,"leisure":false,"notes":"Sunnuntaisin. Omaan tahtiin kirjoitettavat tehtävät.","district":"Helsinki","epassi":false,"online":false},{"id":"tvo-ruoka-italia","provider":"Helsingin työväenopisto","title":"Italian keittiö - kurssi","category":"Ruoka ja kotitalous","priceEur":70,"credits":null,"format":"Lähiopetus","location":"Stoa, Itäkeskus","city":"Helsinki","schedule":[{"day":4,"start":"17:30","end":"20:30"}],"startDate":"2027-01-08","endDate":"2027-02-26","regStart":"2026-11-24","regEnd":"2027-01-07","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Perjantaisin. Aineet sisältyvät hintaan.","district":"Helsinki","epassi":true,"online":false},{"id":"aalto-strategy-mgmt","provider":"Aalto-yliopisto","title":"Strategic Management (intro)","category":"Liiketalous","priceEur":110,"credits":6,"format":"Verkko-opetus","location":"Online","city":"Helsinki","schedule":[{"day":1,"start":"17:30","end":"20:00"}],"startDate":"2027-01-12","endDate":"2027-03-09","regStart":"2026-12-01","regEnd":"2027-01-10","url":"https://www.aalto.fi/fi/avoimen-yliopiston-kurssit","status":"coming","intro":true,"hobby":false,"leisure":false,"notes":"Tiistaisin verkossa.","district":"Verkko","epassi":false,"online":true},{"id":"hy-yoga-philosophy","provider":"Helsingin yliopisto","title":"Intian filosofia ja jooga - johdanto","category":"Filosofia / hyvinvointi","priceEur":60,"credits":5,"format":"Verkko-opetus","location":"Online","city":"Helsinki","schedule":[],"startDate":"2027-01-11","endDate":"2027-03-15","regStart":"2026-12-07","regEnd":"2027-01-09","url":"https://studies.helsinki.fi/kurssit","status":"coming","intro":true,"hobby":true,"leisure":true,"notes":"Omaan tahtiin suoritettava verkko-opetus. Ei kiinteitä tapaamisia.","district":"Verkko","epassi":false,"online":true},{"id":"tvo-englanti-alkeet","provider":"Helsingin työväenopisto","title":"English - beginners (A1)","category":"Kielet","priceEur":75,"credits":null,"format":"Lähiopetus","location":"Opistotalo, Kallio","city":"Helsinki","schedule":[{"day":3,"start":"17:00","end":"18:30"}],"startDate":"2027-01-14","endDate":"2027-03-11","regStart":"2026-11-24","regEnd":"2027-01-13","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Torstaisin. Ei aikaisempaa osaamista vaadita.","district":"Helsinki","epassi":true,"online":false},{"id":"tvo-akvarelli","provider":"Helsingin työväenopisto","title":"Akvarellimaalaus - alkeet","category":"Kuvataide","priceEur":90,"credits":null,"format":"Lähiopetus","location":"Maunula-talo","city":"Helsinki","schedule":[{"day":2,"start":"17:00","end":"19:30"}],"startDate":"2027-01-13","endDate":"2027-03-10","regStart":"2026-11-24","regEnd":"2027-01-12","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Keskiviikkoisin. Materiaalit omalla kustannuksella.","district":"Helsinki","epassi":true,"online":false},{"id":"tvo-pianon-alkeet","provider":"Helsingin työväenopisto","title":"Piano - alkeet (aikuiset)","category":"Musiikki","priceEur":120,"credits":null,"format":"Lähiopetus","location":"Opistotalo, Kallio","city":"Helsinki","schedule":[{"day":4,"start":"17:30","end":"19:00"}],"startDate":"2027-01-08","endDate":"2027-03-26","regStart":"2026-11-24","regEnd":"2027-01-07","url":"https://ilmonet.fi","status":"open","intro":true,"hobby":true,"leisure":false,"notes":"Perjantaisin.","district":"Helsinki","epassi":true,"online":false},{"id":"helao-search","provider":"Helsingin aikuisopisto (Helao)","title":"Kurssihaku (1000+ kurssia/vuosi)","category":"Kaikki aihealueet","priceEur":null,"credits":null,"format":"Lähi- ja verkko-opetus","location":"Annankatu 29 B / Runeberginkatu 22-24","city":"Helsinki","district":"Keskusta","schedule":[],"startDate":"2027-01-01","endDate":"2027-12-31","regStart":"2026-11-01","regEnd":"2027-12-31","url":"https://helao.fi/en/courses","status":"open","intro":true,"hobby":true,"leisure":true,"online":false,"epassi":true,"notes":"Yli 1000 kurssia vuodessa: kielet, taiteet, käsityöt, hyvinvointi, tanssi. Epassi/Smartum tuettu. Linkki suoraan kurssihakuun."},{"id":"kallio-kansalaisopisto","provider":"Kalliolan kansalaisopisto","title":"Kurssit (historiallisesti ~600 kurssia)","category":"Kaikki aihealueet","priceEur":null,"credits":null,"format":"Lähiopetus","location":"Kallio","city":"Helsinki","district":"Kallio","schedule":[],"startDate":"2027-01-01","endDate":"2027-06-30","regStart":"2026-11-01","regEnd":"2027-01-31","url":"https://www.kalliola.fi","status":"coming","intro":true,"hobby":true,"leisure":false,"online":false,"epassi":false,"notes":"Huom: toiminta hiipuu konkurssin (loppu-2026) jälkeen. Historiallisesti ~600 kurssia Kalliossa."},{"id":"liikunta-hel-courses","provider":"Helsingin kaupungin liikuntapalvelut","title":"Liikuntakurssit (kaupunki)","category":"Liikunta","priceEur":40,"credits":null,"format":"Lähiopetus","location":"Useita liikuntapaikkoja","city":"Helsinki","district":"Useita","schedule":[{"day":2,"start":"17:30","end":"19:00"}],"startDate":"2027-01-13","endDate":"2027-03-10","regStart":"2026-12-01","regEnd":"2027-01-10","url":"https://liikunta.hel.fi","status":"coming","intro":true,"hobby":true,"leisure":false,"online":false,"epassi":false,"notes":"Kaupungin liikuntakurssit: tekniikka, tanssi, jooga, pallopelit. Edulliset hinnat."},{"id":"unisport-courses","provider":"UniSport","title":"UniSport-kurssit (tekniikka, tanssi, jooga, pallopelit)","category":"Liikunta","priceEur":55,"credits":null,"format":"Lähiopetus","location":"UniSport-salit (Kumpula, Otaniemi, keskusta)","city":"Helsinki","district":"Useita","schedule":[{"day":1,"start":"17:00","end":"18:30"}],"startDate":"2027-01-12","endDate":"2027-03-10","regStart":"2026-12-01","regEnd":"2027-01-10","url":"https://www.unisport.fi","status":"coming","intro":true,"hobby":true,"leisure":false,"online":false,"epassi":false,"notes":"Avoimet HY:n, Aallon, Hankenin ja Taideyliopiston opiskelijoille/henkilökunnalle."}]}</script>
   <script>
     const DAYS = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const DAYFULL = ['Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai', 'Lauantai', 'Sunnuntai']
     let snapshot = { courses: [] }
     let searchTerm = ''
     let providerFilter = 'ALL'
+    let districtFilter = 'ALL'
     let statusFilter = 'ALL'
+    let priceFilter = 'ALL'
+    let epassiFilter = 'ALL'
     let introFilter = 'ALL'
     let selected = new Set()
     let scheduleOpen = false
@@ -236,9 +254,19 @@
       const q = norm(searchTerm)
       return (snapshot.courses||[]).filter(c => {
         if (providerFilter !== 'ALL' && c.provider !== providerFilter) return false
+        if (districtFilter !== 'ALL' && (c.district||'') !== districtFilter) return false
         if (statusFilter !== 'ALL' && c.status !== statusFilter) return false
+        if (priceFilter !== 'ALL') {
+          const p = c.priceEur
+          if (priceFilter === 'free') { if (p != null && p > 0) return false }
+          else if (priceFilter === '0-50') { if (p == null || p > 50) return false }
+          else if (priceFilter === '50-100') { if (p == null || p < 50 || p > 100) return false }
+          else if (priceFilter === '100+') { if (p == null || p <= 100) return false }
+        }
+        if (epassiFilter === 'yes' && !c.epassi) return false
         if (introFilter === 'intro' && !c.intro) return false
         if (introFilter === 'hobby' && !c.hobby) return false
+        if (introFilter === 'leisure' && !c.leisure) return false
         if (!q) return true
         return norm(c.title).includes(q) || norm(c.location).includes(q) || norm(c.category).includes(q) || norm(c.provider).includes(q) || norm(c.notes).includes(q)
       })
@@ -293,7 +321,7 @@
           </div>
           <div class="title">${c.title}</div>
           <div class="meta">📚 ${c.category} ${credits ? '· ' + credits : ''}</div>
-          <div class="meta">📍 ${c.location}, ${c.city}</div>
+          <div class="meta">📍 ${c.location}, ${c.city}${c.district && c.district !== c.city ? ' · ' + c.district : ''}</div>
           <div class="meta">🗓️ ${sched || 'Omaan tahtiin (ei kiinteitä tapaamisia)'}</div>
           <div class="meta">📅 ${c.startDate} → ${c.endDate}</div>
           <div class="meta">✍️ Ilmoittautuminen: ${c.regStart} → ${c.regEnd}</div>
@@ -301,6 +329,7 @@
           <div class="links">
             <span class="price">${price}</span>
             <a href="${c.url}" target="_blank" rel="noreferrer">Kurssisivu</a>
+            ${c.status === 'coming' && c.regStart ? `<button class="ics-btn" data-id="${c.id}">⏰ Muistutus ilmoittautumisesta</button>` : ''}
             <label class="select-course"><input type="checkbox" class="sel" data-id="${c.id}" ${checked}/> Aikatauluun</label>
           </div>
         </article>
@@ -308,7 +337,12 @@
     }
 
     function attachCardHandlers() {
-      document.querySelectorAll('.sel').forEach(cb => {
+      document.querySelectorAll('.ics-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const c = (snapshot.courses||[]).find(x=>x.id===btn.dataset.id)
+          if (c) downloadIcs(c)
+        })
+      })
         cb.addEventListener('change', (e) => {
           const id = e.target.dataset.id
           if (e.target.checked) { selected.add(id) } else { selected.delete(id) }
@@ -318,12 +352,13 @@
       })
     }
 
-    function buildProviderSelect() {
-      const sel = document.getElementById('providerSelect')
+    function buildFilters() {
+      const providerSel = document.getElementById('providerSelect')
+      const districtSel = document.getElementById('districtSelect')
       const providers = [...new Set((snapshot.courses||[]).map(c=>c.provider))].sort()
-      for (const p of providers) {
-        const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o)
-      }
+      const districts = [...new Set((snapshot.courses||[]).map(c=>c.district).filter(Boolean))].sort()
+      for (const p of providers) { const o=document.createElement('option'); o.value=p; o.textContent=p; providerSel.appendChild(o) }
+      for (const d of districts) { const o=document.createElement('option'); o.value=d; o.textContent=d; districtSel.appendChild(o) }
     }
 
     // Schedule rendering
@@ -414,22 +449,65 @@
       block.style.top = topOffset + 'px'
     }
 
+    function formatFiTimestamp(iso) {
+      const d = new Date(iso)
+      if (Number.isNaN(d.getTime())) return iso
+      const pad = n => String(n).padStart(2,'0')
+      return `${pad(d.getDate())}.${pad(d.getMonth()+1)} klo ${pad(d.getHours())}:${pad(d.getMinutes())}`
+    }
+
+    function downloadIcs(c) {
+      const regDate = c.regStart + 'T10:00:00'
+      const dt = new Date(regDate)
+      dt.setMinutes(dt.getMinutes() - 5)
+      const pad = (n) => String(n).padStart(2,'0')
+      const fmt = (d) => d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z'
+      const start = fmt(dt)
+      const end = fmt(new Date(dt.getTime()+15*60000))
+      const ics = [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Oppi//EN','BEGIN:VEVENT',
+        'UID:' + c.id + '@oppi','DTSTAMP:' + fmt(new Date()),
+        'DTSTART:' + start,'DTEND:' + end,
+        'SUMMARY:Ilmoittautuminen: ' + c.title,
+        'DESCRIPTION:' + (c.url||''),
+        'END:VEVENT','END:VCALENDAR'
+      ].join('\\r\\n')
+      const blob = new Blob([ics], { type: 'text/calendar' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = c.id + '.ics'
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+
     async function load() {
       try {
         const res = await fetch('./courses.json', { cache: 'no-store' })
         const data = await res.json()
-        snapshot = Array.isArray(data) ? { courses: data } : data
-        snapshot.courses = Array.isArray(snapshot.courses) ? snapshot.courses : []
-        document.getElementById('lastUpdate').textContent = snapshot.generatedAt ? new Date(snapshot.generatedAt).toLocaleString('fi-FI') : '-'
-        buildProviderSelect()
-        render()
+        if (data && Array.isArray(data.courses) && data.courses.length) {
+          snapshot = data
+        } else { throw new Error('empty') }
       } catch (err) {
-        document.getElementById('sections').innerHTML = '<div class="empty">Kurssitietojen lataus epäonnistui.</div>'
+        try {
+          const emb = document.getElementById('embeddedCourses')
+          const data = JSON.parse(emb.textContent)
+          snapshot = Array.isArray(data) ? { courses: data } : data
+        } catch (e) {
+          snapshot = { courses: [] }
+        }
       }
+      snapshot.courses = Array.isArray(snapshot.courses) ? snapshot.courses : []
+      document.getElementById('lastUpdate').textContent = snapshot.generatedAt ? formatFiTimestamp(snapshot.generatedAt) : '-'
+      buildFilters()
+      render()
+    }
     }
 
     document.getElementById('search').addEventListener('input', e => { searchTerm = e.target.value||''; render() })
-    document.getElementById('providerSelect').addEventListener('change', e => { providerFilter = e.target.value; render() })
+    document.getElementById('districtSelect').addEventListener('change', e => { districtFilter = e.target.value; render() })
+    document.getElementById('priceSelect').addEventListener('change', e => { priceFilter = e.target.value; render() })
+    document.getElementById('epassiSelect').addEventListener('change', e => { epassiFilter = e.target.value; render() })
     document.getElementById('statusSelect').addEventListener('change', e => { statusFilter = e.target.value; render() })
     document.getElementById('introSelect').addEventListener('change', e => { introFilter = e.target.value; render() })
     document.getElementById('scheduleToggle').addEventListener('click', e => {

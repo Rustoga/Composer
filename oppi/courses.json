@@ -12,7 +12,13 @@
       "format": "Verkko-opetus",
       "location": "Online (MyCourses)",
       "city": "Helsinki (Otaniemi)",
-      "schedule": [{"day": 0, "start": "17:30", "end": "20:45"}],
+      "schedule": [
+        {
+          "day": 0,
+          "start": "17:30",
+          "end": "20:45"
+        }
+      ],
       "startDate": "2027-01-18",
       "endDate": "2027-03-15",
       "regStart": "2026-12-14",
@@ -22,7 +28,10 @@
       "intro": false,
       "hobby": false,
       "leisure": false,
-      "notes": "8 viikkoa, maanantaisin. Iltaopetus. Osallistuminen odotettu; luennot eivät tallennu."
+      "notes": "8 viikkoa, maanantaisin. Iltaopetus. Osallistuminen odotettu; luennot eivät tallennu.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "aalto-data-python",
@@ -34,7 +43,13 @@
       "format": "Verkko-opetus",
       "location": "Online",
       "city": "Helsinki",
-      "schedule": [{"day": 2, "start": "17:00", "end": "19:30"}],
+      "schedule": [
+        {
+          "day": 2,
+          "start": "17:00",
+          "end": "19:30"
+        }
+      ],
       "startDate": "2027-01-13",
       "endDate": "2027-03-03",
       "regStart": "2026-12-01",
@@ -44,7 +59,10 @@
       "intro": true,
       "hobby": false,
       "leisure": false,
-      "notes": "Verkko-opetus keskiviikkoisin. Sopii aloittelijoille."
+      "notes": "Verkko-opetus keskiviikkoisin. Sopii aloittelijoille.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "hy-python-intro",
@@ -56,7 +74,13 @@
       "format": "Lähi- ja verkko-opetus",
       "location": "Kumpulan kampus",
       "city": "Helsinki",
-      "schedule": [{"day": 0, "start": "17:00", "end": "19:00"}],
+      "schedule": [
+        {
+          "day": 0,
+          "start": "17:00",
+          "end": "19:00"
+        }
+      ],
       "startDate": "2027-01-11",
       "endDate": "2027-03-15",
       "regStart": "2026-12-07",
@@ -66,7 +90,10 @@
       "intro": true,
       "hobby": false,
       "leisure": false,
-      "notes": "Maanantaisin lähikontaktiopetus. Ilmoittautuminen aukeaa joulukuussa."
+      "notes": "Maanantaisin lähikontaktiopetus. Ilmoittautuminen aukeaa joulukuussa.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "hy-italian-alkeet",
@@ -78,7 +105,13 @@
       "format": "Lähiopetus",
       "location": "Porthania",
       "city": "Helsinki",
-      "schedule": [{"day": 2, "start": "17:00", "end": "19:00"}],
+      "schedule": [
+        {
+          "day": 2,
+          "start": "17:00",
+          "end": "19:00"
+        }
+      ],
       "startDate": "2027-01-13",
       "endDate": "2027-03-10",
       "regStart": "2026-12-07",
@@ -88,7 +121,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Keskiviikkoisin. Ei aikaisempaa osaamista vaadita."
+      "notes": "Keskiviikkoisin. Ei aikaisempaa osaamista vaadita.",
+      "district": "Helsinki",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "hy-art-history-intro",
@@ -100,7 +136,13 @@
       "format": "Lähiopetus",
       "location": "Metsätalo",
       "city": "Helsinki",
-      "schedule": [{"day": 3, "start": "17:30", "end": "19:30"}],
+      "schedule": [
+        {
+          "day": 3,
+          "start": "17:30",
+          "end": "19:30"
+        }
+      ],
       "startDate": "2027-01-14",
       "endDate": "2027-03-11",
       "regStart": "2026-12-07",
@@ -110,7 +152,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Torstaisin iltaopetus."
+      "notes": "Torstaisin iltaopetus.",
+      "district": "Helsinki",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "hy-philosophy-intro",
@@ -122,7 +167,13 @@
       "format": "Verkko-opetus",
       "location": "Online",
       "city": "Helsinki",
-      "schedule": [{"day": 1, "start": "18:00", "end": "20:00"}],
+      "schedule": [
+        {
+          "day": 1,
+          "start": "18:00",
+          "end": "20:00"
+        }
+      ],
       "startDate": "2027-01-12",
       "endDate": "2027-03-09",
       "regStart": "2026-12-07",
@@ -132,7 +183,10 @@
       "intro": true,
       "hobby": false,
       "leisure": false,
-      "notes": "Tiistaisin verkossa. Omaan tahtiin luettava materiaali."
+      "notes": "Tiistaisin verkossa. Omaan tahtiin luettava materiaali.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "impi-pole-start",
@@ -144,7 +198,18 @@
       "format": "Lähiopetus",
       "location": "Pasilankatu 10, Rubik House",
       "city": "Helsinki (Pasila)",
-      "schedule": [{"day": 1, "start": "18:00", "end": "19:30"}, {"day": 3, "start": "18:00", "end": "19:30"}],
+      "schedule": [
+        {
+          "day": 1,
+          "start": "18:00",
+          "end": "19:30"
+        },
+        {
+          "day": 3,
+          "start": "18:00",
+          "end": "19:30"
+        }
+      ],
       "startDate": "2027-01-12",
       "endDate": "2027-02-04",
       "regStart": "2026-11-01",
@@ -154,7 +219,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Tiistai ja torstai. Aloittelijoille suunnattu 4 viikon kurssi."
+      "notes": "Tiistai ja torstai. Aloittelijoille suunnattu 4 viikon kurssi.",
+      "district": "Pasila",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "pole4fit-intro",
@@ -166,7 +234,13 @@
       "format": "Lähiopetus",
       "location": "Bruno Granholmin kuja 2, Vallila",
       "city": "Helsinki (Vallila)",
-      "schedule": [{"day": 0, "start": "17:30", "end": "19:00"}],
+      "schedule": [
+        {
+          "day": 0,
+          "start": "17:30",
+          "end": "19:00"
+        }
+      ],
       "startDate": "2027-01-11",
       "endDate": "2027-02-15",
       "regStart": "2026-11-15",
@@ -176,7 +250,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet."
+      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet.",
+      "district": "Vallila",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "sdance-beginner",
@@ -188,7 +265,13 @@
       "format": "Lähiopetus",
       "location": "Helsinki (keskusta)",
       "city": "Helsinki",
-      "schedule": [{"day": 0, "start": "18:00", "end": "21:00"}],
+      "schedule": [
+        {
+          "day": 0,
+          "start": "18:00",
+          "end": "21:00"
+        }
+      ],
       "startDate": "2027-01-11",
       "endDate": "2027-01-25",
       "regStart": "2026-12-01",
@@ -198,7 +281,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita."
+      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita.",
+      "district": "Helsinki",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "wonder-beginners-friday",
@@ -210,7 +296,13 @@
       "format": "Lähiopetus",
       "location": "Helsinki studio",
       "city": "Helsinki",
-      "schedule": [{"day": 4, "start": "17:00", "end": "18:30"}],
+      "schedule": [
+        {
+          "day": 4,
+          "start": "17:00",
+          "end": "18:30"
+        }
+      ],
       "startDate": "2027-01-08",
       "endDate": "2027-03-26",
       "regStart": "2026-11-01",
@@ -220,7 +312,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit."
+      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit.",
+      "district": "Helsinki",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "imperia-pole-intro",
@@ -232,7 +327,13 @@
       "format": "Lähiopetus",
       "location": "Sahaajankatu 11",
       "city": "Helsinki (Herttoniemi)",
-      "schedule": [{"day": 5, "start": "11:00", "end": "12:30"}],
+      "schedule": [
+        {
+          "day": 5,
+          "start": "11:00",
+          "end": "12:30"
+        }
+      ],
       "startDate": "2027-01-09",
       "endDate": "2027-02-27",
       "regStart": "2026-11-01",
@@ -242,7 +343,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Lauantaisin. Myös venäjänkielinen opetus."
+      "notes": "Lauantaisin. Myös venäjänkielinen opetus.",
+      "district": "Herttoniemi",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "helao-salsa-beginners",
@@ -254,7 +358,13 @@
       "format": "Lähiopetus",
       "location": "Annankatu 29 B",
       "city": "Helsinki (keskusta)",
-      "schedule": [{"day": 1, "start": "18:00", "end": "19:30"}],
+      "schedule": [
+        {
+          "day": 1,
+          "start": "18:00",
+          "end": "19:30"
+        }
+      ],
       "startDate": "2027-01-12",
       "endDate": "2027-03-16",
       "regStart": "2026-12-01",
@@ -264,7 +374,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi."
+      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi.",
+      "district": "keskusta",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "tvo-keramiikka",
@@ -276,7 +389,13 @@
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [{"day": 2, "start": "17:30", "end": "20:00"}],
+      "schedule": [
+        {
+          "day": 2,
+          "start": "17:30",
+          "end": "20:00"
+        }
+      ],
       "startDate": "2027-01-13",
       "endDate": "2027-03-10",
       "regStart": "2026-11-24",
@@ -286,7 +405,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Keskiviikkoisin. Materiaalit sisältyvät hintaan."
+      "notes": "Keskiviikkoisin. Materiaalit sisältyvät hintaan.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "tvo-valokuvaus",
@@ -298,7 +420,13 @@
       "format": "Lähiopetus",
       "location": "Malmitalo",
       "city": "Helsinki",
-      "schedule": [{"day": 5, "start": "10:00", "end": "13:00"}],
+      "schedule": [
+        {
+          "day": 5,
+          "start": "10:00",
+          "end": "13:00"
+        }
+      ],
       "startDate": "2027-01-09",
       "endDate": "2027-02-27",
       "regStart": "2026-11-24",
@@ -308,7 +436,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Lauantaisin. Oma kamera suositeltava."
+      "notes": "Lauantaisin. Oma kamera suositeltava.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "tvo-jooga",
@@ -320,7 +451,13 @@
       "format": "Lähiopetus",
       "location": "Itämerentalo, Ruoholahti",
       "city": "Helsinki",
-      "schedule": [{"day": 0, "start": "17:00", "end": "18:15"}],
+      "schedule": [
+        {
+          "day": 0,
+          "start": "17:00",
+          "end": "18:15"
+        }
+      ],
       "startDate": "2027-01-11",
       "endDate": "2027-03-15",
       "regStart": "2026-11-24",
@@ -330,7 +467,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Maanantaisin. Rauhallinen alkeiskurssi."
+      "notes": "Maanantaisin. Rauhallinen alkeiskurssi.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "kansanopisto-kirjoittaminen",
@@ -342,7 +482,13 @@
       "format": "Lähiopetus",
       "location": "Helsinki (kampus)",
       "city": "Helsinki",
-      "schedule": [{"day": 6, "start": "14:00", "end": "16:00"}],
+      "schedule": [
+        {
+          "day": 6,
+          "start": "14:00",
+          "end": "16:00"
+        }
+      ],
       "startDate": "2027-01-10",
       "endDate": "2027-02-28",
       "regStart": "2026-12-01",
@@ -352,7 +498,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Sunnuntaisin. Omaan tahtiin kirjoitettavat tehtävät."
+      "notes": "Sunnuntaisin. Omaan tahtiin kirjoitettavat tehtävät.",
+      "district": "Helsinki",
+      "epassi": false,
+      "online": false
     },
     {
       "id": "tvo-ruoka-italia",
@@ -364,7 +513,13 @@
       "format": "Lähiopetus",
       "location": "Stoa, Itäkeskus",
       "city": "Helsinki",
-      "schedule": [{"day": 4, "start": "17:30", "end": "20:30"}],
+      "schedule": [
+        {
+          "day": 4,
+          "start": "17:30",
+          "end": "20:30"
+        }
+      ],
       "startDate": "2027-01-08",
       "endDate": "2027-02-26",
       "regStart": "2026-11-24",
@@ -374,7 +529,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantaisin. Aineet sisältyvät hintaan."
+      "notes": "Perjantaisin. Aineet sisältyvät hintaan.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "aalto-strategy-mgmt",
@@ -386,7 +544,13 @@
       "format": "Verkko-opetus",
       "location": "Online",
       "city": "Helsinki",
-      "schedule": [{"day": 1, "start": "17:30", "end": "20:00"}],
+      "schedule": [
+        {
+          "day": 1,
+          "start": "17:30",
+          "end": "20:00"
+        }
+      ],
       "startDate": "2027-01-12",
       "endDate": "2027-03-09",
       "regStart": "2026-12-01",
@@ -396,7 +560,10 @@
       "intro": true,
       "hobby": false,
       "leisure": false,
-      "notes": "Tiistaisin verkossa."
+      "notes": "Tiistaisin verkossa.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "hy-yoga-philosophy",
@@ -418,7 +585,10 @@
       "intro": true,
       "hobby": true,
       "leisure": true,
-      "notes": "Omaan tahtiin suoritettava verkko-opetus. Ei kiinteitä tapaamisia."
+      "notes": "Omaan tahtiin suoritettava verkko-opetus. Ei kiinteitä tapaamisia.",
+      "district": "Verkko",
+      "epassi": false,
+      "online": true
     },
     {
       "id": "tvo-englanti-alkeet",
@@ -430,7 +600,13 @@
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [{"day": 3, "start": "17:00", "end": "18:30"}],
+      "schedule": [
+        {
+          "day": 3,
+          "start": "17:00",
+          "end": "18:30"
+        }
+      ],
       "startDate": "2027-01-14",
       "endDate": "2027-03-11",
       "regStart": "2026-11-24",
@@ -440,7 +616,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Torstaisin. Ei aikaisempaa osaamista vaadita."
+      "notes": "Torstaisin. Ei aikaisempaa osaamista vaadita.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "tvo-akvarelli",
@@ -452,7 +631,13 @@
       "format": "Lähiopetus",
       "location": "Maunula-talo",
       "city": "Helsinki",
-      "schedule": [{"day": 2, "start": "17:00", "end": "19:30"}],
+      "schedule": [
+        {
+          "day": 2,
+          "start": "17:00",
+          "end": "19:30"
+        }
+      ],
       "startDate": "2027-01-13",
       "endDate": "2027-03-10",
       "regStart": "2026-11-24",
@@ -462,7 +647,10 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Keskiviikkoisin. Materiaalit omalla kustannuksella."
+      "notes": "Keskiviikkoisin. Materiaalit omalla kustannuksella.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
     },
     {
       "id": "tvo-pianon-alkeet",
@@ -474,7 +662,13 @@
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [{"day": 4, "start": "17:30", "end": "19:00"}],
+      "schedule": [
+        {
+          "day": 4,
+          "start": "17:30",
+          "end": "19:00"
+        }
+      ],
       "startDate": "2027-01-08",
       "endDate": "2027-03-26",
       "regStart": "2026-11-24",
@@ -484,7 +678,122 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantaisin."
+      "notes": "Perjantaisin.",
+      "district": "Helsinki",
+      "epassi": true,
+      "online": false
+    },
+    {
+      "id": "helao-search",
+      "provider": "Helsingin aikuisopisto (Helao)",
+      "title": "Kurssihaku (1000+ kurssia/vuosi)",
+      "category": "Kaikki aihealueet",
+      "priceEur": null,
+      "credits": null,
+      "format": "Lähi- ja verkko-opetus",
+      "location": "Annankatu 29 B / Runeberginkatu 22-24",
+      "city": "Helsinki",
+      "district": "Keskusta",
+      "schedule": [],
+      "startDate": "2027-01-01",
+      "endDate": "2027-12-31",
+      "regStart": "2026-11-01",
+      "regEnd": "2027-12-31",
+      "url": "https://helao.fi/en/courses",
+      "status": "open",
+      "intro": true,
+      "hobby": true,
+      "leisure": true,
+      "online": false,
+      "epassi": true,
+      "notes": "Yli 1000 kurssia vuodessa: kielet, taiteet, käsityöt, hyvinvointi, tanssi. Epassi/Smartum tuettu. Linkki suoraan kurssihakuun."
+    },
+    {
+      "id": "kallio-kansalaisopisto",
+      "provider": "Kalliolan kansalaisopisto",
+      "title": "Kurssit (historiallisesti ~600 kurssia)",
+      "category": "Kaikki aihealueet",
+      "priceEur": null,
+      "credits": null,
+      "format": "Lähiopetus",
+      "location": "Kallio",
+      "city": "Helsinki",
+      "district": "Kallio",
+      "schedule": [],
+      "startDate": "2027-01-01",
+      "endDate": "2027-06-30",
+      "regStart": "2026-11-01",
+      "regEnd": "2027-01-31",
+      "url": "https://www.kalliola.fi",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "Huom: toiminta hiipuu konkurssin (loppu-2026) jälkeen. Historiallisesti ~600 kurssia Kalliossa."
+    },
+    {
+      "id": "liikunta-hel-courses",
+      "provider": "Helsingin kaupungin liikuntapalvelut",
+      "title": "Liikuntakurssit (kaupunki)",
+      "category": "Liikunta",
+      "priceEur": 40,
+      "credits": null,
+      "format": "Lähiopetus",
+      "location": "Useita liikuntapaikkoja",
+      "city": "Helsinki",
+      "district": "Useita",
+      "schedule": [
+        {
+          "day": 2,
+          "start": "17:30",
+          "end": "19:00"
+        }
+      ],
+      "startDate": "2027-01-13",
+      "endDate": "2027-03-10",
+      "regStart": "2026-12-01",
+      "regEnd": "2027-01-10",
+      "url": "https://liikunta.hel.fi",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "Kaupungin liikuntakurssit: tekniikka, tanssi, jooga, pallopelit. Edulliset hinnat."
+    },
+    {
+      "id": "unisport-courses",
+      "provider": "UniSport",
+      "title": "UniSport-kurssit (tekniikka, tanssi, jooga, pallopelit)",
+      "category": "Liikunta",
+      "priceEur": 55,
+      "credits": null,
+      "format": "Lähiopetus",
+      "location": "UniSport-salit (Kumpula, Otaniemi, keskusta)",
+      "city": "Helsinki",
+      "district": "Useita",
+      "schedule": [
+        {
+          "day": 1,
+          "start": "17:00",
+          "end": "18:30"
+        }
+      ],
+      "startDate": "2027-01-12",
+      "endDate": "2027-03-10",
+      "regStart": "2026-12-01",
+      "regEnd": "2027-01-10",
+      "url": "https://www.unisport.fi",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "Avoimet HY:n, Aallon, Hankenin ja Taideyliopiston opiskelijoille/henkilökunnalle."
     }
   ]
 }
