@@ -645,6 +645,169 @@
       "online": false,
       "epassi": true,
       "notes": "Lauantai-sunnuntai 16-17.1.2027. Ei aikaisempaa balettikokemusta vaadita. Opetus suomeksi, liikkeet demonstroidaan."
+    },
+    {
+      "id": "aalto-yritysjuridiikka",
+      "provider": "Aalto-yliopisto",
+      "title": "Yritysjuridiikan perusteet",
+      "category": "Oikeustiede / liiketalous",
+      "priceEur": 120,
+      "credits": 6,
+      "format": "Lähiopetus",
+      "location": "Otakaari 1, Espoo (Otaniemi)",
+      "city": "Espoo",
+      "district": "Otaniemi",
+      "schedule": [
+        {
+          "day": 0,
+          "start": "16:15",
+          "end": "19:30"
+        },
+        {
+          "day": 1,
+          "start": "16:15",
+          "end": "19:30"
+        },
+        {
+          "day": 2,
+          "start": "16:15",
+          "end": "19:30"
+        }
+      ],
+      "startDate": "2027-01-11",
+      "endDate": "2027-01-20",
+      "regStart": "2026-12-14",
+      "regEnd": "2027-01-04",
+      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/yritysjuridiikan-perusteet",
+      "status": "coming",
+      "intro": true,
+      "hobby": false,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "6 luentokertaa 11.-20.1.2027. Tentti 28.1.2027 klo 16-19."
+    },
+    {
+      "id": "aalto-swedish-1b",
+      "provider": "Aalto-yliopisto",
+      "title": "Swedish for International Students 1 (group B, contact)",
+      "category": "Kielet",
+      "priceEur": 60,
+      "credits": 3,
+      "format": "Lähiopetus",
+      "location": "Otakaari 1, Espoo (Otaniemi)",
+      "city": "Espoo",
+      "district": "Otaniemi",
+      "schedule": [
+        {
+          "day": 1,
+          "start": "16:00",
+          "end": "17:30"
+        },
+        {
+          "day": 3,
+          "start": "16:00",
+          "end": "17:30"
+        }
+      ],
+      "startDate": "2027-01-12",
+      "endDate": "2027-02-18",
+      "regStart": "2026-12-14",
+      "regEnd": "2027-01-05",
+      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/swedish-for-international-students-1-group-b-contact-teaching",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "Tiistaisin ja torstaisin klo 16-17.30. Tentti 22.2.-5.3.2027."
+    },
+    {
+      "id": "aalto-swedish-3a",
+      "provider": "Aalto-yliopisto",
+      "title": "Swedish for International Students 3 (group A, online)",
+      "category": "Kielet",
+      "priceEur": 60,
+      "credits": 3,
+      "format": "Verkko-opetus",
+      "location": "Online + tentti Otaniemessä",
+      "city": "Espoo/Helsinki",
+      "district": "Verkko",
+      "schedule": [
+        {
+          "day": 0,
+          "start": "16:00",
+          "end": "17:30"
+        },
+        {
+          "day": 2,
+          "start": "16:00",
+          "end": "17:30"
+        }
+      ],
+      "startDate": "2027-05-03",
+      "endDate": "2027-06-09",
+      "regStart": "2027-03-31",
+      "regEnd": "2027-04-26",
+      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/swedish-for-international-students-3-group-a-online-teaching-exam-on-campus",
+      "status": "coming",
+      "intro": false,
+      "hobby": true,
+      "leisure": false,
+      "online": true,
+      "epassi": false,
+      "notes": "Maanantaisin ja keskiviikkoisin klo 16-17.30 verkossa. Tentti 14.-23.6.2027."
+    },
+    {
+      "id": "aalto-yritystalous",
+      "provider": "Aalto-yliopisto",
+      "title": "Yrityksen talouden johtaminen ja raportointi",
+      "category": "Liiketalous",
+      "priceEur": 120,
+      "credits": 6,
+      "format": "Verkko-opetus",
+      "location": "Online (MyCourses)",
+      "city": "Espoo/Helsinki",
+      "district": "Verkko",
+      "schedule": [],
+      "startDate": "2027-02-22",
+      "endDate": "2027-04-02",
+      "regStart": "2026-12-14",
+      "regEnd": "2027-02-15",
+      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/yrityksen-talouden-johtaminen-ja-raportointi-2",
+      "status": "coming",
+      "intro": true,
+      "hobby": false,
+      "leisure": true,
+      "online": true,
+      "epassi": false,
+      "notes": "Itseopiskelu, nauhoitetut luennot englanniksi. Viikottaiset harjoitukset ja välikoe. Tentti kampuksella."
+    },
+    {
+      "id": "aalto-foundations-discrete-math",
+      "provider": "Aalto-yliopisto",
+      "title": "Foundations of Discrete Mathematics",
+      "category": "Matematiikka",
+      "priceEur": 100,
+      "credits": 5,
+      "format": "Lähiopetus",
+      "location": "Otaniemi (aikataulu Sisussa)",
+      "city": "Espoo",
+      "district": "Otaniemi",
+      "schedule": [],
+      "startDate": "2027-03-01",
+      "endDate": "2027-04-20",
+      "regStart": "2027-02-01",
+      "regEnd": "2027-03-08",
+      "url": "https://www.aalto.fi/fi/avoimen-yliopiston-kurssit/foundations-of-discrete-mathematics",
+      "status": "coming",
+      "intro": true,
+      "hobby": false,
+      "leisure": false,
+      "online": false,
+      "epassi": false,
+      "notes": "Aikataulu Sisussa (ryhmät ja opetustapahtumat). 100 €."
     }
   ]
 }
