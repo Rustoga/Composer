@@ -192,13 +192,7 @@
       "format": "Lähiopetus",
       "location": "Bruno Granholmin kuja 2, Vallila",
       "city": "Helsinki (Vallila)",
-      "schedule": [
-        {
-          "day": 0,
-          "start": "17:30",
-          "end": "19:00"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-11",
       "endDate": "2027-02-15",
       "regStart": "2026-11-15",
@@ -208,7 +202,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet. (Hinta: tarkista kurssisivulta.)",
+      "notes": "Maanantaisin. Sisältää perustekniikat ja voimaharjoitteet. (Hinta: tarkista kurssisivulta.) Aikataulu/hinta tarkista kurssisivulta.",
       "district": "Vallila",
       "epassi": false,
       "online": false
@@ -239,7 +233,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita. (Hinta: tarkista kurssisivulta.)",
+      "notes": "3 maanantaita, 9h yhteensä. Ei aikaisempaa kokemusta vaadita. (Hinta: tarkista kurssisivulta.) Hinta tarkista kurssisivulta.",
       "district": "Helsinki",
       "epassi": false,
       "online": false
@@ -254,13 +248,7 @@
       "format": "Lähiopetus",
       "location": "Helsinki studio",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 4,
-          "start": "17:00",
-          "end": "18:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-08",
       "endDate": "2027-03-26",
       "regStart": "2026-11-01",
@@ -270,7 +258,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit. (Hinta: tarkista kurssisivulta.)",
+      "notes": "Perjantai-iltaisin. Matalan kynnyksen tanssitunnit. (Hinta: tarkista kurssisivulta.) Aikataulu/hinta tarkista kurssisivulta.",
       "district": "Helsinki",
       "epassi": false,
       "online": false
@@ -285,13 +273,7 @@
       "format": "Lähiopetus",
       "location": "Sahaajankatu 11",
       "city": "Helsinki (Herttoniemi)",
-      "schedule": [
-        {
-          "day": 5,
-          "start": "11:00",
-          "end": "12:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-09",
       "endDate": "2027-02-27",
       "regStart": "2026-11-01",
@@ -301,7 +283,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Lauantaisin. Myös venäjänkielinen opetus. (Hinta: tarkista kurssisivulta.)",
+      "notes": "Lauantaisin. Myös venäjänkielinen opetus. (Hinta: tarkista kurssisivulta.) Aikataulu/hinta tarkista kurssisivulta.",
       "district": "Herttoniemi",
       "epassi": false,
       "online": false
@@ -332,7 +314,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi. Hinta: tarkista kurssisivulta.",
+      "notes": "Tiistaisin. Opetus suomeksi ja englanniksi. Hinta/aikataulu tarkista kurssisivulta.",
       "district": "keskusta",
       "epassi": true,
       "online": false
@@ -342,18 +324,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Keramiikka - peruskurssi",
       "category": "Kuvataide ja käsityö",
-      "priceEur": 95,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 2,
-          "start": "17:30",
-          "end": "20:00"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-13",
       "endDate": "2027-03-10",
       "regStart": "2026-11-24",
@@ -363,7 +339,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Keskiviikkoisin. Materiaalit sisältyvät hintaan.",
+      "notes": "Keskiviikkoisin. Materiaalit sisältyvät hintaan. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -373,18 +349,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Valokuvaus - perusteet",
       "category": "Media ja taide",
-      "priceEur": 80,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Malmitalo",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 5,
-          "start": "10:00",
-          "end": "13:00"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-09",
       "endDate": "2027-02-27",
       "regStart": "2026-11-24",
@@ -394,7 +364,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Lauantaisin. Oma kamera suositeltava.",
+      "notes": "Lauantaisin. Oma kamera suositeltava. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -404,18 +374,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Jooga - alkeet",
       "category": "Liikunta ja hyvinvointi",
-      "priceEur": 65,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Itämerentalo, Ruoholahti",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 0,
-          "start": "17:00",
-          "end": "18:15"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-11",
       "endDate": "2027-03-15",
       "regStart": "2026-11-24",
@@ -425,7 +389,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Maanantaisin. Rauhallinen alkeiskurssi.",
+      "notes": "Maanantaisin. Rauhallinen alkeiskurssi. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -435,18 +399,12 @@
       "provider": "Kansanopisto (Helsinki)",
       "title": "Luova kirjoittaminen - intro",
       "category": "Kirjoittaminen",
-      "priceEur": 55,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Helsinki (kampus)",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 6,
-          "start": "14:00",
-          "end": "16:00"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-10",
       "endDate": "2027-02-28",
       "regStart": "2026-12-01",
@@ -456,7 +414,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Sunnuntaisin. Omaan tahtiin kirjoitettavat tehtävät.",
+      "notes": "Sunnuntaisin. Omaan tahtiin kirjoitettavat tehtävät. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": false,
       "online": false
@@ -466,18 +424,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Italian keittiö - kurssi",
       "category": "Ruoka ja kotitalous",
-      "priceEur": 70,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Stoa, Itäkeskus",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 4,
-          "start": "17:30",
-          "end": "20:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-08",
       "endDate": "2027-02-26",
       "regStart": "2026-11-24",
@@ -487,7 +439,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantaisin. Aineet sisältyvät hintaan.",
+      "notes": "Perjantaisin. Aineet sisältyvät hintaan. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -522,18 +474,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "English - beginners (A1)",
       "category": "Kielet",
-      "priceEur": 75,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 3,
-          "start": "17:00",
-          "end": "18:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-14",
       "endDate": "2027-03-11",
       "regStart": "2026-11-24",
@@ -543,7 +489,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Torstaisin. Ei aikaisempaa osaamista vaadita.",
+      "notes": "Torstaisin. Ei aikaisempaa osaamista vaadita. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -553,18 +499,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Akvarellimaalaus - alkeet",
       "category": "Kuvataide",
-      "priceEur": 90,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Maunula-talo",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 2,
-          "start": "17:00",
-          "end": "19:30"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-13",
       "endDate": "2027-03-10",
       "regStart": "2026-11-24",
@@ -574,7 +514,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Keskiviikkoisin. Materiaalit omalla kustannuksella.",
+      "notes": "Keskiviikkoisin. Materiaalit omalla kustannuksella. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -584,18 +524,12 @@
       "provider": "Helsingin työväenopisto",
       "title": "Piano - alkeet (aikuiset)",
       "category": "Musiikki",
-      "priceEur": 120,
+      "priceEur": null,
       "credits": null,
       "format": "Lähiopetus",
       "location": "Opistotalo, Kallio",
       "city": "Helsinki",
-      "schedule": [
-        {
-          "day": 4,
-          "start": "17:30",
-          "end": "19:00"
-        }
-      ],
+      "schedule": [],
       "startDate": "2027-01-08",
       "endDate": "2027-03-26",
       "regStart": "2026-11-24",
@@ -605,7 +539,7 @@
       "intro": true,
       "hobby": true,
       "leisure": false,
-      "notes": "Perjantaisin.",
+      "notes": "Perjantaisin. Hinta/aikataulu tarkista Ilmonetistä.",
       "district": "Helsinki",
       "epassi": true,
       "online": false
@@ -808,6 +742,68 @@
       "online": false,
       "epassi": false,
       "notes": "Aikataulu Sisussa (ryhmät ja opetustapahtumat). 100 €."
+    },
+    {
+      "id": "helao-spanish-travellers",
+      "provider": "Helsingin aikuisopisto",
+      "title": "Spanish for travellers (Espanjan pika-alkeet matkailijoille)",
+      "category": "Kielet",
+      "priceEur": 100,
+      "credits": null,
+      "format": "Lähiopetus",
+      "location": "Runeberginkatu 22-24",
+      "city": "Helsinki",
+      "district": "Töölö",
+      "schedule": [
+        {
+          "day": 1,
+          "start": "17:00",
+          "end": "19:30"
+        }
+      ],
+      "startDate": "2027-04-20",
+      "endDate": "2027-05-25",
+      "regStart": "2026-12-01",
+      "regEnd": "2027-04-19",
+      "url": "https://helao.fi/en/courses/languages/spanish-courses",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": true,
+      "notes": "Tiistaisin. Tasot 0. Matkailijoiden perusfraasit."
+    },
+    {
+      "id": "helao-spanish-intensive-a",
+      "provider": "Helsingin aikuisopisto",
+      "title": "Intensive Spanish for beginners A",
+      "category": "Kielet",
+      "priceEur": 117,
+      "credits": null,
+      "format": "Lähiopetus",
+      "location": "Runeberginkatu 22-24",
+      "city": "Helsinki",
+      "district": "Töölö",
+      "schedule": [
+        {
+          "day": 2,
+          "start": "16:30",
+          "end": "18:30"
+        }
+      ],
+      "startDate": "2027-01-20",
+      "endDate": "2027-03-17",
+      "regStart": "2026-12-01",
+      "regEnd": "2027-01-19",
+      "url": "https://helao.fi/en/courses/languages/spanish-courses",
+      "status": "coming",
+      "intro": true,
+      "hobby": true,
+      "leisure": false,
+      "online": false,
+      "epassi": true,
+      "notes": "Keskiviikkoisin. Tasot 0. Nopeasti etenevä."
     }
   ]
 }
