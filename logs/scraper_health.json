@@ -1,65 +1,64 @@
 {
-  "ok_sources": 3,
+  "ok_sources": 4,
   "total_sources": 6,
   "needs_attention": [
     "myhelsinki_events",
-    "finnkino_movies",
-    "k_ruoka"
+    "finnkino_movies"
   ],
   "sources": {
     "resq_club": {
-      "status": "empty",
-      "items_found": 0,
-      "latency_ms": 5571,
+      "status": "ok",
+      "items_found": 15,
+      "latency_ms": 4982,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-28T01:53:21.432442+02:00"
+      "checked_at": "2026-11-28T13:16:39.173355+02:00"
     },
     "myhelsinki_events": {
       "status": "error",
       "items_found": 0,
-      "latency_ms": 1124,
+      "latency_ms": 2608,
       "http_status": null,
       "error_reason": "name 'reg' is not defined",
-      "consecutive_failures": 4,
-      "checked_at": "2026-11-28T01:53:22.556721+02:00"
+      "consecutive_failures": 6,
+      "checked_at": "2026-11-28T13:16:41.781939+02:00"
     },
     "finnkino_movies": {
       "status": "blocked",
       "items_found": 0,
-      "latency_ms": 2501,
+      "latency_ms": 2410,
       "http_status": 403,
       "error_reason": "HTTP 403",
-      "consecutive_failures": 43,
-      "checked_at": "2026-11-28T01:53:25.059456+02:00"
+      "consecutive_failures": 45,
+      "checked_at": "2026-11-28T13:16:44.193478+02:00"
     },
     "k_ruoka": {
-      "status": "blocked",
-      "items_found": 0,
-      "latency_ms": 2491,
-      "http_status": 403,
-      "error_reason": "HTTP 403",
-      "consecutive_failures": 3,
-      "checked_at": "2026-11-28T01:53:27.551275+02:00"
+      "status": "ok",
+      "items_found": 4,
+      "latency_ms": 3389,
+      "http_status": 200,
+      "error_reason": null,
+      "consecutive_failures": 0,
+      "checked_at": "2026-11-28T13:16:47.586198+02:00"
     },
     "lidl": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 4499,
+      "latency_ms": 3906,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-28T01:53:32.051088+02:00"
+      "checked_at": "2026-11-28T13:16:51.493161+02:00"
     },
     "s_group": {
       "status": "empty",
       "items_found": 0,
-      "latency_ms": 2903,
+      "latency_ms": 2730,
       "http_status": 200,
       "error_reason": null,
       "consecutive_failures": 0,
-      "checked_at": "2026-11-28T01:53:38.795269+02:00"
+      "checked_at": "2026-11-28T13:16:57.593852+02:00"
     }
   }
 }
