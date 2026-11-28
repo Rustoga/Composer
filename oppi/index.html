@@ -399,13 +399,14 @@
       // We'll position absolute within a single cell? Better: use grid cell as anchor and span rows via rowspan not possible with divs. Use absolute positioning in cell? Simpler: append block to first cell and set height.
       const cell = grid.querySelector(`.sched-cell[data-day="${day}"][data-hour="${topHour}"]`)
       if (!cell) return
+      const idx = cell.querySelectorAll('.sched-block').length
       const block = document.createElement('div')
       block.className = 'sched-block ' + cls
       block.textContent = label
-      // height: durationMin/60 * 26px
       const px = (durationMin/60)*26
       block.style.height = px + 'px'
-      block.style.zIndex = 2
+      block.style.zIndex = cls.includes('course') ? 3 : 1
+      block.style.left = (2 + idx*6) + 'px'
       cell.style.position = 'relative'
       cell.appendChild(block)
       // offset top within cell based on minutes
